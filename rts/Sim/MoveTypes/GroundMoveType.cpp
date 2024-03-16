@@ -1380,6 +1380,8 @@ void CGroundMoveType::ChangeSpeed(float newWantedSpeed, bool wantReverse, bool f
  * FIXME near-duplicate of HoverAirMoveType::UpdateHeading
  */
 void CGroundMoveType::ChangeHeading(short newHeading) {
+	if (owner->IsMoving() == false)
+		return;
 	if (owner->IsFlying())
 		return;
 	if (owner->GetTransporter() != nullptr)
