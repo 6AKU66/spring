@@ -673,7 +673,6 @@ float3 CPathManager::NextWayPoint(
 	float radius,
 	bool synced
 ) {
-	//ZoneScoped;
 	// in misc since it is called from many points
 	//SCOPED_TIMER("Misc::Path::NextWayPoint");
 	ZoneScoped;

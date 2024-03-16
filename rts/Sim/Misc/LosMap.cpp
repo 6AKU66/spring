@@ -521,7 +521,6 @@ void CLosMap::LosAdd(SLosInstance* li) const
 
 inline static constexpr size_t ToAngleMapIdx(const int2 p, const int radius)
 {
-	//ZoneScoped;
 	// [-radius, +radius]^2 -> [0, +2*radius]^2 -> idx
 	return (p.y + radius) * (2 * radius + 1) + (p.x + radius);
 }

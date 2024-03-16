@@ -377,7 +377,6 @@ void QTPFS::PathSearch::SetForwardSearchLimit() {
 }
 
 bool QTPFS::PathSearch::ExecutePathSearch() {
-	//ZoneScoped;
 	ZoneScoped;
 
 	#ifdef QTPFS_TRACE_PATH_SEARCHES
@@ -662,7 +661,6 @@ bool QTPFS::PathSearch::ExecutePathSearch() {
 }
 
 bool QTPFS::PathSearch::ExecuteRawSearch() {
-	//ZoneScoped;
 	ZoneScoped;
 	auto& fwd = directionalSearchData[SearchThreadData::SEARCH_FORWARD];
 
@@ -709,7 +707,6 @@ void QTPFS::PathSearch::UpdateNode(SearchNode* nextNode, SearchNode* prevNode, u
 }
 
 void QTPFS::PathSearch::IterateNodes(unsigned int searchDir) {
-	//ZoneScoped;
 	ZoneScoped;
 	DirectionalSearchData& searchData = directionalSearchData[searchDir];
 

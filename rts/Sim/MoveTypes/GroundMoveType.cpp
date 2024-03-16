@@ -459,13 +459,11 @@ static float3 CalcSpeedVectorExclGravity(const CUnit* owner, const CGroundMoveTy
 
 
 static constexpr decltype(&CheckCollisionInclSAT) checkCollisionFuncs[] = {
-	//ZoneScoped;
 	CheckCollisionExclSAT,
 	CheckCollisionInclSAT,
 };
 
 static constexpr decltype(&CalcSpeedVectorInclGravity) calcSpeedVectorFuncs[] = {
-	//ZoneScoped;
 	CalcSpeedVectorExclGravity,
 	CalcSpeedVectorInclGravity,
 };

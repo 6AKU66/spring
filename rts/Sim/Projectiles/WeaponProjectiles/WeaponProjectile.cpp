@@ -62,7 +62,6 @@ CWeaponProjectile::CWeaponProjectile(const ProjectileParams& params)
 	, startPos(params.pos)
 	, targetPos(params.end)
 {
-	//ZoneScoped;
 	projectileType = WEAPON_BASE_PROJECTILE;
 
 	assert(weaponDef != nullptr);

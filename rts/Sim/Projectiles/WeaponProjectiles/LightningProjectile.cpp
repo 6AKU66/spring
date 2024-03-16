@@ -24,7 +24,6 @@ CR_REG_METADATA(CLightningProjectile,(
 
 CLightningProjectile::CLightningProjectile(const ProjectileParams& params): CWeaponProjectile(params)
 {
-	//ZoneScoped;
 	projectileType = WEAPON_LIGHTNING_PROJECTILE;
 	useAirLos = false;
 

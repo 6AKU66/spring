@@ -159,7 +159,6 @@ static void MAPPOS_SANITY_CHECK(const float3 v)
 template<bool synced>
 void CProjectileHandler::UpdateProjectilesImpl()
 {
-	//ZoneScoped;
 	SCOPED_TIMER("Sim::Projectiles::Update");
 
 	auto& pc = projectiles[synced];
