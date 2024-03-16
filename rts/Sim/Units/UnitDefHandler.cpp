@@ -14,6 +14,7 @@
 #include "System/StringUtil.h"
 #include "System/Sound/ISound.h"
 
+#include <tracy/Tracy.hpp>
 
 static CUnitDefHandler gUnitDefHandler;
 CUnitDefHandler* unitDefHandler = &gUnitDefHandler;

@@ -28,6 +28,8 @@
 #include "System/Log/ILog.h"
 #include "System/Platform/Watchdog.h"
 
+#include <tracy/Tracy.hpp>
+
 
 
 CUnitLoader* CUnitLoader::GetInstance()

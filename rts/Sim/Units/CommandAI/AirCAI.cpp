@@ -21,6 +21,9 @@
 #include "System/StringUtil.h"
 
 #include <cassert>
+
+#include <tracy/Tracy.hpp>
+
 #define AUTO_GENERATE_ATTACK_ORDERS 1
 
 // AirCAI is always assigned to StrafeAirMoveType aircraft

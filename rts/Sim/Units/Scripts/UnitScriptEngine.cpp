@@ -15,6 +15,7 @@
 #include "System/SafeUtil.h"
 #include "System/Config/ConfigHandler.h"
 
+#include <tracy/Tracy.hpp>
 
 static CCobEngine gCobEngine;
 static CCobFileHandler gCobFileHandler;

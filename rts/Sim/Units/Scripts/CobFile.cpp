@@ -14,6 +14,8 @@
 #include <cctype>
 #include <cstring>
 
+#include <tracy/Tracy.hpp>
+
 
 //The following structure is taken from http://visualta.tauniverse.com/Downloads/ta-cob-fmt.txt
 //Information on missing fields from Format_Cob.pas

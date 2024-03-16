@@ -25,6 +25,8 @@
 #include "System/SafeUtil.h"
 #include "System/StringUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 CR_BIND_DERIVED(CLuaUnitScript, CUnitScript, )
 
 CR_REG_METADATA(CLuaUnitScript, (

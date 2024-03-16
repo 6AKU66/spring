@@ -46,6 +46,8 @@
 #include "System/StringUtil.h"
 #include "System/Sound/ISoundChannels.h"
 
+#include <tracy/Tracy.hpp>
+
 #endif
 
 CR_BIND_INTERFACE(CUnitScript)

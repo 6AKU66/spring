@@ -3,6 +3,8 @@
 #include "Command.h"
 #include "CommandParamsPool.hpp"
 
+#include <tracy/Tracy.hpp>
+
 CommandParamsPool cmdParamsPool;
 
 CR_BIND(Command, )

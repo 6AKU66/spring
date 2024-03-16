@@ -6,6 +6,8 @@
 #include "Sim/Misc/GlobalConstants.h"
 #include "System/StringUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 // script function-indices never change, so this is fine wrt. reloading
 static std::array<std::string, COBFN_NumUnitFuncs> scriptNames;
 static spring::unordered_map<std::string, int> scriptMap;

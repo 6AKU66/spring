@@ -26,6 +26,7 @@
 
 #include "Game/GlobalUnsynced.h"
 
+#include <tracy/Tracy.hpp>
 
 CR_BIND_DERIVED(CFactory, CBuilding, )
 CR_REG_METADATA(CFactory, (

@@ -28,6 +28,8 @@
 #include "System/Log/ILog.h"
 #include "System/Sound/ISoundChannels.h"
 
+#include <tracy/Tracy.hpp>
+
 using std::min;
 using std::max;
 

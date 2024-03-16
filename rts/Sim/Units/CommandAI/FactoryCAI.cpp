@@ -20,6 +20,8 @@
 #include "System/EventHandler.h"
 #include "System/Exceptions.h"
 
+#include <tracy/Tracy.hpp>
+
 CR_BIND_DERIVED(CFactoryCAI ,CCommandAI , )
 
 CR_REG_METADATA(CFactoryCAI , (

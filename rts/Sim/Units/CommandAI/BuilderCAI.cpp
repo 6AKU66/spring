@@ -30,6 +30,8 @@
 #include "System/Log/ILog.h"
 #include "System/creg/STL_Map.h"
 
+#include <tracy/Tracy.hpp>
+
 
 CR_BIND_DERIVED(CBuilderCAI ,CMobileCAI , )
 

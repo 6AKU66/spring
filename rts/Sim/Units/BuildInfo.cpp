@@ -6,6 +6,8 @@
 #include "System/SpringMath.h"
 #include "System/float3.h"
 
+#include <tracy/Tracy.hpp>
+
 
 BuildInfo::BuildInfo()
 	: def(nullptr)

@@ -5,6 +5,8 @@
 #include "LuaScriptNames.h"
 #include "Sim/Misc/GlobalConstants.h"
 
+#include <tracy/Tracy.hpp>
+
 // script function-indices never change, so this is fine wrt. reloading
 static std::array<std::string, LUAFN_Last> scriptNames;
 static spring::unordered_map<std::string, int> scriptMap;

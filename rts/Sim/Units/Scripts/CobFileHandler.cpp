@@ -1,6 +1,8 @@
 #include "CobFileHandler.h"
 #include "System/FileSystem/FileHandler.h"
 
+#include <tracy/Tracy.hpp>
+
 CCobFile* CCobFileHandler::GetCobFile(const std::string& name)
 {
 	//ZoneScoped;

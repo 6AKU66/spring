@@ -13,6 +13,8 @@
 #include "Sim/Misc/QuadField.h"
 #include "System/ContainerUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 
 CR_BIND_DERIVED(CExtractorBuilding, CBuilding, )
 CR_REG_METADATA(CExtractorBuilding, (

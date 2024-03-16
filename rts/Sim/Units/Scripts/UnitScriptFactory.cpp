@@ -13,6 +13,8 @@
 #include "System/Log/ILog.h"
 #include "System/StringUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 void CUnitScriptFactory::InitStatic()
 {
 	static_assert(sizeof(CLuaUnitScript) >= sizeof(CCobInstance   ), "");

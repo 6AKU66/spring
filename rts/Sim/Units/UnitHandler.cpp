@@ -32,6 +32,8 @@
 
 #include "Sim/Path/HAPFS/PathGlobal.h"
 
+#include <tracy/Tracy.hpp>
+
 
 CR_BIND(CUnitHandler, )
 CR_REG_METADATA(CUnitHandler, (

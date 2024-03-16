@@ -4,6 +4,8 @@
 #include "Sim/Units/Unit.h"
 #include "System/Log/ILog.h"
 
+#include <tracy/Tracy.hpp>
+
 
 // keep one global copy so we don't need to allocate a lot of
 // near empty objects for mods that use Lua unit scripts.

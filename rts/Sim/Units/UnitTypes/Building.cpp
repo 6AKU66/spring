@@ -9,6 +9,8 @@
 #include "Sim/Units/UnitLoader.h"
 #include "System/SpringMath.h"
 
+#include <tracy/Tracy.hpp>
+
 
 CR_BIND_DERIVED(CBuilding, CUnit, )
 CR_REG_METADATA(CBuilding, (

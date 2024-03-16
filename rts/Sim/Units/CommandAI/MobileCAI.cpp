@@ -27,6 +27,8 @@
 #include "System/StringUtil.h"
 #include <assert.h>
 
+#include <tracy/Tracy.hpp>
+
 #define AUTO_GENERATE_ATTACK_ORDERS 1
 
 // MobileCAI is not always assigned to aircraft

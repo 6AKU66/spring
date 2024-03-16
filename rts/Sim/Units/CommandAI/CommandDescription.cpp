@@ -8,6 +8,8 @@
 #include "System/SpringHash.h"
 #include "System/creg/STL_Pair.h"
 
+#include <tracy/Tracy.hpp>
+
 CR_BIND(SCommandDescription, )
 CR_REG_METADATA(SCommandDescription, (
 	CR_MEMBER(id),

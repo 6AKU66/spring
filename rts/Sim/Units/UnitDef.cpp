@@ -20,6 +20,8 @@
 #include "System/SafeUtil.h"
 #include "System/StringUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 /******************************************************************************/
 
 UnitDefWeapon::UnitDefWeapon(const WeaponDef* weaponDef) {

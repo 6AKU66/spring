@@ -34,6 +34,8 @@
 #include "System/creg/STL_Deque.h"
 #include <assert.h>
 
+#include <tracy/Tracy.hpp>
+
 // number of SlowUpdate calls that a target (unit) must
 // be out of radar (and hence LOS) contact before it is
 // considered 'lost' and invalid (for attack orders etc)
