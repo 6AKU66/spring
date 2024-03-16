@@ -68,6 +68,7 @@ CCommandDescriptionCache commandDescriptionCache;
 
 void CCommandDescriptionCache::Init()
 {
+	//ZoneScoped;
 	index.fill({0, 0});
 	slots.fill(-1u);
 
@@ -86,6 +87,7 @@ void CCommandDescriptionCache::Init()
 
 void CCommandDescriptionCache::Dump(bool forced)
 {
+	//ZoneScoped;
 	if (!forced)
 		return;
 
@@ -123,6 +125,7 @@ void CCommandDescriptionCache::Dump(bool forced)
 
 int CCommandDescriptionCache::CalcHash(const SCommandDescription& cd) const
 {
+	//ZoneScoped;
 	int hash = 0;
 
 	hash = spring::LiteHash(&cd.id             , sizeof(cd.id)         , hash);
@@ -148,6 +151,7 @@ int CCommandDescriptionCache::CalcHash(const SCommandDescription& cd) const
 
 const SCommandDescription* CCommandDescriptionCache::GetPtr(SCommandDescription&& cd)
 {
+	//ZoneScoped;
 	using P = decltype(index)::value_type;
 
 	const int cdHash = CalcHash(cd);
@@ -197,6 +201,7 @@ const SCommandDescription* CCommandDescriptionCache::GetPtr(SCommandDescription&
 
 void CCommandDescriptionCache::DecRef(const SCommandDescription& cd)
 {
+	//ZoneScoped;
 	using P = decltype(index)::value_type;
 
 	const int cdHash = CalcHash(cd);
@@ -238,6 +243,7 @@ void CCommandDescriptionCache::DecRef(const SCommandDescription& cd)
 
 void CCommandDescriptionCache::DecRef(std::vector<const SCommandDescription*>& cmdDescs)
 {
+	//ZoneScoped;
 	for (const SCommandDescription* cd: cmdDescs) {
 		DecRef(*cd);
 	}

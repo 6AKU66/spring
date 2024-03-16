@@ -21,6 +21,7 @@ CNullUnitScript::CNullUnitScript(CUnit *u)
 
 void CNullUnitScript::PostLoad()
 {
+	//ZoneScoped;
 	if (unit == nullptr)
 		return;
 
@@ -31,6 +32,7 @@ void CNullUnitScript::PostLoad()
 
 void CNullUnitScript::ShowScriptError(const std::string& msg)
 {
+	//ZoneScoped;
 	LOG_L(L_ERROR, "%s", msg.c_str());
 	LOG_L(L_ERROR, "why are you using CNullUnitScript anyway?");
 }

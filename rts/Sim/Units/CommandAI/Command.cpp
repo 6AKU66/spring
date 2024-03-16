@@ -28,6 +28,7 @@ Command::~Command() {
 
 
 const float* Command::GetParams(unsigned int idx) const {
+	//ZoneScoped;
 	if (idx >= numParams)
 		return nullptr;
 
@@ -40,6 +41,7 @@ const float* Command::GetParams(unsigned int idx) const {
 }
 
 float Command::GetParam(unsigned int idx) const {
+	//ZoneScoped;
 	const float* ptr = GetParams(idx);
 
 	if (ptr != nullptr)
@@ -50,6 +52,7 @@ float Command::GetParam(unsigned int idx) const {
 
 
 bool Command::SetParam(unsigned int idx, float param) {
+	//ZoneScoped;
 	float* ptr = const_cast<float*>(GetParams(idx));
 
 	if (ptr != nullptr)
@@ -59,6 +62,7 @@ bool Command::SetParam(unsigned int idx, float param) {
 }
 
 bool Command::PushParam(float param) {
+	//ZoneScoped;
 	if (numParams < MAX_COMMAND_PARAMS) {
 		// no need to make this a pooled command just yet
 		params[numParams++] = param;
@@ -83,6 +87,7 @@ bool Command::PushParam(float param) {
 }
 
 void Command::CopyParams(const Command& c) {
+	//ZoneScoped;
 	// clear existing params
 	if (IsPooledCommand())
 		cmdParamsPool.ReleasePage(pageIndex);
@@ -98,6 +103,7 @@ void Command::CopyParams(const Command& c) {
 }
 
 void Command::Serialize(creg::ISerializer* s) {
+	//ZoneScoped;
 	if (s->IsWriting()) {
 		for (unsigned int i = 0; i < numParams; i++) {
 			float p = GetParam(i);

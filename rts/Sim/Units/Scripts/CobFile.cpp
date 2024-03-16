@@ -87,6 +87,7 @@ static std::vector<uint8_t> cobFileData;
 
 CCobFile::CCobFile(CFileHandler& in, const std::string& scriptName)
 {
+	//ZoneScoped;
 	name.assign(scriptName);
 	scriptIndex.fill(-1);
 
@@ -201,6 +202,7 @@ CCobFile::CCobFile(CFileHandler& in, const std::string& scriptName)
 
 int CCobFile::GetFunctionId(const std::string& name)
 {
+	//ZoneScoped;
 	const auto i = scriptMap.find(name);
 
 	if (i != scriptMap.end())

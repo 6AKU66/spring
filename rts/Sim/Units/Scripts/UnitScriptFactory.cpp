@@ -25,6 +25,7 @@ void CUnitScriptFactory::InitStatic()
 
 CUnitScript* CUnitScriptFactory::CreateScript(CUnit* unit, const UnitDef* udef)
 {
+	//ZoneScoped;
 	CUnitScript* script = &CNullUnitScript::value;
 
 	// NOTE:
@@ -45,12 +46,14 @@ CUnitScript* CUnitScriptFactory::CreateScript(CUnit* unit, const UnitDef* udef)
 
 CUnitScript* CUnitScriptFactory::CreateCOBScript(CUnit* unit, CCobFile* F)
 {
+	//ZoneScoped;
 	static_assert(sizeof(CCobInstance) <= sizeof(unit->usMemBuffer), "");
 	return (new (unit->usMemBuffer) CCobInstance(F, unit));
 }
 
 CUnitScript* CUnitScriptFactory::CreateLuaScript(CUnit* unit, lua_State* L)
 {
+	//ZoneScoped;
 	static_assert(sizeof(CLuaUnitScript) <= sizeof(unit->usMemBuffer), "");
 	return (new (unit->usMemBuffer) CLuaUnitScript(L, unit));
 }

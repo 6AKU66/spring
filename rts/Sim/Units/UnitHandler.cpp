@@ -62,6 +62,7 @@ CUnitHandler unitHandler;
 
 CUnit* CUnitHandler::NewUnit(const UnitDef* ud)
 {
+	//ZoneScoped;
 	// special static builder structures that can always be given
 	// move orders (which are passed on to all mobile buildees)
 	if (ud->IsFactoryUnit())
@@ -88,6 +89,7 @@ CUnit* CUnitHandler::NewUnit(const UnitDef* ud)
 
 
 void CUnitHandler::Init() {
+	//ZoneScoped;
 	GroundMoveSystem::Init();
 	GeneralMoveSystem::Init();
 	UnitTrapCheckSystem::Init();
@@ -132,6 +134,7 @@ void CUnitHandler::Init() {
 
 void CUnitHandler::Kill()
 {
+	//ZoneScoped;
 	for (CUnit* u: activeUnits) {
 		// ~CUnit dereferences featureHandler which is destroyed already
 		u->KilledScriptFinished(-1);
@@ -167,6 +170,7 @@ void CUnitHandler::Kill()
 
 void CUnitHandler::DeleteScripts()
 {
+	//ZoneScoped;
 	// predelete scripts since they sometimes reference (pieces
 	// of) models, which are already gone before KillSimulation
 	for (CUnit* u: activeUnits) {
@@ -177,6 +181,7 @@ void CUnitHandler::DeleteScripts()
 
 void CUnitHandler::InsertActiveUnit(CUnit* unit)
 {
+	//ZoneScoped;
 	idPool.AssignID(unit);
 
 	assert(unit->id < units.size());
@@ -211,6 +216,7 @@ void CUnitHandler::InsertActiveUnit(CUnit* unit)
 
 bool CUnitHandler::AddUnit(CUnit* unit)
 {
+	//ZoneScoped;
 	// LoadUnit should make sure this is true
 	assert(CanAddUnit(unit->id));
 
@@ -230,6 +236,7 @@ bool CUnitHandler::AddUnit(CUnit* unit)
 
 bool CUnitHandler::GarbageCollectUnit(unsigned int id)
 {
+	//ZoneScoped;
 	if (inUpdateCall)
 		return false;
 
@@ -256,6 +263,7 @@ void CUnitHandler::QueueDeleteUnits()
 
 bool CUnitHandler::QueueDeleteUnit(CUnit* unit)
 {
+	//ZoneScoped;
 	if (!unit->deathScriptFinished)
 		return false;
 
@@ -270,6 +278,7 @@ bool CUnitHandler::QueueDeleteUnit(CUnit* unit)
 
 void CUnitHandler::DeleteUnits()
 {
+	//ZoneScoped;
 	while (!unitsToBeRemoved.empty()) {
 		DeleteUnit(unitsToBeRemoved.back());
 		unitsToBeRemoved.pop_back();
@@ -278,6 +287,7 @@ void CUnitHandler::DeleteUnits()
 
 void CUnitHandler::DeleteUnit(CUnit* delUnit)
 {
+	//ZoneScoped;
 	assert(delUnit->isDead);
 	// we want to call RenderUnitDestroyed while the unit is still valid
 	eventHandler.RenderUnitDestroyed(delUnit);
@@ -437,12 +447,14 @@ void CUnitHandler::Update()
 
 void CUnitHandler::AddBuilderCAI(CBuilderCAI* b)
 {
+	//ZoneScoped;
 	// called from CBuilderCAI --> owner is already valid
 	builderCAIs[b->owner->id] = b;
 }
 
 void CUnitHandler::RemoveBuilderCAI(CBuilderCAI* b)
 {
+	//ZoneScoped;
 	// called from ~CUnit --> owner is still valid
 	assert(b->owner != nullptr);
 	builderCAIs.erase(b->owner->id);
@@ -451,6 +463,7 @@ void CUnitHandler::RemoveBuilderCAI(CBuilderCAI* b)
 
 void CUnitHandler::ChangeUnitTeam(CUnit* unit, int oldTeamNum, int newTeamNum)
 {
+	//ZoneScoped;
 	spring::VectorErase       (GetUnitsByTeamAndDef(oldTeamNum,                 0), unit       );
 	spring::VectorErase       (GetUnitsByTeamAndDef(oldTeamNum, unit->unitDef->id), unit       );
 	spring::VectorInsertUnique(GetUnitsByTeamAndDef(newTeamNum,                 0), unit, false);
@@ -460,6 +473,7 @@ void CUnitHandler::ChangeUnitTeam(CUnit* unit, int oldTeamNum, int newTeamNum)
 
 bool CUnitHandler::CanBuildUnit(const UnitDef* unitdef, int team) const
 {
+	//ZoneScoped;
 	if (teamHandler.Team(team)->AtUnitLimit())
 		return false;
 
@@ -468,6 +482,7 @@ bool CUnitHandler::CanBuildUnit(const UnitDef* unitdef, int team) const
 
 unsigned int CUnitHandler::CalcMaxUnits() const
 {
+	//ZoneScoped;
 	unsigned int n = 0;
 
 	for (unsigned int i = 0; i < teamHandler.ActiveTeams(); i++) {

@@ -97,6 +97,7 @@ CBuilder::CBuilder():
 
 void CBuilder::PreInit(const UnitLoadParams& params)
 {
+	//ZoneScoped;
 	unitDef = params.unitDef;
 	range3D = unitDef->buildRange3D;
 	buildDistance = (params.unitDef)->buildDistance;
@@ -116,6 +117,7 @@ void CBuilder::PreInit(const UnitLoadParams& params)
 
 bool CBuilder::CanAssistUnit(const CUnit* u, const UnitDef* def) const
 {
+	//ZoneScoped;
 	if (!unitDef->canAssist)
 		return false;
 
@@ -125,6 +127,7 @@ bool CBuilder::CanAssistUnit(const CUnit* u, const UnitDef* def) const
 
 bool CBuilder::CanRepairUnit(const CUnit* u) const
 {
+	//ZoneScoped;
 	if (!unitDef->canRepair)
 		return false;
 	if (u->beingBuilt)
@@ -139,6 +142,7 @@ bool CBuilder::CanRepairUnit(const CUnit* u) const
 
 bool CBuilder::UpdateTerraform(const Command&)
 {
+	//ZoneScoped;
 	CUnit* curBuildee = curBuild;
 
 	if (!terraforming || !inBuildStance)
@@ -275,6 +279,7 @@ bool CBuilder::UpdateTerraform(const Command&)
 
 bool CBuilder::AssistTerraform(const Command&)
 {
+	//ZoneScoped;
 	CBuilder* helpTerraformee = helpTerraform;
 
 	if (helpTerraformee == nullptr || !inBuildStance)
@@ -295,6 +300,7 @@ bool CBuilder::AssistTerraform(const Command&)
 
 bool CBuilder::UpdateBuild(const Command& fCommand)
 {
+	//ZoneScoped;
 	CUnit* curBuildee = curBuild;
 	CBuilderCAI* cai = static_cast<CBuilderCAI*>(commandAI);
 
@@ -362,6 +368,7 @@ bool CBuilder::UpdateBuild(const Command& fCommand)
 
 bool CBuilder::UpdateReclaim(const Command& fCommand)
 {
+	//ZoneScoped;
 	// AddBuildPower can invoke StopBuild indirectly even if returns true
 	// and reset curReclaim to null (which would crash CreateNanoParticle)
 	CSolidObject* curReclaimee = curReclaim;
@@ -385,6 +392,7 @@ bool CBuilder::UpdateReclaim(const Command& fCommand)
 
 bool CBuilder::UpdateResurrect(const Command& fCommand)
 {
+	//ZoneScoped;
 	CBuilderCAI* cai = static_cast<CBuilderCAI*>(commandAI);
 	CFeature* curResurrectee = curResurrect;
 
@@ -474,6 +482,7 @@ bool CBuilder::UpdateResurrect(const Command& fCommand)
 
 bool CBuilder::UpdateCapture(const Command& fCommand)
 {
+	//ZoneScoped;
 	CUnit* curCapturee = curCapture;
 
 	if (curCapturee == nullptr || f3SqDist(curCapturee->pos, pos) >= Square(buildDistance + curCapturee->buildeeRadius) || !inBuildStance)
@@ -528,6 +537,7 @@ bool CBuilder::UpdateCapture(const Command& fCommand)
 
 void CBuilder::Update()
 {
+	//ZoneScoped;
 	const CBuilderCAI* cai = static_cast<CBuilderCAI*>(commandAI);
 
 	const CCommandQueue& cQueue = cai->commandQue;
@@ -552,6 +562,7 @@ void CBuilder::Update()
 
 void CBuilder::SlowUpdate()
 {
+	//ZoneScoped;
 	if (terraforming)
 		mapDamage->RecalcArea(tx1, tx2, tz1, tz2);
 
@@ -561,6 +572,7 @@ void CBuilder::SlowUpdate()
 
 void CBuilder::SetRepairTarget(CUnit* target)
 {
+	//ZoneScoped;
 	if (target == curBuild)
 		return;
 
@@ -589,6 +601,7 @@ void CBuilder::SetRepairTarget(CUnit* target)
 
 void CBuilder::SetReclaimTarget(CSolidObject* target)
 {
+	//ZoneScoped;
 	if (dynamic_cast<CFeature*>(target) != nullptr && !static_cast<CFeature*>(target)->def->reclaimable)
 		return;
 
@@ -613,6 +626,7 @@ void CBuilder::SetReclaimTarget(CSolidObject* target)
 
 void CBuilder::SetResurrectTarget(CFeature* target)
 {
+	//ZoneScoped;
 	if (curResurrect == target || target->udef == nullptr)
 		return;
 
@@ -628,6 +642,7 @@ void CBuilder::SetResurrectTarget(CFeature* target)
 
 void CBuilder::SetCaptureTarget(CUnit* target)
 {
+	//ZoneScoped;
 	if (target == curCapture)
 		return;
 
@@ -643,6 +658,7 @@ void CBuilder::SetCaptureTarget(CUnit* target)
 
 void CBuilder::StartRestore(float3 centerPos, float radius)
 {
+	//ZoneScoped;
 	StopBuild(false);
 	TempHoldFire(CMD_RESTORE);
 
@@ -674,6 +690,7 @@ void CBuilder::StartRestore(float3 centerPos, float radius)
 
 void CBuilder::StopBuild(bool callScript)
 {
+	//ZoneScoped;
 	if (curBuild != nullptr)
 		DeleteDeathDependence(curBuild, DEPENDENCE_BUILD);
 	if (curReclaim != nullptr)
@@ -702,6 +719,7 @@ void CBuilder::StopBuild(bool callScript)
 
 bool CBuilder::StartBuild(BuildInfo& buildInfo, CFeature*& feature, bool& inWaitStance, bool& limitReached)
 {
+	//ZoneScoped;
 	const CUnit* prvBuild = curBuild;
 
 	StopBuild(false);
@@ -828,6 +846,7 @@ bool CBuilder::StartBuild(BuildInfo& buildInfo, CFeature*& feature, bool& inWait
 
 float CBuilder::CalculateBuildTerraformCost(BuildInfo& buildInfo)
 {
+	//ZoneScoped;
 	float3& buildPos = buildInfo.pos;
 
 	float tcost = 0.0f;
@@ -854,6 +873,7 @@ float CBuilder::CalculateBuildTerraformCost(BuildInfo& buildInfo)
 
 void CBuilder::DependentDied(CObject* o)
 {
+	//ZoneScoped;
 	if (o == curBuild) {
 		curBuild = nullptr;
 		StopBuild();
@@ -880,6 +900,7 @@ void CBuilder::DependentDied(CObject* o)
 
 bool CBuilder::ScriptStartBuilding(float3 pos, bool silent)
 {
+	//ZoneScoped;
 	if (script->HasStartBuilding()) {
 		const float3 wantedDir = (pos - midPos).Normalize();
 		const float h = GetHeadingFromVectorF(wantedDir.x, wantedDir.z);
@@ -901,6 +922,7 @@ bool CBuilder::ScriptStartBuilding(float3 pos, bool silent)
 
 void CBuilder::HelpTerraform(CBuilder* unit)
 {
+	//ZoneScoped;
 	if (helpTerraform == unit)
 		return;
 
@@ -915,6 +937,7 @@ void CBuilder::HelpTerraform(CBuilder* unit)
 
 void CBuilder::CreateNanoParticle(const float3& goal, float radius, bool inverse, bool highPriority)
 {
+	//ZoneScoped;
 	const int modelNanoPiece = nanoPieceCache.GetNanoPiece(script);
 
 	if (!localModel.Initialized() || !localModel.HasPiece(modelNanoPiece))

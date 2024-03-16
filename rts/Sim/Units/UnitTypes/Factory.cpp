@@ -65,6 +65,7 @@ CFactory::CFactory()
 
 void CFactory::KillUnit(CUnit* attacker, bool selfDestruct, bool reclaimed)
 {
+	//ZoneScoped;
 	if (curBuild != nullptr) {
 		curBuild->KillUnit(nullptr, false, true);
 		curBuild = nullptr;
@@ -75,6 +76,7 @@ void CFactory::KillUnit(CUnit* attacker, bool selfDestruct, bool reclaimed)
 
 void CFactory::PreInit(const UnitLoadParams& params)
 {
+	//ZoneScoped;
 	unitDef = params.unitDef;
 	buildSpeed = unitDef->buildSpeed / GAME_SPEED;
 
@@ -89,6 +91,7 @@ void CFactory::PreInit(const UnitLoadParams& params)
 
 float3 CFactory::CalcBuildPos(int buildPiece)
 {
+	//ZoneScoped;
 	const float3 relBuildPos = script->GetPiecePos((buildPiece < 0)? script->QueryBuildInfo() : buildPiece);
 	const float3 absBuildPos = this->GetObjectSpacePos(relBuildPos);
 	return absBuildPos;
@@ -98,6 +101,7 @@ float3 CFactory::CalcBuildPos(int buildPiece)
 
 void CFactory::Update()
 {
+	//ZoneScoped;
 	nanoPieceCache.Update();
 
 	if (beingBuilt) {
@@ -164,6 +168,7 @@ void CFactory::Update()
 
 
 void CFactory::StartBuild(const UnitDef* buildeeDef) {
+	//ZoneScoped;
 	if (isDead)
 		return;
 
@@ -199,6 +204,7 @@ void CFactory::StartBuild(const UnitDef* buildeeDef) {
 }
 
 void CFactory::UpdateBuild(CUnit* buildee) {
+	//ZoneScoped;
 	if (IsStunned())
 		return;
 
@@ -241,6 +247,7 @@ void CFactory::UpdateBuild(CUnit* buildee) {
 }
 
 void CFactory::FinishBuild(CUnit* buildee) {
+	//ZoneScoped;
 	if (buildee->beingBuilt)
 		return;
 	if (unitDef->fullHealthFactory && buildee->health < buildee->maxHealth)
@@ -272,6 +279,7 @@ void CFactory::FinishBuild(CUnit* buildee) {
 
 unsigned int CFactory::QueueBuild(const UnitDef* buildeeDef, const Command& buildCmd)
 {
+	//ZoneScoped;
 	assert(!beingBuilt);
 	assert(buildeeDef != nullptr);
 
@@ -295,6 +303,7 @@ unsigned int CFactory::QueueBuild(const UnitDef* buildeeDef, const Command& buil
 
 void CFactory::StopBuild()
 {
+	//ZoneScoped;
 	// cancel a build-in-progress
 	script->StopBuilding();
 
@@ -312,6 +321,7 @@ void CFactory::StopBuild()
 
 void CFactory::DependentDied(CObject* o)
 {
+	//ZoneScoped;
 	if (o == curBuild) {
 		curBuild = nullptr;
 		StopBuild();
@@ -324,6 +334,7 @@ void CFactory::DependentDied(CObject* o)
 
 void CFactory::SendToEmptySpot(CUnit* unit)
 {
+	//ZoneScoped;
 	constexpr int numSteps = 100;
 
 	const float searchRadius = radius * 4.0f + unit->radius * 4.0f;
@@ -409,6 +420,7 @@ void CFactory::SendToEmptySpot(CUnit* unit)
 }
 
 void CFactory::AssignBuildeeOrders(CUnit* unit) {
+	//ZoneScoped;
 	CCommandAI* unitCAI = unit->commandAI;
 	CCommandQueue& unitCmdQue = unitCAI->commandQue;
 
@@ -482,6 +494,7 @@ void CFactory::AssignBuildeeOrders(CUnit* unit) {
 
 bool CFactory::ChangeTeam(int newTeam, ChangeType type)
 {
+	//ZoneScoped;
 	if (!CBuilding::ChangeTeam(newTeam, type))
 		return false;
 
@@ -494,6 +507,7 @@ bool CFactory::ChangeTeam(int newTeam, ChangeType type)
 
 void CFactory::CreateNanoParticle(bool highPriority)
 {
+	//ZoneScoped;
 	const int modelNanoPiece = nanoPieceCache.GetNanoPiece(script);
 
 	if (!localModel.Initialized() || !localModel.HasPiece(modelNanoPiece))

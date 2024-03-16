@@ -74,6 +74,7 @@ const spring::unordered_map<std::string, int>& CLuaUnitScriptNames::GetScriptMap
 
 int CLuaUnitScriptNames::GetScriptNumber(const std::string& fname)
 {
+	//ZoneScoped;
 	const auto it = scriptMap.find(fname);
 
 	if (it != scriptMap.end())
@@ -84,6 +85,7 @@ int CLuaUnitScriptNames::GetScriptNumber(const std::string& fname)
 
 const std::string& CLuaUnitScriptNames::GetScriptName(unsigned int num)
 {
+	//ZoneScoped;
 	const static std::string empty;
 
 	if (num < scriptNames.size())

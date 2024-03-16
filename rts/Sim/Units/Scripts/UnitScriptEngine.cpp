@@ -36,6 +36,7 @@ CR_REG_METADATA(CUnitScriptEngine, (
 
 
 void CUnitScriptEngine::InitStatic() {
+	//ZoneScoped;
 	cobEngine = &gCobEngine;
 	cobFileHandler = &gCobFileHandler;
 	unitScriptEngine = &gUnitScriptEngine;
@@ -46,6 +47,7 @@ void CUnitScriptEngine::InitStatic() {
 }
 
 void CUnitScriptEngine::KillStatic() {
+	//ZoneScoped;
 	cobEngine->Kill();
 	cobFileHandler->Kill();
 	unitScriptEngine->Kill();
@@ -59,6 +61,7 @@ void CUnitScriptEngine::KillStatic() {
 
 void CUnitScriptEngine::ReloadScripts(const UnitDef* udef)
 {
+	//ZoneScoped;
 	const CCobFile* oldScriptFile = cobFileHandler->GetScriptFile(udef->scriptName);
 
 	if (oldScriptFile == nullptr) {
@@ -101,6 +104,7 @@ void CUnitScriptEngine::ReloadScripts(const UnitDef* udef)
 
 void CUnitScriptEngine::AddInstance(CUnitScript* instance)
 {
+	//ZoneScoped;
 	if (instance == currentScript)
 		return;
 
@@ -109,6 +113,7 @@ void CUnitScriptEngine::AddInstance(CUnitScript* instance)
 
 void CUnitScriptEngine::RemoveInstance(CUnitScript* instance)
 {
+	//ZoneScoped;
 	if (instance == currentScript)
 		return;
 

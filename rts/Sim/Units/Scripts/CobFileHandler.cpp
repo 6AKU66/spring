@@ -3,6 +3,7 @@
 
 CCobFile* CCobFileHandler::GetCobFile(const std::string& name)
 {
+	//ZoneScoped;
 	const auto it = cobFileHandles.find(name);
 
 	if (it != cobFileHandles.end())
@@ -22,6 +23,7 @@ CCobFile* CCobFileHandler::GetCobFile(const std::string& name)
 
 CCobFile* CCobFileHandler::ReloadCobFile(const std::string& name)
 {
+	//ZoneScoped;
 	const auto it = cobFileHandles.find(name);
 
 	if (it == cobFileHandles.end())
@@ -37,6 +39,7 @@ CCobFile* CCobFileHandler::ReloadCobFile(const std::string& name)
 
 const CCobFile* CCobFileHandler::GetScriptFile(const std::string& name) const
 {
+	//ZoneScoped;
 	const auto it = cobFileHandles.find(name);
 
 	if (it != cobFileHandles.end())

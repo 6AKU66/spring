@@ -28,6 +28,7 @@ bool isblank(int c) {
 
 void CUnitDefHandler::Init(LuaParser* defsParser)
 {
+	//ZoneScoped;
 	noCost = false;
 
 	const LuaTable& rootTable = defsParser->GetRoot().SubTable("UnitDefs");
@@ -58,6 +59,7 @@ void CUnitDefHandler::Init(LuaParser* defsParser)
 
 int CUnitDefHandler::PushNewUnitDef(const std::string& unitName, const LuaTable& udTable)
 {
+	//ZoneScoped;
 	if (std::find_if(unitName.begin(), unitName.end(), isblank) != unitName.end())
 		LOG_L(L_WARNING, "[%s] UnitDef name \"%s\" contains white-spaces", __func__, unitName.c_str());
 
@@ -89,6 +91,7 @@ int CUnitDefHandler::PushNewUnitDef(const std::string& unitName, const LuaTable&
 
 void CUnitDefHandler::CleanBuildOptions()
 {
+	//ZoneScoped;
 	std::vector<int> eraseOpts;
 
 	// remove invalid build options
@@ -118,6 +121,7 @@ void CUnitDefHandler::CleanBuildOptions()
 
 void CUnitDefHandler::ProcessDecoys()
 {
+	//ZoneScoped;
 	// assign the decoy pointers, and build the decoy map
 	for (const auto& p: decoyNameMap) {
 		const auto fakeIt = unitDefIDs.find(p.first);
@@ -149,6 +153,7 @@ void CUnitDefHandler::ProcessDecoys()
 
 void CUnitDefHandler::UnitDefLoadSounds(UnitDef* ud, const LuaTable& udTable)
 {
+	//ZoneScoped;
 	LuaTable soundsTable = udTable.SubTable("sounds");
 
 	LoadSounds(soundsTable, ud->sounds.ok,          "ok");      // eg. "ok1", "ok2", ...
@@ -164,6 +169,7 @@ void CUnitDefHandler::UnitDefLoadSounds(UnitDef* ud, const LuaTable& udTable)
 
 void CUnitDefHandler::LoadSounds(const LuaTable& soundsTable, GuiSoundSet& gsound, const string& soundName)
 {
+	//ZoneScoped;
 	string fileName = soundsTable.GetString(soundName, "");
 	if (!fileName.empty()) {
 		CommonDefHandler::AddSoundSetData(gsound, fileName, 1.0f);
@@ -199,6 +205,7 @@ void CUnitDefHandler::LoadSounds(const LuaTable& soundsTable, GuiSoundSet& gsoun
 
 const UnitDef* CUnitDefHandler::GetUnitDefByName(std::string name)
 {
+	//ZoneScoped;
 	StringToLowerInPlace(name);
 
 	const auto it = unitDefIDs.find(name);
@@ -212,6 +219,7 @@ const UnitDef* CUnitDefHandler::GetUnitDefByName(std::string name)
 
 void CUnitDefHandler::SetNoCost(bool value)
 {
+	//ZoneScoped;
 	if (noCost == value)
 		return;
 
