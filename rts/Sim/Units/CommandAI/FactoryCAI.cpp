@@ -145,7 +145,6 @@ CFactoryCAI::CFactoryCAI(CUnit* owner): CCommandAI(owner)
 
 static constexpr int GetCountMultiplierFromOptions(int opts)
 {
-	//ZoneScoped;
 	// The choice of keys and their associated multipliers are from OTA.
 	int ret = 1;
 	if (opts &   SHIFT_KEY) ret *=  5;
