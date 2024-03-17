@@ -23,11 +23,15 @@
 #include "System/StringHash.h"
 #include "System/UnorderedSet.hpp"
 
+#include <tracy/Tracy.hpp>
+
 CSelectionKeyHandler selectionKeys;
 
 
 std::string CSelectionKeyHandler::ReadToken(std::string& str)
 {
+	
+//ZoneScoped;
 	std::string ret;
 
 	size_t index = 0;
@@ -44,6 +48,8 @@ std::string CSelectionKeyHandler::ReadToken(std::string& str)
 
 std::string CSelectionKeyHandler::ReadDelimiter(std::string& str)
 {
+	
+//ZoneScoped;
 	std::string ret = str.substr(0, 1);
 	if (!str.empty()) {
 		str = str.substr(1, std::string::npos);
@@ -275,6 +281,7 @@ namespace {
 
 void CSelectionKeyHandler::DoSelection(std::string selectString)
 {
+	//ZoneScoped;
 	selection.clear();
 
 	std::string s = ReadToken(selectString);
