@@ -1046,7 +1046,6 @@ int CGameHelper::GetYardMapIndex(int buildFacing, const int2& yardPos, const int
 
 
 struct SearchOffset {
-	//ZoneScoped;
 	int dx, dy;
 	int qdist; // dx*dx+dy*dy
 };

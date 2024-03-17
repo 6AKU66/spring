@@ -356,7 +356,6 @@ void CGame::AddTimedJobs()
 
 void CGame::Load(const std::string& mapFileName)
 {
-	//ZoneScoped;
 	// NOTE:
 	//   this is needed for LuaHandle::CallOut*UpdateCallIn
 	//   the main-thread is NOT the same as the load-thread

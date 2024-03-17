@@ -39,7 +39,6 @@ CInMapDraw* inMapDrawer = nullptr;
  */
 class CNotificationPeeper : public CEventClient
 {
-	//ZoneScoped;
 public:
 	CNotificationPeeper(): CEventClient("NotificationPeeper", 99, false)
 	{

@@ -68,7 +68,6 @@ void glSurfaceCircleLua(const float3& center, float radius, const SColor& col, u
 }
 
 static constexpr float (*weaponRangeFuncs[])(const CWeapon*, const WeaponDef*, float, float) = {
-	//ZoneScoped;
 	CWeapon::GetStaticRange2D,
 	CWeapon::GetLiveRange2D,
 };

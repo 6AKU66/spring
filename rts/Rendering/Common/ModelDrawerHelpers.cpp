@@ -196,7 +196,6 @@ void CModelDrawerHelper::PopModelRenderState(const CSolidObject* o) { PopModelRe
 ///////////////////////////////////////////////////////////////////////////
 
 const std::array<const CModelDrawerHelper*, MODELTYPE_CNT> CModelDrawerHelper::modelDrawerHelpers = {
-	//ZoneScoped;
 	CModelDrawerHelper::GetInstance<CModelDrawerHelper3DO>(),
 	CModelDrawerHelper::GetInstance<CModelDrawerHelperS3O>(),
 	CModelDrawerHelper::GetInstance<CModelDrawerHelperASS>(),

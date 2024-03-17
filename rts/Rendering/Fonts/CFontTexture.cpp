@@ -85,7 +85,6 @@ static auto cacheMutexes = spring::WrappedSyncRecursiveMutex{};
 
 #ifndef HEADLESS
 class FtLibraryHandler {
-	//ZoneScoped;
 public:
 	FtLibraryHandler()
 		: config(nullptr)

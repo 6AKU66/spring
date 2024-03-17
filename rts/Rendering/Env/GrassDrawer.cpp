@@ -89,7 +89,6 @@ static const bool GrassSortNear(const CGrassDrawer::InviewNearGrass& a, const CG
 
 class CGrassBlockDrawer: public CReadMap::IQuadDrawer
 {
-	//ZoneScoped;
 public:
 	std::vector<CGrassDrawer::InviewNearGrass> inviewGrass;
 	std::vector<CGrassDrawer::InviewNearGrass> inviewNearGrass;

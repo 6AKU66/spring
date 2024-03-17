@@ -245,7 +245,6 @@ void CPreGame::AddModArchivesToVFS(const CGameSetup* setup)
 
 void CPreGame::StartServer(const std::string& setupscript)
 {
-	//ZoneScoped;
 	assert(gameServer == nullptr);
 	SCOPED_ONCE_TIMER("PreGame::StartServer");
 
