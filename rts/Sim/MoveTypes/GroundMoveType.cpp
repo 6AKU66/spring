@@ -3196,6 +3196,8 @@ float CGroundMoveType::GetGroundHeight(const float3& p) const
 
 void CGroundMoveType::AdjustPosToWaterLine()
 {
+	if (owner->IsMoving() == false)
+		return;
 	if (owner->IsFalling())
 		return;
 	if (owner->IsFlying())
