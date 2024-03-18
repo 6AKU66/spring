@@ -29,6 +29,8 @@
 #include <algorithm>
 #include <numeric>
 
+#include <tracy/Tracy.hpp>
+
 
 #define IS_QNAN(f) (f != f)
 
@@ -66,6 +68,7 @@ static constexpr unsigned int ASS_LOGGING_OPTIONS =
 
 static inline float3 aiVectorToFloat3(const aiVector3D v)
 {
+	//ZoneScoped;
 	// no-op; AssImp's internal coordinate-system matches Spring's modulo handedness
 	return {v.x, v.y, v.z};
 
@@ -75,6 +78,7 @@ static inline float3 aiVectorToFloat3(const aiVector3D v)
 
 static inline CMatrix44f aiMatrixToMatrix(const aiMatrix4x4t<float>& m)
 {
+	//ZoneScoped;
 	CMatrix44f n;
 
 	n[ 0] = m.a1; n[ 1] = m.a2; n[ 2] = m.a3; n[ 3] = m.a4; // 1st column
@@ -125,6 +129,7 @@ static float3 aiQuaternionToRadianAngles(const aiQuaternion q1)
 
 class AssLogStream : public Assimp::LogStream
 {
+	//ZoneScoped;
 public:
 	void write(const char* message) override {
 		LOG_SL(LOG_SECTION_MODEL, L_DEBUG, "Assimp: %s", message);
@@ -134,6 +139,7 @@ public:
 
 
 struct SPseudoAssPiece {
+	//ZoneScoped;
 	std::string name;
 
 	S3DModelPiece* parent;
@@ -184,6 +190,7 @@ struct SPseudoAssPiece {
 
 void CAssParser::Init()
 {
+	//ZoneScoped;
 	// FIXME: non-optimal, maybe compute these ourselves (pre-TL cache size!)
 	maxIndices = std::max(globalRendering->glslMaxRecommendedIndices, 1024);
 	maxVertices = std::max(globalRendering->glslMaxRecommendedVertices, 1024);
@@ -196,6 +203,7 @@ void CAssParser::Init()
 
 void CAssParser::Kill()
 {
+	//ZoneScoped;
 	Assimp::DefaultLogger::kill();
 	LOG_L(L_INFO, "[AssParser::%s] allocated %u pieces", __func__, numPoolPieces);
 
@@ -210,6 +218,7 @@ void CAssParser::Kill()
 
 void CAssParser::Load(S3DModel& model, const std::string& modelFilePath)
 {
+	//ZoneScoped;
 	LOG_SL(LOG_SECTION_MODEL, L_INFO, "Loading model: %s", modelFilePath.c_str());
 
 	const std::string& modelPath = FileSystem::GetDirectory(modelFilePath);
@@ -363,6 +372,7 @@ void CAssParser::Load(S3DModel& model, const std::string& modelFilePath)
 
 void CAssParser::PreProcessFileBuffer(std::vector<unsigned char>& fileBuffer)
 {
+	//ZoneScoped;
 	// the Collada specification requires node uid's to be unique
 	// (names can be repeated) which certain exporters obey while
 	// others do not
@@ -442,6 +452,7 @@ namespace {
 		const aiNode* pieceNode,
 		const LuaTable& pieceTable
 	) {
+		//ZoneScoped;
 		aiVector3D aiScaleVec;
 		aiVector3D aiTransVec;
 		aiQuaternion aiRotateQuat;
@@ -517,6 +528,7 @@ void CAssParser::LoadPieceTransformations(
 	const aiNode* pieceNode,
 	const LuaTable& pieceTable
 ) {
+	//ZoneScoped;
 	LoadPieceTransformationsImpl<SAssPiece>(piece, model, pieceNode, pieceTable);
 }
 
@@ -526,11 +538,13 @@ void CAssParser::LoadPieceTransformations(
 	const aiNode* pieceNode,
 	const LuaTable& pieceTable
 ) {
+	//ZoneScoped;
 	LoadPieceTransformationsImpl<SPseudoAssPiece>(piece, model, pieceNode, pieceTable);
 }
 
 void CAssParser::UpdatePiecesMinMaxExtents(S3DModel* model)
 {
+	//ZoneScoped;
 	for (auto* piece : model->pieceObjects) {
 		for (const auto& vertex : piece->vertices) {
 			piece->mins = float3::min(piece->mins, vertex.pos);
@@ -545,6 +559,7 @@ void CAssParser::SetPieceName(
 	const aiNode* pieceNode,
 	ModelPieceMap& pieceMap
 ) {
+	//ZoneScoped;
 	assert(piece->name.empty());
 	piece->name = std::string(pieceNode->mName.data);
 
@@ -580,6 +595,7 @@ void CAssParser::SetPieceParentName(
 	const LuaTable& pieceTable,
 	ParentNameMap& parentMap
 ) {
+	//ZoneScoped;
 	// parent was updated in GetPieceTableRecursively
 	if (parentMap.find(piece->name) != parentMap.end())
 		return;
@@ -605,6 +621,7 @@ void CAssParser::SetPieceParentName(
 
 void CAssParser::LoadPieceGeometry(SAssPiece* piece, const S3DModel* model, const aiNode* pieceNode, const aiScene* scene)
 {
+	//ZoneScoped;
 	std::vector<unsigned> meshVertexMapping;
 
 	// Get vertex data from node meshes
@@ -719,6 +736,7 @@ void CAssParser::LoadPieceGeometry(SAssPiece* piece, const S3DModel* model, cons
 
 const std::vector<std::string> CAssParser::GetBoneNames(const aiScene* scene)
 {
+	//ZoneScoped;
 	std::vector<std::string> boneNames;
 	for (size_t m = 0; m < scene->mNumMeshes; ++m) {
 		for (size_t b = 0; b < scene->mMeshes[m]->mNumBones; ++b) {
@@ -734,6 +752,7 @@ const std::vector<std::string> CAssParser::GetBoneNames(const aiScene* scene)
 
 const std::vector<std::string> CAssParser::GetMeshNames(const aiScene* scene)
 {
+	//ZoneScoped;
 	std::vector<std::string> meshNames;
 	for (uint32_t m = 0; m < scene->mNumMeshes; ++m) {
 		meshNames.emplace_back(scene->mMeshes[m]->mName.data);
@@ -744,6 +763,7 @@ const std::vector<std::string> CAssParser::GetMeshNames(const aiScene* scene)
 
 aiNode* CAssParser::FindNode(const aiScene* scene, aiNode* node, const std::string& name)
 {
+	//ZoneScoped;
 	if (std::string(node->mName.C_Str()) == name)
 		return node;
 
@@ -758,6 +778,7 @@ aiNode* CAssParser::FindNode(const aiScene* scene, aiNode* node, const std::stri
 
 aiNode* CAssParser::FindFallbackNode(const aiScene* scene)
 {
+	//ZoneScoped;
 	for (uint32_t ci = 0; ci < scene->mRootNode->mNumChildren; ++ci) {
 		if (scene->mRootNode->mChildren[ci]->mNumChildren == 0) {
 			return scene->mRootNode->mChildren[ci];
@@ -769,6 +790,7 @@ aiNode* CAssParser::FindFallbackNode(const aiScene* scene)
 
 const std::vector<CMatrix44f> CAssParser::GetMeshBoneMatrices(const aiScene* scene, const S3DModel* model, std::vector<SPseudoAssPiece>& meshPPs)
 {
+	//ZoneScoped;
 	std::vector<CMatrix44f> meshBoneMatrices;
 
 	for (auto& meshPP : meshPPs) {
@@ -781,6 +803,7 @@ const std::vector<CMatrix44f> CAssParser::GetMeshBoneMatrices(const aiScene* sce
 
 const std::vector<CAssParser::MeshData> CAssParser::GetModelSpaceMeshes(const aiScene* scene, const S3DModel* model, const std::vector<CMatrix44f>& meshBoneMatrices)
 {
+	//ZoneScoped;
 	std::vector<uint32_t> meshVertexMapping;
 	std::vector<CAssParser::MeshData> meshes;
 
@@ -944,6 +967,7 @@ const std::vector<CAssParser::MeshData> CAssParser::GetModelSpaceMeshes(const ai
 
 void CAssParser::ReparentMeshesTrianglesToBones(S3DModel* model, const std::vector<CAssParser::MeshData>& meshes)
 {
+	//ZoneScoped;
 	for (const auto& [verts, indcs, numUVs] : meshes) {
 		for (size_t trID = 0; trID < indcs.size() / 3; ++trID) {
 			std::array<uint32_t, 256> boneWeights = { 0 };
@@ -1033,6 +1057,7 @@ void CAssParser::ReparentMeshesTrianglesToBones(S3DModel* model, const std::vect
 
 void CAssParser::ReparentCompleteMeshesToBones(S3DModel* model, const std::vector<CAssParser::MeshData>& meshes)
 {
+	//ZoneScoped;
 	for (const auto& [verts, indcs, numUVs] : meshes) {
 		std::array<uint32_t, 256> boneWeights = { 0 };
 		for (const auto& vert : verts) {
@@ -1113,6 +1138,7 @@ static LuaTable GetPieceTableRecursively(
 	const std::string& parentName,
 	CAssParser::ParentNameMap& parentMap)
 {
+	//ZoneScoped;
 	LuaTable ret = table.SubTable(name);
 	if (ret.IsValid()) {
 		if (!parentName.empty())
@@ -1133,6 +1159,7 @@ static LuaTable GetPieceTableRecursively(
 
 SAssPiece* CAssParser::AllocPiece()
 {
+	//ZoneScoped;
 	std::lock_guard<spring::mutex> lock(poolMutex);
 
 	// lazily reserve pool here instead of during Init
@@ -1158,6 +1185,7 @@ SAssPiece* CAssParser::LoadPiece(
 	ModelPieceMap& pieceMap,
 	ParentNameMap& parentMap
 ) {
+	//ZoneScoped;
 	if (std::find(skipList.begin(), skipList.end(), std::string(pieceNode->mName.data)) != skipList.end())
 		return nullptr;
 
@@ -1211,6 +1239,7 @@ SAssPiece* CAssParser::LoadPiece(
 // Because of metadata overrides we don't know the true hierarchy until all pieces have been loaded
 void CAssParser::BuildPieceHierarchy(S3DModel* model, ModelPieceMap& pieceMap, const ParentNameMap& parentMap)
 {
+	//ZoneScoped;
 	const char* fmt1 = "Missing piece '%s' declared as parent of '%s'.";
 	const char* fmt2 = "Missing root piece (parent of orphan '%s')";
 
@@ -1277,6 +1306,7 @@ void CAssParser::CalculateModelDimensions(S3DModel* model, S3DModelPiece* piece)
 // Calculate model radius from the min/max extents
 void CAssParser::CalculateModelProperties(S3DModel* model, const LuaTable& modelTable)
 {
+	//ZoneScoped;
 	CalculateModelDimensions(model, model->pieceObjects[0]);
 
 	model->mins = modelTable.GetFloat3("mins", model->mins);
@@ -1291,6 +1321,7 @@ void CAssParser::CalculateModelProperties(S3DModel* model, const LuaTable& model
 
 static std::string FindTexture(std::string testTextureFile, const std::string& modelPath, const std::string& fallback)
 {
+	//ZoneScoped;
 	if (testTextureFile.empty())
 		return fallback;
 
@@ -1313,6 +1344,7 @@ static std::string FindTexture(std::string testTextureFile, const std::string& m
 
 static std::string FindTextureByRegex(const std::string& regex_path, const std::string& regex)
 {
+	//ZoneScoped;
 	//FIXME instead of ".*" only check imagetypes!
 	const std::vector<std::string>& files = CFileHandler::FindFiles(regex_path, regex + ".*");
 
@@ -1330,6 +1362,7 @@ void CAssParser::FindTextures(
 	const std::string& modelPath,
 	const std::string& modelName
 ) {
+	//ZoneScoped;
 	// 1. try to find by name (lowest priority)
 	model->texs[0] = FindTextureByRegex("unittextures/", modelName);
 
