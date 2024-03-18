@@ -1,7 +1,5 @@
 /* This file is part of the Spring engine (GPL v2 or later), see LICENSE.html */
 
-#include <fstream>
-
 #include "SelectionKeyHandler.h"
 #include "Game/Camera/CameraController.h"
 #include "Game/Camera.h"
@@ -204,6 +202,7 @@ namespace {
 		},
 	)
 
+	// Only used for the _Not_IdMatches case, the positive case is handled differently
 	DECLARE_FILTER_EX(IdMatches, 1, unit->unitDef->name.compare(name) == 0,
 		std::string name;
 		void SetParam(int index, const std::string& value) override {
@@ -396,6 +395,10 @@ void CSelectionKeyHandler::DoSelection(std::string selectString)
 
 	ReadDelimiter(selectString);
 
+	// Store positive (not prefixed by Not) IdMatches tokens for OR composition at end
+  // (can't be done serially, like all others)
+	std::unordered_set<std::string> idMatchesSet;
+
 	while (true) {
 		std::string filter = ReadDelimiter(selectString);
 
@@ -412,6 +415,16 @@ void CSelectionKeyHandler::DoSelection(std::string selectString)
 			filter = ReadToken(selectString);
 		}
 
+		/* Positive IdMatches use OR instead of AND,
+		 * because that is intuitive and it's not possible
+		 * for a unit to match two names anyway. */
+		if (filter == "IdMatches" && !_not) {
+			ReadDelimiter(selectString);
+
+			idMatchesSet.insert(ReadToken(selectString));
+
+			continue;
+		}
 
 		using FilterPair = Filter::Pair;
 
@@ -440,6 +453,19 @@ void CSelectionKeyHandler::DoSelection(std::string selectString)
 		} else {
 			LOG_L(L_WARNING, "[%s] unknown token in filter \"%s\"", __func__, filter.c_str());
 			return;
+		}
+	}
+
+	if (!idMatchesSet.empty()) {
+		auto ui = selection.begin();
+		while (ui != selection.end()) {
+			if (idMatchesSet.contains((*ui)->unitDef->name)) {
+				++ui;
+			} else {
+				// erase, order is not relevant
+				*ui = selection.back();
+				selection.pop_back();
+			}
 		}
 	}
 

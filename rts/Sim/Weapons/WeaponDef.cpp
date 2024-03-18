@@ -3,6 +3,7 @@
 
 #include "Game/TraceRay.h"
 #include "Rendering/Models/IModelParser.h"
+#include "Rendering/Textures/ColorMap.h"
 #include "Sim/Misc/DamageArrayHandler.h"
 #include "Sim/Misc/DefinitionTag.h"
 #include "Sim/Misc/GlobalConstants.h"
@@ -205,7 +206,16 @@ WEAPONTAG(std::string, shieldArmorTypeName).externalName("shield.armorType").fal
 
 // Unsynced (= Visuals)
 WEAPONTAG(std::string, model, visuals.modelName).defaultValue("");
+WEAPONTAG(std::string, scarGlowColorMap, visuals.scarGlowColorMapStr).defaultValue("");
+WEAPONDUMMYTAG(table, scarIndices);
 WEAPONTAG(bool, explosionScar, visuals.explosionScar).defaultValue(true);
+WEAPONTAG(float, scarAlpha, visuals.scarAlpha).defaultValue(0.0f);
+WEAPONTAG(float, scarGlow, visuals.scarGlow).defaultValue(0.0f);
+WEAPONTAG(float, scarTtl, visuals.scarTtl).defaultValue(0.0f);
+WEAPONTAG(float, scarGlowTtl, visuals.scarGlowTtl).defaultValue(0.0f);
+WEAPONTAG(float, scarDotElimination, visuals.scarDotElimination).defaultValue(0.0f);
+WEAPONTAG(float4, scarProjVector, visuals.scarProjVector).defaultValue(float4{0.0f});
+WEAPONTAG(float4, scarColorTint, visuals.scarColorTint).defaultValue(float4{0.5f, 0.5f, 0.5f, 0.5f });
 WEAPONTAG(bool, alwaysVisible, visuals.alwaysVisible).defaultValue(false);
 WEAPONTAG(float, cameraShake).fallbackName("damage.default").defaultValue(0.0f).minimumValue(0.0f);
 
@@ -506,6 +516,19 @@ WeaponDef::WeaponDef(const LuaTable& wdTable, const std::string& name_, int id_)
 
 		interceptedByShieldType = wdTable.GetInt("interceptedByShieldType", defInterceptType);
 	}
+
+	const auto siTbl = wdTable.SubTable("scarIndices");
+	const int siTblSize = siTbl.GetLength();
+	for (int i = 1; i <= siTblSize; ++i) {
+		const auto si = siTbl.GetInt(i, 0);
+		if (si > 0)
+			visuals.scarIdcs.emplace_back(si);
+	}
+
+	visuals.scarProjVector.w = visuals.scarProjVector.LengthNormalize();
+
+	if (!visuals.scarGlowColorMapStr.empty())
+		visuals.scarGlowColorMap = CColorMap::LoadFromDefString(visuals.scarGlowColorMapStr);
 
 	ParseWeaponSounds(wdTable);
 
