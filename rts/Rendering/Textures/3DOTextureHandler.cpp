@@ -30,7 +30,6 @@
 C3DOTextureHandler textureHandler3DO;
 
 struct TexFile {
-	//ZoneScoped;
 	CBitmap tex;  ///< same format as s3o's
 	CBitmap tex2; ///< same format as s3o's
 	std::string name;

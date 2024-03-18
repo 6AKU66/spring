@@ -73,7 +73,6 @@ CONFIG(bool, AdvUnitShading).defaultValue(true).headlessValue(false).safemodeVal
 //don't inherit and leave only static Unit specific helpers
 class CUnitDrawerHelper
 {
-	//ZoneScoped;
 public:
 	static void LoadUnitExplosionGenerators() {
 		using F = decltype(&UnitDef::AddModelExpGenID);

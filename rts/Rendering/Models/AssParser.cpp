@@ -129,7 +129,6 @@ static float3 aiQuaternionToRadianAngles(const aiQuaternion q1)
 
 class AssLogStream : public Assimp::LogStream
 {
-	//ZoneScoped;
 public:
 	void write(const char* message) override {
 		LOG_SL(LOG_SECTION_MODEL, L_DEBUG, "Assimp: %s", message);
@@ -139,7 +138,6 @@ public:
 
 
 struct SPseudoAssPiece {
-	//ZoneScoped;
 	std::string name;
 
 	S3DModelPiece* parent;

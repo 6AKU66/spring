@@ -34,7 +34,6 @@
 #include <tracy/Tracy.hpp>
 
 struct InitializeOpenIL {
-	//ZoneScoped;
 	InitializeOpenIL() { ilInit(); }
 	~InitializeOpenIL() { ilShutDown(); }
 } static initOpenIL;
@@ -43,7 +42,6 @@ class TexMemPool;
 class TexNoMemPool;
 
 class ITexMemPool {
-	//ZoneScoped;
 public:
 	void GrabLock() { bmpMutex.lock(); }
 	void FreeLock() { bmpMutex.unlock(); }
@@ -92,7 +90,6 @@ protected:
 };
 
 class TexMemPool : public ITexMemPool {
-	//ZoneScoped;
 private:
 	// (index, size)
 	using FreePair = std::pair<size_t, size_t>;
@@ -311,7 +308,6 @@ private:
 };
 
 class TexNoMemPool : public ITexMemPool {
-	//ZoneScoped;
 public:
 	size_t Size() const override { return 0; }
 	size_t AllocIdx(size_t size) override { return reinterpret_cast<std::uintptr_t>(Alloc(size)); }
@@ -392,7 +388,6 @@ static bool IsValidImageFormat(int format) {
 
 #ifndef HEADLESS
 class BitmapAction {
-	//ZoneScoped;
 public:
 	BitmapAction() = delete;
 	BitmapAction(CBitmap* bmp_)
@@ -427,7 +422,6 @@ protected:
 
 template<typename T, uint32_t ch>
 class TBitmapAction : public BitmapAction {
-	//ZoneScoped;
 public:
 	static constexpr size_t PixelTypeSize = sizeof(T) * ch;
 

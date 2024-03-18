@@ -17,7 +17,6 @@ static int NODE_MIN_SIZE = 8;
 
 
 struct QuadTreeNode {
-	//ZoneScoped;
 	QuadTreeNode() {
 		used = false;
 		posx = posy = size = 0;
