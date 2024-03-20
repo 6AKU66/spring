@@ -16,6 +16,8 @@
 #include <zlib.h>
 #include <cstring> //strnlen
 
+#include <tracy/Tracy.hpp>
+
 static const int bufsize = 4096;
 
 class RapidEntry{
@@ -65,6 +67,7 @@ private:
 template <typename Lambda>
 static bool GetRapidEntry(const std::string& file, RapidEntry* re, Lambda p)
 {
+	//ZoneScoped;
 	gzFile in = gzopen(file.c_str(), "rb");
 	if (in == nullptr) {
 		LOG_L(L_ERROR, "couldn't open %s", file.c_str());
@@ -93,6 +96,7 @@ CONFIG(std::string, RapidTagResolutionOrder)
 	.description("';' separated list of domains, preference order for resolving package from rapid tags");
 
 static std::vector<std::string> ParseRapidTagResolutionOrder() {
+	//ZoneScoped;
 	const auto orderStr = configHandler->GetString("RapidTagResolutionOrder");
 	std::vector<std::string> order;
 	std::size_t beg, end;
@@ -110,6 +114,7 @@ static std::vector<std::string> ParseRapidTagResolutionOrder() {
 
 std::string GetRapidPackageFromTag(const std::string& tag)
 {
+	//ZoneScoped;
 	const auto order = ParseRapidTagResolutionOrder();
 	std::string package = tag;
 	std::size_t rank = std::numeric_limits<std::size_t>::max();
@@ -138,6 +143,7 @@ std::string GetRapidPackageFromTag(const std::string& tag)
 
 std::string GetRapidTagFromPackage(const std::string& pkg)
 {
+	//ZoneScoped;
 	for (const std::string& file: dataDirsAccess.FindFiles("rapid", "versions.gz", FileQueryFlags::RECURSE)) {
 		RapidEntry re;
 		if (GetRapidEntry(dataDirsAccess.LocateFile(file), &re, [&](const RapidEntry& re) { return re.GetPackageHash() == pkg; }))

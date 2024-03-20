@@ -11,12 +11,14 @@
 
 static void log_sink_record_tracy(int level, const char* section, const char* record)
 {
+	//ZoneScoped;
 	auto buf = fmt::format("[{}:{}][{}] {}", log_util_levelToString(log_util_getNearestLevel(level)),
 	                       level, section, record);
 	TracyMessageS(buf.c_str(), buf.size(), 30);
 }
 
 namespace {
+	//ZoneScoped;
 
 /// Auto-registers the sink defined in this file before main() is called
 struct TracySinkRegistrator {

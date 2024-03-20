@@ -15,6 +15,8 @@
 
 #include <stdexcept>
 
+#include <tracy/Tracy.hpp>
+
 CONFIG(bool, StoreDefaultSettings).defaultValue(false).description("springsettings.cfg will save the settings values, if they match the implicit defaults and were set by a user explicitly");
 
 /******************************************************************************/
@@ -84,6 +86,7 @@ private:
  */
 ConfigHandlerImpl::ConfigHandlerImpl(const std::vector<std::string>& locations, const bool safemode)
 {
+	//ZoneScoped;
 	writingEnabled = true;
 	overlay = new OverlayConfigSource();
 	writableSource = new FileConfigSource(locations.front());
@@ -124,6 +127,7 @@ ConfigHandlerImpl::ConfigHandlerImpl(const std::vector<std::string>& locations, 
 
 ConfigHandlerImpl::~ConfigHandlerImpl()
 {
+	//ZoneScoped;
 	//all observers have to be deregistered by RemoveObserver()
 	assert(configsToCallbacks.empty());
 	assert(observersToConfigs.empty());
@@ -135,6 +139,7 @@ ConfigHandlerImpl::~ConfigHandlerImpl()
 
 void ConfigHandlerImpl::FinalizeLoad()
 {
+	//ZoneScoped;
 	if (!GetBool("StoreDefaultSettings"))
 		RemoveDefaults();
 
@@ -154,6 +159,7 @@ void ConfigHandlerImpl::FinalizeLoad()
  */
 void ConfigHandlerImpl::RemoveDefaults()
 {
+	//ZoneScoped;
 	StringMap defaults = sources.back()->GetData();
 
 	for (auto rsource = sources.crbegin(); rsource != sources.crend(); ++rsource) {
@@ -183,6 +189,7 @@ void ConfigHandlerImpl::RemoveDefaults()
 
 void ConfigHandlerImpl::RemoveDeprecated()
 {
+	//ZoneScoped;
 	std::vector<std::string> deprecatedVars;
 	for (const auto& [name, meta] : ConfigVariable::GetMetaDataMap()) {
 		if (meta->GetDeprecated().IsSet() && meta->GetDeprecated().Get() != 0) {
@@ -204,6 +211,7 @@ void ConfigHandlerImpl::RemoveDeprecated()
 
 StringMap ConfigHandlerImpl::GetDataWithoutDefaults() const
 {
+	//ZoneScoped;
 	StringMap cleanConfig;
 	StringMap defaults = sources.back()->GetData();
 
@@ -231,6 +239,7 @@ StringMap ConfigHandlerImpl::GetDataWithoutDefaults() const
 
 void ConfigHandlerImpl::Delete(const std::string& key)
 {
+	//ZoneScoped;
 	for (ReadOnlyConfigSource* s: sources) {
 		// The alternative to the dynamic cast is to merge ReadWriteConfigSource
 		// with ReadOnlyConfigSource, but then DefaultConfigSource would have to
@@ -246,6 +255,7 @@ void ConfigHandlerImpl::Delete(const std::string& key)
 
 bool ConfigHandlerImpl::IsSet(const std::string& key) const
 {
+	//ZoneScoped;
 	for (const ReadOnlyConfigSource* s: sources) {
 		if (s->IsSet(key)) return true;
 	}
@@ -255,6 +265,7 @@ bool ConfigHandlerImpl::IsSet(const std::string& key) const
 
 bool ConfigHandlerImpl::IsReadOnly(const std::string& key) const
 {
+	//ZoneScoped;
 	const ConfigVariableMetaData* meta = ConfigVariable::GetMetaData(key);
 
 	if (meta == nullptr)
@@ -265,6 +276,7 @@ bool ConfigHandlerImpl::IsReadOnly(const std::string& key) const
 
 std::string ConfigHandlerImpl::GetString(const std::string& key) const
 {
+	//ZoneScoped;
 	const ConfigVariableMetaData* meta = ConfigVariable::GetMetaData(key);
 
 	for (const ReadOnlyConfigSource* s: sources) {
@@ -299,6 +311,7 @@ std::string ConfigHandlerImpl::GetString(const std::string& key) const
  */
 void ConfigHandlerImpl::SetString(const std::string& key, const std::string& value, bool useOverlay, bool notify)
 {
+	//ZoneScoped;
 	// if we set something to be persisted,
 	// we do want to override the overlay value
 	if (!useOverlay)
@@ -346,6 +359,7 @@ void ConfigHandlerImpl::SetString(const std::string& key, const std::string& val
 
 void ConfigHandlerImpl::Update()
 {
+	//ZoneScoped;
 	std::lock_guard<spring::mutex> lck(observerMutex);
 
 	for (StringMap::const_iterator ut = changedValues.begin(); ut != changedValues.end(); ++ut) {
@@ -363,10 +377,12 @@ void ConfigHandlerImpl::Update()
 }
 
 std::string ConfigHandlerImpl::GetConfigFile() const {
+	//ZoneScoped;
 	return writableSource->GetFilename();
 }
 
 const StringMap ConfigHandlerImpl::GetData() const {
+	//ZoneScoped;
 	StringMap data;
 	for (const ReadOnlyConfigSource* s: sources) {
 		const StringMap& sourceData = s->GetData();
@@ -378,6 +394,7 @@ const StringMap ConfigHandlerImpl::GetData() const {
 
 
 void ConfigHandlerImpl::AddObserver(ConfigNotifyCallback callback, void* observer, const std::vector<std::string>& configs) {
+	//ZoneScoped;
 	std::lock_guard<spring::mutex> lck(observerMutex);
 
 	for (const std::string& config: configs) {
@@ -387,6 +404,7 @@ void ConfigHandlerImpl::AddObserver(ConfigNotifyCallback callback, void* observe
 }
 
 void ConfigHandlerImpl::RemoveObserver(void* observer) {
+	//ZoneScoped;
 	std::lock_guard<spring::mutex> lck(observerMutex);
 
 	for (const std::string& config: observersToConfigs[observer]) {
@@ -406,6 +424,7 @@ void ConfigHandlerImpl::RemoveObserver(void* observer) {
 
 void ConfigHandler::Instantiate(const std::string configSource, const bool safemode)
 {
+	//ZoneScoped;
 	Deallocate();
 
 	std::vector<std::string> locations;
@@ -430,11 +449,13 @@ void ConfigHandler::Instantiate(const std::string configSource, const bool safem
 
 void ConfigHandler::Deallocate()
 {
+	//ZoneScoped;
 	spring::SafeDelete(configHandler);
 }
 
 bool ConfigHandler::Get(const std::string& key) const
 {
+	//ZoneScoped;
 	return StringToBool(GetString(key));
 }
 

@@ -24,6 +24,8 @@
 #include <cstring>
 #include <cinttypes>
 
+#include <tracy/Tracy.hpp>
+
 using namespace creg;
 using std::string;
 using std::map;
@@ -67,6 +69,7 @@ struct PackageHeader
 
 static std::string ReadZStr(std::istream& file)
 {
+	//ZoneScoped;
 	char cstr[1024];
 	file.getline(cstr, sizeof(cstr), 0);
 	return std::string(cstr);
@@ -74,6 +77,7 @@ static std::string ReadZStr(std::istream& file)
 
 static void WriteZStr(std::ostream& file, const std::string& str)
 {
+	//ZoneScoped;
 	assert(str.length() < 1024); // check func above!
 	file.write(str.c_str(), str.length() + 1);
 }
@@ -82,6 +86,7 @@ static void WriteZStr(std::ostream& file, const std::string& str)
 template<typename T>
 void ReadVarSizeUInt(std::istream* stream, T* buf)
 {
+	//ZoneScoped;
 	std::uint64_t val = 0;
 	unsigned offset = 0;
 	while (true) {
@@ -101,6 +106,7 @@ void ReadVarSizeUInt(std::istream* stream, T* buf)
 template<typename T>
 void WriteVarSizeUInt(std::ostream* stream, T val)
 {
+	//ZoneScoped;
 	std::uint64_t v = val;
 	do {
 		unsigned char a = v & 0x7F;
@@ -115,11 +121,13 @@ void WriteVarSizeUInt(std::ostream* stream, T val)
 
 void creg::ReadUInt(std::istream* stream, std::uint64_t* buf)
 {
+	//ZoneScoped;
 	ReadVarSizeUInt(stream, buf);
 }
 
 void creg::WriteUInt(std::ostream* stream, uint64_t val)
 {
+	//ZoneScoped;
 	WriteVarSizeUInt(stream, val);
 }
 
@@ -133,11 +141,13 @@ COutputStreamSerializer::COutputStreamSerializer()
 
 bool COutputStreamSerializer::IsWriting()
 {
+	//ZoneScoped;
 	return true;
 }
 
 COutputStreamSerializer::ObjectRef* COutputStreamSerializer::FindObjectRef(void* inst, creg::Class* objClass, bool isEmbedded)
 {
+	//ZoneScoped;
 	std::vector<ObjectRef*>& refs = ptrToId[inst];
 	for (auto& obj: refs) {
 		if (obj->isThisObject(inst, objClass, isEmbedded))
@@ -148,6 +158,7 @@ COutputStreamSerializer::ObjectRef* COutputStreamSerializer::FindObjectRef(void*
 
 void COutputStreamSerializer::SerializeObject(Class* c, void* ptr, ObjectRef* objr)
 {
+	//ZoneScoped;
 	const unsigned objstart = stream->tellp();
 
 	if (c->base())
@@ -200,6 +211,7 @@ void COutputStreamSerializer::SerializeObject(Class* c, void* ptr, ObjectRef* ob
 
 void COutputStreamSerializer::SerializeObjectInstance(void* inst, creg::Class* objClass)
 {
+	//ZoneScoped;
 	// register the object, and mark it as embedded if a pointer was already referencing it
 	ObjectRef* obj = FindObjectRef(inst, objClass, true);
 	if (!obj) {
@@ -228,6 +240,7 @@ void COutputStreamSerializer::SerializeObjectInstance(void* inst, creg::Class* o
 
 void COutputStreamSerializer::SerializeObjectPtr(void** ptr, creg::Class* objClass)
 {
+	//ZoneScoped;
 	if (*ptr) {
 		// valid pointer, write a one and the object ID
 		int id;
@@ -249,11 +262,13 @@ void COutputStreamSerializer::SerializeObjectPtr(void** ptr, creg::Class* objCla
 
 void COutputStreamSerializer::Serialize(void* data, int byteSize)
 {
+	//ZoneScoped;
 	stream->write((char*)data, byteSize);
 }
 
 void COutputStreamSerializer::SerializeInt(void* data, int byteSize)
 {
+	//ZoneScoped;
 	// always save ints as 64bit
 	// cause of int-types might differ in size depending on platforms
 	// to make savegames compatible between those we need to so
@@ -279,6 +294,7 @@ struct COutputStreamSerializer::ClassRef
 
 void COutputStreamSerializer::SavePackage(std::ostream* s, void* rootObj, Class* rootObjClass)
 {
+	//ZoneScoped;
 	PackageHeader ph;
 
 	stream = s;
@@ -415,6 +431,7 @@ CInputStreamSerializer::CInputStreamSerializer()
 
 CInputStreamSerializer::~CInputStreamSerializer()
 {
+	//ZoneScoped;
 	for (StoredObject& o: objects) {
 		if (o.obj) {
 			classRefs[o.classRef]->DeleteInstance(o.obj);
@@ -424,11 +441,13 @@ CInputStreamSerializer::~CInputStreamSerializer()
 
 bool CInputStreamSerializer::IsWriting()
 {
+	//ZoneScoped;
 	return false;
 }
 
 void CInputStreamSerializer::SerializeObject(Class* c, void* ptr)
 {
+	//ZoneScoped;
 	if (c->base())
 		SerializeObject(c->base(), ptr);
 
@@ -451,11 +470,13 @@ void CInputStreamSerializer::SerializeObject(Class* c, void* ptr)
 
 void CInputStreamSerializer::Serialize(void* data, int byteSize)
 {
+	//ZoneScoped;
 	stream->read((char*)data, byteSize);
 }
 
 void CInputStreamSerializer::SerializeInt(void* data, int byteSize)
 {
+	//ZoneScoped;
 	// always save ints as 64bit
 	// cause of int-types might differ in size depending on platforms
 	// to make savegames compatible between those we need to so
@@ -474,6 +495,7 @@ void CInputStreamSerializer::SerializeInt(void* data, int byteSize)
 
 void CInputStreamSerializer::SerializeObjectPtr(void** ptr, creg::Class* cls)
 {
+	//ZoneScoped;
 	unsigned int id;
 	ReadVarSizeUInt(stream, &id);
 	if (id) {
@@ -495,6 +517,7 @@ void CInputStreamSerializer::SerializeObjectPtr(void** ptr, creg::Class* cls)
 // Serialize an instance of an object embedded into another object
 void CInputStreamSerializer::SerializeObjectInstance(void* inst, creg::Class* cls)
 {
+	//ZoneScoped;
 	unsigned int id;
 	ReadVarSizeUInt(stream, &id);
 
@@ -511,6 +534,7 @@ void CInputStreamSerializer::SerializeObjectInstance(void* inst, creg::Class* cl
 
 void CInputStreamSerializer::AddPostLoadCallback(void (*cb)(void*), void* ud)
 {
+	//ZoneScoped;
 	PostLoadCallback plcb;
 
 	plcb.cb = cb;
@@ -521,6 +545,7 @@ void CInputStreamSerializer::AddPostLoadCallback(void (*cb)(void*), void* ud)
 
 void CallPostLoad(creg::Class* c, creg::Class* oc, void* obj)
 {
+	//ZoneScoped;
 	if (c->base() != nullptr)
 		CallPostLoad(c->base(), oc, obj);
 
@@ -532,6 +557,7 @@ void CallPostLoad(creg::Class* c, creg::Class* oc, void* obj)
 
 void CInputStreamSerializer::LoadPackage(std::istream* s, void*& root, creg::Class*& rootCls)
 {
+	//ZoneScoped;
 	PackageHeader ph;
 
 	stream = s;

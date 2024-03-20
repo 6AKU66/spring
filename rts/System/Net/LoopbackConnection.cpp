@@ -3,14 +3,18 @@
 #include "LoopbackConnection.h"
 #include "Net/Protocol/NetMessageTypes.h"
 
+#include <tracy/Tracy.hpp>
+
 namespace netcode {
 
 void CLoopbackConnection::SendData(std::shared_ptr<const RawPacket> pkt) {
+	//ZoneScoped;
 	numPings += (pkt->data[0] == NETMSG_PING);
 	pktQueue.push_back(pkt);
 }
 
 std::shared_ptr<const RawPacket> CLoopbackConnection::Peek(unsigned ahead) const {
+	//ZoneScoped;
 	if (ahead >= pktQueue.size())
 		return {};
 
@@ -18,6 +22,7 @@ std::shared_ptr<const RawPacket> CLoopbackConnection::Peek(unsigned ahead) const
 }
 
 void CLoopbackConnection::DeleteBufferPacketAt(unsigned index) {
+	//ZoneScoped;
 	if (index >= pktQueue.size())
 		return;
 
@@ -26,6 +31,7 @@ void CLoopbackConnection::DeleteBufferPacketAt(unsigned index) {
 }
 
 std::shared_ptr<const RawPacket> CLoopbackConnection::GetData() {
+	//ZoneScoped;
 	if (pktQueue.empty())
 		return {};
 

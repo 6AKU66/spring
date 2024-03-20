@@ -26,6 +26,8 @@
 #include "System/StringUtil.h"
 #include "System/SafeUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 
 
 // Prefix for all files in the save file.
@@ -57,6 +59,7 @@ CLuaLoadSaveHandler::~CLuaLoadSaveHandler()
 
 void CLuaLoadSaveHandler::SaveGame(const std::string& file)
 {
+	//ZoneScoped;
 	const std::string realname = dataDirsAccess.LocateFile(file, FileQueryFlags::WRITE);
 
 	filename = file;
@@ -107,6 +110,7 @@ void CLuaLoadSaveHandler::SaveGame(const std::string& file)
 
 void CLuaLoadSaveHandler::SaveEventClients()
 {
+	//ZoneScoped;
 	// FIXME: need some way to 'chroot' them into a single directory?
 	//        (maybe abstract zipFile void* after all...)
 	eventHandler.Save(savefile);
@@ -115,6 +119,7 @@ void CLuaLoadSaveHandler::SaveEventClients()
 
 void CLuaLoadSaveHandler::SaveGameStartInfo()
 {
+	//ZoneScoped;
 	const std::string scriptText = gameSetup->setupText;
 	SaveEntireFile(FILE_STARTSCRIPT, "game setup", scriptText.data(), scriptText.size());
 }
@@ -122,6 +127,7 @@ void CLuaLoadSaveHandler::SaveGameStartInfo()
 
 void CLuaLoadSaveHandler::SaveAIData()
 {
+	//ZoneScoped;
 	for (const auto& ai: skirmishAIHandler.GetAllSkirmishAIs()) {
 		std::stringstream aiData;
 		eoh->Save(&aiData, ai.first);
@@ -136,6 +142,7 @@ void CLuaLoadSaveHandler::SaveAIData()
 
 void CLuaLoadSaveHandler::SaveHeightmap()
 {
+	//ZoneScoped;
 	// This implements a trivial compression algorithm (relying on zip):
 	// For every heightmap pixel the bits are XOR'ed with the orig bits,
 	// so that unmodified terrain comes out as 0.
@@ -154,6 +161,7 @@ void CLuaLoadSaveHandler::SaveHeightmap()
 
 void CLuaLoadSaveHandler::SaveEntireFile(const char* file, const char* what, const void* data, int size, bool throwOnError)
 {
+	//ZoneScoped;
 	std::string failedOperation;
 
 	if (Z_OK != zipOpenNewFileInZip(savefile, file, nullptr, nullptr, 0, nullptr, 0, nullptr, Z_DEFLATED, Z_BEST_COMPRESSION)) {
@@ -180,6 +188,7 @@ void CLuaLoadSaveHandler::SaveEntireFile(const char* file, const char* what, con
 
 bool CLuaLoadSaveHandler::LoadGameStartInfo(const std::string& file)
 {
+	//ZoneScoped;
 	const std::string saveFileName = FindSaveFile(filename = file);
 	const std::string realFileName = dataDirsAccess.LocateFile(saveFileName);
 
@@ -193,6 +202,7 @@ bool CLuaLoadSaveHandler::LoadGameStartInfo(const std::string& file)
 
 void CLuaLoadSaveHandler::LoadGame()
 {
+	//ZoneScoped;
 	ENTER_SYNCED_CODE();
 
 	LoadEventClients();
@@ -204,6 +214,7 @@ void CLuaLoadSaveHandler::LoadGame()
 
 void CLuaLoadSaveHandler::LoadEventClients()
 {
+	//ZoneScoped;
 	// FIXME: need some way to 'chroot' them into a single directory? absolute-ify & check path-prefix?
 	eventHandler.Load(loadfile);
 }
@@ -211,6 +222,7 @@ void CLuaLoadSaveHandler::LoadEventClients()
 
 void CLuaLoadSaveHandler::LoadAIData()
 {
+	//ZoneScoped;
 	ENTER_SYNCED_CODE();
 
 	for (const auto& ai: skirmishAIHandler.GetAllSkirmishAIs()) {
@@ -228,6 +240,7 @@ void CLuaLoadSaveHandler::LoadAIData()
 
 void CLuaLoadSaveHandler::LoadHeightmap()
 {
+	//ZoneScoped;
 	std::vector<std::uint8_t> buf;
 
 	if (loadfile->GetFile(FILE_HEIGHTMAP, buf)) {
@@ -249,6 +262,7 @@ void CLuaLoadSaveHandler::LoadHeightmap()
 
 std::string CLuaLoadSaveHandler::LoadEntireFile(const std::string& file)
 {
+	//ZoneScoped;
 	std::vector<std::uint8_t> buf;
 
 	if (loadfile->GetFile(file, buf))

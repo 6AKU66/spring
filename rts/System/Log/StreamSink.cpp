@@ -7,10 +7,13 @@
 #include <string>
 #include <cstring>
 
+#include <tracy/Tracy.hpp>
+
 
 static std::ostream* logStreamInt = NULL;
 
 void log_sink_stream_setLogStream(std::ostream* logStream) {
+	//ZoneScoped;
 	logStreamInt = logStream;
 }
 
@@ -28,6 +31,7 @@ extern "C" {
 /// Records a log entry
 void log_sink_record_stream(int level, const char* section, const char* record)
 {
+	//ZoneScoped;
 	if (logStreamInt != NULL) {
 		logStreamInt->write(record, strlen(record));
 		(*logStreamInt) << std::endl;
@@ -38,6 +42,7 @@ void log_sink_record_stream(int level, const char* section, const char* record)
 
 
 namespace {
+	//ZoneScoped;
 	/// Auto-registers the sink defined in this file before main() is called
 	struct StreamSinkRegistrator {
 		StreamSinkRegistrator() {

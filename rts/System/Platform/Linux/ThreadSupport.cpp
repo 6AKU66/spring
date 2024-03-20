@@ -11,6 +11,8 @@
 #include "System/Log/ILog.h"
 #include "System/Platform/Threading.h"
 
+#include <tracy/Tracy.hpp>
+
 
 #define LOG_SECTION_CRASHHANDLER "CrashHandler"
 
@@ -54,6 +56,7 @@ static int gettid() {
  */
 static LinuxThreadState GetLinuxThreadState(int tid)
 {
+	//ZoneScoped;
 	char filename[64];
 	int pid = getpid();
 	snprintf(filename, 64, "/proc/%d/task/%d/status", pid, tid);
@@ -84,6 +87,7 @@ static LinuxThreadState GetLinuxThreadState(int tid)
 
 static void ThreadSIGUSR1Handler(int signum, siginfo_t* info, void* pCtx)
 {
+	//ZoneScoped;
 	LOG_L(L_DEBUG, "[%s][1]", __func__);
 
 	// Fill in ucontext_t structure before locking, this allows stack walking...
@@ -113,6 +117,7 @@ static void ThreadSIGUSR1Handler(int signum, siginfo_t* info, void* pCtx)
 
 static bool SetThreadSignalHandler()
 {
+	//ZoneScoped;
 	// Installing new ThreadControls object, so install signal handler also
 	int err = 0;
 	sigset_t sigSet;
@@ -142,6 +147,7 @@ static bool SetThreadSignalHandler()
 
 void SetupCurrentThreadControls(std::shared_ptr<ThreadControls>& threadCtls)
 {
+	//ZoneScoped;
 	assert(!Threading::IsWatchDogThread());
 
 	#ifndef _WIN32
@@ -174,6 +180,7 @@ void ThreadStart(
 	std::shared_ptr<ThreadControls>* threadCtls,
 	ThreadControls* tempCtls
 ) {
+	//ZoneScoped;
 	// install the SIGUSR1 handler
 	SetupCurrentThreadControls(localThreadControls);
 
@@ -208,6 +215,7 @@ void ThreadStart(
 
 SuspendResult ThreadControls::Suspend()
 {
+	//ZoneScoped;
 	// Return an error if the running flag is false.
 	if (!running) {
 		LOG_L(L_ERROR, "[ThreadControls::%s] cannot suspend if a thread's running flag is set to false, refusing to use pthread_kill", __func__);
@@ -241,6 +249,7 @@ SuspendResult ThreadControls::Suspend()
 
 SuspendResult ThreadControls::Resume()
 {
+	//ZoneScoped;
 	mutSuspend.unlock();
 
 	return Threading::THREADERR_NONE;

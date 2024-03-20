@@ -21,9 +21,12 @@ CONFIG(bool, DisableDemoVersionCheck).defaultValue(false).description("Allow to 
 #include <cassert>
 #include <cstring>
 
+#include <tracy/Tracy.hpp>
+
 
 static bool CheckDemoHeader(const DemoFileHeader& fileHeader)
 {
+	//ZoneScoped;
 	if (memcmp(fileHeader.magic, DEMOFILE_MAGIC, sizeof(fileHeader.magic)) != 0)
 		return false;
 
@@ -51,6 +54,7 @@ static bool CheckDemoHeader(const DemoFileHeader& fileHeader)
 
 CDemoReader::CDemoReader(const std::string& filename, float curTime): playbackDemo(new CGZFileHandler(filename, SPRING_VFS_PWD_ALL))
 {
+	//ZoneScoped;
 	if (FileSystem::GetExtension(filename) != "sdfz")
 		throw content_error("Unknown demo extension: " + FileSystem::GetExtension(filename));
 
@@ -105,12 +109,14 @@ CDemoReader::CDemoReader(const std::string& filename, float curTime): playbackDe
 
 CDemoReader::~CDemoReader()
 {
+	//ZoneScoped;
 	delete playbackDemo;
 }
 
 
 netcode::RawPacket* CDemoReader::GetData(const float readTime)
 {
+	//ZoneScoped;
 	if (ReachedEnd())
 		return nullptr;
 
@@ -149,12 +155,14 @@ netcode::RawPacket* CDemoReader::GetData(const float readTime)
 
 bool CDemoReader::ReachedEnd()
 {
+	//ZoneScoped;
 	return (bytesRemaining <= 0 || playbackDemo->Eof() || (playbackDemo->GetPos() > playbackDemoSize));
 }
 
 
 void CDemoReader::LoadStats()
 {
+	//ZoneScoped;
 	// Stats are not available if Spring crashed while writing the demo.
 	if (fileHeader.demoStreamSize == 0)
 		return;

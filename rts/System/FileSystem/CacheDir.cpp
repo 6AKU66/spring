@@ -7,6 +7,8 @@
 #include <cstdio>
 #include <string>
 
+#include <tracy/Tracy.hpp>
+
 // as defiend here (DEAD LINK): http://www.brynosaurus.com/cachedir/spec.html
 const std::string CacheDir::tagFile_name          = "CACHEDIR.TAG";
 const std::string CacheDir::tagFile_content       = "Signature: 8a477f597d28d172789f06886806bc55";
@@ -17,6 +19,7 @@ const std::string CacheDir::defaultAdditionalText = "# This file is a cache dire
 
 
 bool CacheDir::IsCacheDir(const std::string& dir) {
+	//ZoneScoped;
 	const std::string cacheFile = GetCacheTagFilePath(dir);
 	bool isTagged = CacheDir::FileContentStartsWith(cacheFile, CacheDir::tagFile_content, CacheDir::tagFile_content_size);
 
@@ -24,6 +27,7 @@ bool CacheDir::IsCacheDir(const std::string& dir) {
 }
 
 bool CacheDir::SetCacheDir(const std::string& dir, bool wantedCacheState, const std::string& additionalText, bool forceRewrite) {
+	//ZoneScoped;
 	bool requestedStatePresent = false;
 
 	const bool currentCacheState = CacheDir::IsCacheDir(dir);
@@ -49,6 +53,7 @@ bool CacheDir::SetCacheDir(const std::string& dir, bool wantedCacheState, const 
 }
 
 bool CacheDir::FileContentStartsWith(const std::string& filePath, const std::string& content, size_t content_size) {
+	//ZoneScoped;
 	bool startsWith = false;
 
 	FILE* fileH = ::fopen(filePath.c_str(), "r");
@@ -71,6 +76,7 @@ bool CacheDir::FileContentStartsWith(const std::string& filePath, const std::str
 }
 
 bool CacheDir::WriteCacheTagFile(const std::string& filePath, const std::string& additionalText) {
+	//ZoneScoped;
 	bool fileWritten = false;
 
 	FILE* fileH = ::fopen(filePath.c_str(), "w");
@@ -91,6 +97,7 @@ bool CacheDir::WriteCacheTagFile(const std::string& filePath, const std::string&
 }
 
 std::string CacheDir::GetCacheTagFilePath(const std::string& dir) {
+	//ZoneScoped;
 	std::string cacheFile = dir;
 	FileSystem::EnsurePathSepAtEnd(cacheFile);
 	cacheFile = cacheFile + CacheDir::tagFile_name;

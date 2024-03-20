@@ -7,6 +7,8 @@
 #include "SoLib.h"
 #include <dlfcn.h>
 
+#include <tracy/Tracy.hpp>
+
 /**
  * Instantiates the loader, attempts to dlopen the
  * shared object lazily.
@@ -23,6 +25,7 @@ SoLib::SoLib(const char* fileName) : so(nullptr)
  * Just dlcloses the shared object
  */
 void SoLib::Unload() {
+	//ZoneScoped;
 
 	if (so != nullptr) {
 		dlclose(so);
@@ -31,6 +34,7 @@ void SoLib::Unload() {
 }
 
 bool SoLib::LoadFailed() {
+	//ZoneScoped;
 	return so == nullptr;
 }
 
@@ -47,6 +51,7 @@ SoLib::~SoLib()
  */
 void* SoLib::FindAddress(const char* symbol)
 {
+	//ZoneScoped;
 	if (so != nullptr) {
 		void* p = dlsym(so, symbol);
 		if (p == nullptr) {

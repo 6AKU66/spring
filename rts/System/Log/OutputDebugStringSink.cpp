@@ -13,6 +13,8 @@
 
 #include <windows.h>
 
+#include <tracy/Tracy.hpp>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +29,7 @@ extern "C" {
 /// Records a log entry
 static void log_sink_record_outputDebugString(int level, const char* section, const char* record)
 {
+	//ZoneScoped;
 	char framePrefix[128] = {'\0'};
 	log_framePrefixer_createPrefix(framePrefix, sizeof(framePrefix));
 

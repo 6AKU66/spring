@@ -15,6 +15,8 @@
 #include "System/StringHash.h"
 #include "System/UnorderedMap.hpp"
 
+#include <tracy/Tracy.hpp>
+
 #define MAX_LOG_SECTIONS 64
 
 
@@ -37,6 +39,7 @@ struct log_filter_section_compare {
 
 
 namespace log_filter {
+	//ZoneScoped;
 	static int minLogLevel = LOG_LEVEL_ALL;
 	static int repeatLimit = 1;
 
@@ -81,6 +84,7 @@ static inline int log_filter_section_getDefaultMinLevel(const char* section)
 
 static inline void log_filter_checkCompileTimeMinLevel(int level)
 {
+	//ZoneScoped;
 	if (level >= _LOG_LEVEL_MIN)
 		return;
 
@@ -107,6 +111,7 @@ void log_filter_setRepeatLimit(int limit) { log_filter::repeatLimit = limit; }
 
 int log_filter_section_getMinLevel(const char* section)
 {
+	//ZoneScoped;
 	int level = -1;
 
 	using P = decltype(log_filter::sectionMinLevels)::value_type;
@@ -128,6 +133,7 @@ int log_filter_section_getMinLevel(const char* section)
 // also by LuaUnsyncedCtrl::SetLogSectionFilterLevel
 void log_filter_section_setMinLevel(int level, const char* section)
 {
+	//ZoneScoped;
 	log_filter_checkCompileTimeMinLevel(level);
 
 	auto& regSecs = log_filter::registeredSections;
@@ -190,6 +196,7 @@ void log_filter_section_setMinLevel(int level, const char* section)
 
 void log_enable_and_disable(const bool enable)
 {
+	//ZoneScoped;
 	static std::stack<int> oldLevels;
 	int newLevel;
 
@@ -206,10 +213,12 @@ void log_enable_and_disable(const bool enable)
 }
 
 int log_filter_section_getNumRegisteredSections() {
+	//ZoneScoped;
 	return log_filter::numSections;
 }
 
 const char* log_filter_section_getRegisteredIndex(int index) {
+	//ZoneScoped;
 	if (index < 0)
 		return nullptr;
 	if (index >= static_cast<int>(log_filter::numSections))
@@ -220,6 +229,7 @@ const char* log_filter_section_getRegisteredIndex(int index) {
 
 static void log_filter_record(int level, const char* section, const char* fmt, va_list arguments)
 {
+	//ZoneScoped;
 	assert(level > LOG_LEVEL_ALL);
 	assert(level < LOG_LEVEL_NONE);
 
@@ -238,6 +248,7 @@ static void log_filter_record(int level, const char* section, const char* fmt, v
 ///@{
 
 bool log_frontend_isEnabled(int level, const char* section) {
+	//ZoneScoped;
 	if (level < log_filter_global_getMinLevel())
 		return false;
 	if (level < log_filter_section_getMinLevel(section))
@@ -248,6 +259,7 @@ bool log_frontend_isEnabled(int level, const char* section) {
 
 // see the LOG_REGISTER_SECTION_RAW macro in ILog.h
 void log_frontend_register_section(const char* section) {
+	//ZoneScoped;
 	if (LOG_SECTION_IS_DEFAULT(section))
 		return;
 
@@ -276,6 +288,7 @@ void log_frontend_register_section(const char* section) {
 }
 
 void log_frontend_register_runtime_section(int level, const char* section_cstr_tmp) {
+	//ZoneScoped;
 	const char* section_cstr = log_filter_section_getSectionCString(section_cstr_tmp);
 
 	log_frontend_register_section(section_cstr);
@@ -285,6 +298,7 @@ void log_frontend_register_runtime_section(int level, const char* section_cstr_t
 
 void log_frontend_record(int level, const char* section, const char* fmt, ...)
 {
+	//ZoneScoped;
 	assert(level > LOG_LEVEL_ALL);
 	assert(level < LOG_LEVEL_NONE);
 
@@ -296,6 +310,7 @@ void log_frontend_record(int level, const char* section, const char* fmt, ...)
 }
 
 void log_frontend_cleanup() {
+	//ZoneScoped;
 	log_backend_cleanup();
 }
 
@@ -310,11 +325,13 @@ void log_frontend_cleanup() {
 
 const char** log_filter_section_getRegisteredSet()
 {
+	//ZoneScoped;
 	return &log_filter::registeredSections[0];
 }
 
 const char* log_filter_section_getSectionCString(const char* section_cstr_tmp)
 {
+	//ZoneScoped;
 	// cache for log_frontend_register_runtime_section; services LuaUnsyced
 	static std::array<char[1024], MAX_LOG_SECTIONS> cache;
 	static spring::unordered_map<std::string, size_t> index;

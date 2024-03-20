@@ -9,6 +9,8 @@
 #include "System/Platform/MessageBox.h"
 #include "System/Platform/errorhandler.h"
 
+#include <tracy/Tracy.hpp>
+
 namespace Platform {
 
 /**
@@ -29,6 +31,7 @@ namespace Platform {
  */
 void MsgBox(const char* message, const char* caption, unsigned int flags)
 {
+	//ZoneScoped;
 	char cap[1024];
 	char msg[1024];
 	pid_t pid;

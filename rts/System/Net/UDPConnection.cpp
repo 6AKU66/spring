@@ -16,6 +16,8 @@
 #include "System/SpringFormat.h"
 #include "System/SafeUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 #ifndef UNIT_TEST
 CONFIG(bool, UDPConnectionLogDebugMessages).defaultValue(false);
 #endif
@@ -36,6 +38,7 @@ static CGlobalUnsyncedRNG rng;
 float RANDOM_NUMBER() { return (rng.NextFloat()); }
 
 bool EMULATE_PACKET_LOSS(int& lossCtr) {
+	//ZoneScoped;
 	if (RANDOM_NUMBER() < (PACKET_LOSS_FACTOR / 100.0f))
 		return true;
 
@@ -48,6 +51,7 @@ bool EMULATE_PACKET_LOSS(int& lossCtr) {
 }
 
 void EMULATE_PACKET_CORRUPTION(uint8_t& crc) {
+	//ZoneScoped;
 	if ((RANDOM_NUMBER() < (PACKET_CORRUPTION_FACTOR / 100.0f)))
 		crc = (uint8_t)rng.NextInt();
 }
@@ -91,17 +95,20 @@ public:
 
 	template<typename T>
 	void Unpack(T& t) {
+	//ZoneScoped;
 		assert(length >= pos + sizeof(t));
 		t = *reinterpret_cast<const T*>(data + pos);
 		pos += sizeof(t);
 	}
 
 	void Unpack(std::vector<std::uint8_t>& t, unsigned unpackLength) {
+	//ZoneScoped;
 		std::copy(data + pos, data + pos + unpackLength, std::back_inserter(t));
 		pos += unpackLength;
 	}
 
 	unsigned Remaining() const {
+	//ZoneScoped;
 		return length - std::min(pos, length);
 	}
 private:
@@ -115,6 +122,7 @@ class Packer
 public:
 	Packer(std::vector<std::uint8_t>& data): data(data)
 	{
+	//ZoneScoped;
 		assert(data.empty());
 	}
 
@@ -126,6 +134,7 @@ public:
 	}
 
 	void Pack(std::vector<std::uint8_t>& _data) {
+	//ZoneScoped;
 		std::copy(_data.begin(), _data.end(), std::back_inserter(data));
 	}
 
@@ -136,6 +145,7 @@ private:
 
 
 void Chunk::UpdateChecksum(CRC& crc) const {
+	//ZoneScoped;
 
 	crc << chunkNumber;
 	crc << (unsigned int)chunkSize;
@@ -149,6 +159,7 @@ void Chunk::UpdateChecksum(CRC& crc) const {
 
 Packet::Packet(const unsigned char* data, unsigned length)
 {
+	//ZoneScoped;
 	Unpacker buf(data, length);
 	buf.Unpack(lastContinuous);
 	buf.Unpack(nakType);
@@ -187,6 +198,7 @@ Packet::Packet(const unsigned char* data, unsigned length)
 
 unsigned Packet::GetSize() const
 {
+	//ZoneScoped;
 	unsigned size = headerSize + naks.size();
 
 	for (auto chk = chunks.begin(); chk != chunks.end(); ++chk)
@@ -197,6 +209,7 @@ unsigned Packet::GetSize() const
 
 std::uint8_t Packet::GetChecksum() const
 {
+	//ZoneScoped;
 	CRC crc;
 	crc << lastContinuous;
 	crc << (unsigned int)nakType;
@@ -212,6 +225,7 @@ std::uint8_t Packet::GetChecksum() const
 
 void Packet::Serialize(std::vector<std::uint8_t>& data)
 {
+	//ZoneScoped;
 	data.clear();
 	data.reserve(GetSize());
 
@@ -326,20 +340,24 @@ void UDPConnection::Init()
 }
 
 void UDPConnection::ReconnectTo(CConnection& conn) {
+	//ZoneScoped;
 	dynamic_cast<UDPConnection&>(conn).CopyConnection(*this);
 }
 
 void UDPConnection::CopyConnection(UDPConnection &conn) {
+	//ZoneScoped;
 	conn.InitConnection(addr, mySocket);
 }
 
 void UDPConnection::InitConnection(ip::udp::endpoint address, std::shared_ptr<ip::udp::socket> socket) {
+	//ZoneScoped;
 	addr = address;
 	mySocket = socket;
 }
 
 UDPConnection::~UDPConnection()
 {
+	//ZoneScoped;
 	fragmentBuffer.Delete();
 	waitingPackets.clear();
 
@@ -348,12 +366,14 @@ UDPConnection::~UDPConnection()
 
 void UDPConnection::SendData(std::shared_ptr<const RawPacket> pkt)
 {
+	//ZoneScoped;
 	assert(pkt->length > 0);
 	outgoingData.push_back(pkt);
 }
 
 std::shared_ptr<const RawPacket> UDPConnection::Peek(unsigned ahead) const
 {
+	//ZoneScoped;
 	if (ahead >= msgQueue.size())
 		return {};
 
@@ -363,6 +383,7 @@ std::shared_ptr<const RawPacket> UDPConnection::Peek(unsigned ahead) const
 #ifdef ENABLE_DEBUG_STATS
 std::shared_ptr<const RawPacket> UDPConnection::GetData()
 {
+	//ZoneScoped;
 	numTotalGetDataCalls++;
 
 	if (!msgQueue.empty()) {
@@ -382,6 +403,7 @@ std::shared_ptr<const RawPacket> UDPConnection::GetData()
 #else
 std::shared_ptr<const RawPacket> UDPConnection::GetData()
 {
+	//ZoneScoped;
 	if (msgQueue.empty())
 		return {};
 
@@ -396,6 +418,7 @@ std::shared_ptr<const RawPacket> UDPConnection::GetData()
 
 void UDPConnection::DeleteBufferPacketAt(unsigned index)
 {
+	//ZoneScoped;
 	if (index >= msgQueue.size())
 		return;
 
@@ -405,6 +428,7 @@ void UDPConnection::DeleteBufferPacketAt(unsigned index)
 
 void UDPConnection::Update()
 {
+	//ZoneScoped;
 	spring_time curTime = spring_gettime();
 	outgoing.UpdateTime(spring_tomsecs(curTime));
 
@@ -477,6 +501,7 @@ void UDPConnection::Update()
 
 void UDPConnection::UpdateWaitingPackets()
 {
+	//ZoneScoped;
 	const auto beg = waitingPackets.begin();
 	const auto end = waitingPackets.end();
 	const auto pos = std::remove_if(beg, end, [](const std::pair<int, RawPacket>& p) { return ((p.second).length == 0); });
@@ -487,6 +512,7 @@ void UDPConnection::UpdateWaitingPackets()
 
 void UDPConnection::UpdateResendRequests()
 {
+	//ZoneScoped;
 	using P = decltype(resendRequested)::value_type;
 
 	const auto cmpPred = [](const P& a, const P& b) { return (a.first <  b.first); };
@@ -523,6 +549,7 @@ void UDPConnection::UpdateResendRequests()
 
 void UDPConnection::ProcessRawPacket(Packet& incoming)
 {
+	//ZoneScoped;
 	#ifdef ENABLE_DEBUG_STATS
 	if (logMessages)
 		LOG_L(L_INFO, "\t[%s] checksum=(%u : %u) mtu=%u", __func__, incoming.GetChecksum(), incoming.checksum, mtu);
@@ -695,6 +722,7 @@ void UDPConnection::ProcessRawPacket(Packet& incoming)
 
 void UDPConnection::Flush(const bool forced)
 {
+	//ZoneScoped;
 	if (muted)
 		return;
 
@@ -767,6 +795,7 @@ void UDPConnection::Flush(const bool forced)
 }
 
 bool UDPConnection::CheckTimeout(int seconds, bool initial) const {
+	//ZoneScoped;
 
 	int timeout;
 
@@ -784,6 +813,7 @@ bool UDPConnection::CheckTimeout(int seconds, bool initial) const {
 }
 
 bool UDPConnection::NeedsReconnect() {
+	//ZoneScoped;
 
 	if (CanReconnect()) {
 		if (!CheckTimeout(-1)) {
@@ -798,11 +828,13 @@ bool UDPConnection::NeedsReconnect() {
 }
 
 bool UDPConnection::CanReconnect() const {
+	//ZoneScoped;
 	return (globalConfig.reconnectTimeout > 0);
 }
 
 std::string UDPConnection::Statistics() const
 {
+	//ZoneScoped;
 	const char* fmts[] = {
 		"\t%u bytes sent   in %u packets (%.3f bytes/packet)\n",
 		"\t%u bytes recv'd in %u packets (%.3f bytes/packet)\n",
@@ -827,6 +859,7 @@ std::string UDPConnection::GetFullAddress() const
 
 void UDPConnection::SetMTU(unsigned mtu2)
 {
+	//ZoneScoped;
 	if ((mtu2 > 300) && (mtu2 < udpMaxPacketSize)) {
 		mtu = mtu2;
 	}
@@ -834,6 +867,7 @@ void UDPConnection::SetMTU(unsigned mtu2)
 
 void UDPConnection::CreateChunk(const unsigned char* data, const unsigned length, const int packetNum)
 {
+	//ZoneScoped;
 	assert((length > 0) && (length < 255));
 	ChunkPtr buf(new Chunk);
 	buf->chunkNumber = packetNum;
@@ -845,6 +879,7 @@ void UDPConnection::CreateChunk(const unsigned char* data, const unsigned length
 
 void UDPConnection::SendIfNecessary(bool flushed)
 {
+	//ZoneScoped;
 	const spring_time curTime = spring_gettime();
 	const spring_time difTime = curTime - lastPacketSendTime;
 	const spring_time unackTime = spring_msecs(400 >> netLossFactor);
@@ -1048,6 +1083,7 @@ void UDPConnection::SendIfNecessary(bool flushed)
 
 void UDPConnection::SendPacket(Packet& pkt)
 {
+	//ZoneScoped;
 	pkt.Serialize(sendBuffer);
 
 	outgoing.DataSent(sendBuffer.size());
@@ -1069,6 +1105,7 @@ void UDPConnection::SendPacket(Packet& pkt)
 
 void UDPConnection::AckChunks(int lastAck)
 {
+	//ZoneScoped;
 	while (!unackedChunks.empty() && (lastAck >= (*unackedChunks.begin())->chunkNumber)) {
 		unackedChunks.pop_front();
 	}
@@ -1084,6 +1121,7 @@ void UDPConnection::AckChunks(int lastAck)
 
 void UDPConnection::RequestResend(ChunkPtr ptr, bool noSort)
 {
+	//ZoneScoped;
 	resendRequested.emplace_back(ptr->chunkNumber, ptr);
 
 	if (noSort)
@@ -1102,6 +1140,7 @@ void UDPConnection::RequestResend(ChunkPtr ptr, bool noSort)
 
 void UDPConnection::BandwidthUsage::UpdateTime(unsigned newTime)
 {
+	//ZoneScoped;
 	if (newTime > (lastTime + 100)) {
 		average = (average*9 + float(trafficSinceLastTime) / float(newTime-lastTime) * 1000.0f) / 10.0f;
 		trafficSinceLastTime = 0;
@@ -1112,6 +1151,7 @@ void UDPConnection::BandwidthUsage::UpdateTime(unsigned newTime)
 
 void UDPConnection::BandwidthUsage::DataSent(unsigned amount, bool prel)
 {
+	//ZoneScoped;
 	if (prel) {
 		prelTrafficSinceLastTime += amount;
 	} else {
@@ -1121,11 +1161,13 @@ void UDPConnection::BandwidthUsage::DataSent(unsigned amount, bool prel)
 
 float UDPConnection::BandwidthUsage::GetAverage(bool prel) const
 {
+	//ZoneScoped;
 	// not exactly accurate, but does job
 	return average + (prel ? std::max(trafficSinceLastTime, prelTrafficSinceLastTime) : trafficSinceLastTime);
 }
 
 void UDPConnection::Close(bool flush) {
+	//ZoneScoped;
 
 	if (closed)
 		return;
@@ -1143,6 +1185,7 @@ void UDPConnection::Close(bool flush) {
 }
 
 void UDPConnection::SetLossFactor(int factor) {
+	//ZoneScoped;
 	netLossFactor = factor;
 	netLossFactor = std::max(netLossFactor, int(MIN_LOSS_FACTOR));
 	netLossFactor = std::min(netLossFactor, int(MAX_LOSS_FACTOR));

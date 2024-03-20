@@ -19,23 +19,28 @@
 
 #define BUFFER_SIZE 8192
 
+#include <tracy/Tracy.hpp>
+
 
 //We must call Open from here since in the CFileHandler ctor
 //virtual functions aren't called.
 CGZFileHandler::CGZFileHandler(const char* fileName, const char* modes)
 {
+	//ZoneScoped;
 	Open(fileName, modes);
 }
 
 
 CGZFileHandler::CGZFileHandler(const std::string& fileName, const std::string& modes)
 {
+	//ZoneScoped;
 	Open(fileName, modes);
 }
 
 
 bool CGZFileHandler::ReadToBuffer(const std::string& path)
 {
+	//ZoneScoped;
 	assert(fileBuffer.empty());
 
 	gzFile file = gzopen(path.c_str(), "rb");
@@ -64,6 +69,7 @@ bool CGZFileHandler::ReadToBuffer(const std::string& path)
 
 bool CGZFileHandler::UncompressBuffer()
 {
+	//ZoneScoped;
 	std::vector<std::uint8_t> compressed;
 	std::swap(compressed, fileBuffer);
 
@@ -109,6 +115,7 @@ bool CGZFileHandler::UncompressBuffer()
 
 bool CGZFileHandler::TryReadFromPWD(const std::string& fileName)
 {
+	//ZoneScoped;
 #ifndef TOOLS
 	if (FileSystem::IsAbsolutePath(fileName))
 		return false;
@@ -122,6 +129,7 @@ bool CGZFileHandler::TryReadFromPWD(const std::string& fileName)
 
 bool CGZFileHandler::TryReadFromRawFS(const std::string& fileName)
 {
+	//ZoneScoped;
 #ifndef TOOLS
 	const std::string rawpath = dataDirsAccess.LocateFile(fileName);
 	return ReadToBuffer(rawpath);
@@ -133,5 +141,6 @@ bool CGZFileHandler::TryReadFromRawFS(const std::string& fileName)
 
 bool CGZFileHandler::TryReadFromVFS(const std::string& fileName, int section)
 {
+	//ZoneScoped;
 	return CFileHandler::TryReadFromVFS(fileName, section) && UncompressBuffer();
 }

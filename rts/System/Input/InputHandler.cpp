@@ -3,12 +3,15 @@
 #include "InputHandler.h"
 #include "System/TimeProfiler.h"
 
+#include <tracy/Tracy.hpp>
+
 InputHandler input;
 
 InputHandler::InputHandler() = default;
 
 void InputHandler::PushEvent(const SDL_Event& ev)
 {
+	//ZoneScoped;
 	sig.emit(ev);
 }
 
@@ -28,5 +31,6 @@ void InputHandler::PushEvents()
 
 InputHandler::SignalType::connection_type InputHandler::AddHandler(SignalType::callback handler)
 {
+	//ZoneScoped;
 	return sig.connect(handler);
 }
