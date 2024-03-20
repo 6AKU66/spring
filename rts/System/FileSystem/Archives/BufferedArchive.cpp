@@ -7,14 +7,12 @@
 
 #include <cassert>
 
-#include <tracy/Tracy.hpp>
 
 spring::mutex CBufferedArchive::archiveLock;
 
 
 CBufferedArchive::~CBufferedArchive()
 {
-	//ZoneScoped;
 	// filter archives for which only {map,mod}info.lua was accessed
 	if (cacheSize <= 1 || fileCount <= 1)
 		return;
@@ -24,7 +22,6 @@ CBufferedArchive::~CBufferedArchive()
 
 bool CBufferedArchive::GetFile(unsigned int fid, std::vector<std::uint8_t>& buffer)
 {
-	//ZoneScoped;
 	std::scoped_lock lck(archiveLock);
 	assert(IsFileId(fid));
 

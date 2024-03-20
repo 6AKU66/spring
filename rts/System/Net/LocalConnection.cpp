@@ -7,7 +7,6 @@
 #include "System/Log/ILog.h"
 #include "System/SpringFormat.h"
 
-#include <tracy/Tracy.hpp>
 
 namespace netcode {
 
@@ -20,7 +19,6 @@ CLocalConnection* CLocalConnection::instancePtrs[MAX_INSTANCES] = {nullptr, null
 
 CLocalConnection::CLocalConnection()
 {
-	//ZoneScoped;
 	if (numInstances >= MAX_INSTANCES)
 		throw network_error("Opening a third local connection is not allowed");
 
@@ -34,7 +32,6 @@ CLocalConnection::CLocalConnection()
 
 CLocalConnection::~CLocalConnection()
 {
-	//ZoneScoped;
 	std::lock_guard<spring::mutex> scoped_lock(mutexes[instanceIdx]);
 
 	instancePtrs[instanceIdx] = nullptr;
@@ -44,7 +41,6 @@ CLocalConnection::~CLocalConnection()
 
 void CLocalConnection::Close(bool flush)
 {
-	//ZoneScoped;
 	if (!flush)
 		return;
 
@@ -54,7 +50,6 @@ void CLocalConnection::Close(bool flush)
 
 void CLocalConnection::SendData(std::shared_ptr<const RawPacket> pkt)
 {
-	//ZoneScoped;
 	if (!ProtocolDef::GetInstance()->IsValidPacket(pkt->data, pkt->length)) {
 		// having this check here makes it easier to find networking bugs, also when testing locally
 		LOG_L(L_ERROR, "[LocalConn::%s] discarding invalid packet: ID %d, LEN %d", __func__, (pkt->length > 0) ? (int)pkt->data[0] : -1, pkt->length);
@@ -77,7 +72,6 @@ void CLocalConnection::SendData(std::shared_ptr<const RawPacket> pkt)
 
 std::shared_ptr<const RawPacket> CLocalConnection::GetData()
 {
-	//ZoneScoped;
 	std::lock_guard<spring::mutex> scoped_lock(mutexes[instanceIdx]);
 	std::deque<std::shared_ptr<const RawPacket>>& pktQueue = pktQueues[instanceIdx];
 
@@ -94,7 +88,6 @@ std::shared_ptr<const RawPacket> CLocalConnection::GetData()
 
 std::shared_ptr<const RawPacket> CLocalConnection::Peek(unsigned ahead) const
 {
-	//ZoneScoped;
 	std::lock_guard<spring::mutex> scoped_lock(mutexes[instanceIdx]);
 	std::deque<std::shared_ptr<const RawPacket>>& pktQueue = pktQueues[instanceIdx];
 
@@ -106,7 +99,6 @@ std::shared_ptr<const RawPacket> CLocalConnection::Peek(unsigned ahead) const
 
 void CLocalConnection::DeleteBufferPacketAt(unsigned index)
 {
-	//ZoneScoped;
 	std::lock_guard<spring::mutex> scoped_lock(mutexes[instanceIdx]);
 	std::deque<std::shared_ptr<const RawPacket>>& pktQueue = pktQueues[instanceIdx];
 
@@ -120,7 +112,6 @@ void CLocalConnection::DeleteBufferPacketAt(unsigned index)
 
 std::string CLocalConnection::Statistics() const
 {
-	//ZoneScoped;
 	std::string msg = "[LocalConnection::Statistics]\n";
 	msg += spring::format("\t%u bytes sent  \n", dataSent);
 	msg += spring::format("\t%u bytes recv'd\n", dataRecv);
@@ -130,14 +121,12 @@ std::string CLocalConnection::Statistics() const
 
 bool CLocalConnection::HasIncomingData() const
 {
-	//ZoneScoped;
 	std::lock_guard<spring::mutex> scoped_lock(mutexes[instanceIdx]);
 	return (!pktQueues[instanceIdx].empty());
 }
 
 unsigned int CLocalConnection::GetPacketQueueSize() const
 {
-	//ZoneScoped;
 	std::lock_guard<spring::mutex> scoped_lock(mutexes[instanceIdx]);
 	return (!pktQueues[instanceIdx].size());
 }
