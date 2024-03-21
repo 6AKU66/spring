@@ -34,6 +34,8 @@
 	#include "System/Platform/Watchdog.h"
 #endif
 
+#include <tracy/Tracy.hpp>
+
 
 #define LOG_SECTION_ARCHIVESCANNER "ArchiveScanner"
 LOG_REGISTER_SECTION_GLOBAL(LOG_SECTION_ARCHIVESCANNER)
@@ -122,6 +124,7 @@ CArchiveScanner* archiveScanner = nullptr;
  */
 CArchiveScanner::ArchiveData::ArchiveData(const LuaTable& archiveTable, bool fromCache)
 {
+	//ZoneScoped;
 	if (!archiveTable.IsValid())
 		return;
 
@@ -196,6 +199,7 @@ CArchiveScanner::ArchiveData::ArchiveData(const LuaTable& archiveTable, bool fro
 
 std::string CArchiveScanner::ArchiveData::GetKeyDescription(const std::string& keyLower)
 {
+	//ZoneScoped;
 	const auto pred = [&keyLower](const KnownInfoTag& t) { return (t.name == keyLower); };
 	const auto iter = std::find_if(knownTags.cbegin(), knownTags.cend(), pred);
 
@@ -208,12 +212,14 @@ std::string CArchiveScanner::ArchiveData::GetKeyDescription(const std::string& k
 
 bool CArchiveScanner::ArchiveData::IsReservedKey(const std::string& keyLower)
 {
+	//ZoneScoped;
 	return ((keyLower == "depend") || (keyLower == "replace"));
 }
 
 
 bool CArchiveScanner::ArchiveData::IsValid(std::string& err) const
 {
+	//ZoneScoped;
 	using P = decltype(infoItems)::value_type;
 
 	const auto HasInfoItem = [this](const std::string& name) {
@@ -239,6 +245,7 @@ bool CArchiveScanner::ArchiveData::IsValid(std::string& err) const
 
 const InfoItem* CArchiveScanner::ArchiveData::GetInfoItem(const std::string& key) const
 {
+	//ZoneScoped;
 	using P = decltype(infoItems)::value_type;
 
 	const std::string& lcKey = StringToLower(key);
@@ -256,6 +263,7 @@ const InfoItem* CArchiveScanner::ArchiveData::GetInfoItem(const std::string& key
 
 InfoItem& CArchiveScanner::ArchiveData::GetAddInfoItem(const std::string& key)
 {
+	//ZoneScoped;
 	const std::string& keyLower = StringToLower(key);
 
 	if (IsReservedKey(keyLower))
@@ -290,6 +298,7 @@ InfoItem& CArchiveScanner::ArchiveData::GetAddInfoItem(const std::string& key)
 
 void CArchiveScanner::ArchiveData::SetInfoItemValueString(const std::string& key, const std::string& value)
 {
+	//ZoneScoped;
 	InfoItem& infoItem = GetAddInfoItem(key);
 	infoItem.valueType = INFO_VALUE_TYPE_STRING;
 	infoItem.valueTypeString = value;
@@ -297,6 +306,7 @@ void CArchiveScanner::ArchiveData::SetInfoItemValueString(const std::string& key
 
 void CArchiveScanner::ArchiveData::SetInfoItemValueInteger(const std::string& key, int value)
 {
+	//ZoneScoped;
 	InfoItem& infoItem = GetAddInfoItem(key);
 	infoItem.valueType = INFO_VALUE_TYPE_INTEGER;
 	infoItem.value.typeInteger = value;
@@ -304,6 +314,7 @@ void CArchiveScanner::ArchiveData::SetInfoItemValueInteger(const std::string& ke
 
 void CArchiveScanner::ArchiveData::SetInfoItemValueFloat(const std::string& key, float value)
 {
+	//ZoneScoped;
 	InfoItem& infoItem = GetAddInfoItem(key);
 	infoItem.valueType = INFO_VALUE_TYPE_FLOAT;
 	infoItem.value.typeFloat = value;
@@ -311,6 +322,7 @@ void CArchiveScanner::ArchiveData::SetInfoItemValueFloat(const std::string& key,
 
 void CArchiveScanner::ArchiveData::SetInfoItemValueBool(const std::string& key, bool value)
 {
+	//ZoneScoped;
 	InfoItem& infoItem = GetAddInfoItem(key);
 	infoItem.valueType = INFO_VALUE_TYPE_BOOL;
 	infoItem.value.typeBool = value;
@@ -319,6 +331,7 @@ void CArchiveScanner::ArchiveData::SetInfoItemValueBool(const std::string& key, 
 
 std::vector<InfoItem> CArchiveScanner::ArchiveData::GetInfoItems() const
 {
+	//ZoneScoped;
 	std::vector<InfoItem> retInfoItems;
 
 	retInfoItems.reserve(infoItems.size());
@@ -334,6 +347,7 @@ std::vector<InfoItem> CArchiveScanner::ArchiveData::GetInfoItems() const
 
 std::string CArchiveScanner::ArchiveData::GetInfoValueString(const std::string& key) const
 {
+	//ZoneScoped;
 	const InfoItem* infoItem = GetInfoItem(key);
 
 	if (infoItem != nullptr) {
@@ -348,6 +362,7 @@ std::string CArchiveScanner::ArchiveData::GetInfoValueString(const std::string& 
 
 int CArchiveScanner::ArchiveData::GetInfoValueInteger(const std::string& key) const
 {
+	//ZoneScoped;
 	const InfoItem* infoItem = GetInfoItem(key);
 
 	if ((infoItem != nullptr) && (infoItem->valueType == INFO_VALUE_TYPE_INTEGER))
@@ -358,6 +373,7 @@ int CArchiveScanner::ArchiveData::GetInfoValueInteger(const std::string& key) co
 
 float CArchiveScanner::ArchiveData::GetInfoValueFloat(const std::string& key) const
 {
+	//ZoneScoped;
 	const InfoItem* infoItem = GetInfoItem(key);
 
 	if ((infoItem != nullptr) && (infoItem->valueType == INFO_VALUE_TYPE_FLOAT))
@@ -368,6 +384,7 @@ float CArchiveScanner::ArchiveData::GetInfoValueFloat(const std::string& key) co
 
 bool CArchiveScanner::ArchiveData::GetInfoValueBool(const std::string& key) const
 {
+	//ZoneScoped;
 	const InfoItem* infoItem = GetInfoItem(key);
 
 	if ((infoItem != nullptr) && (infoItem->valueType == INFO_VALUE_TYPE_BOOL))
@@ -388,6 +405,7 @@ static std::atomic<uint32_t> numScannedArchives{0};
 
 CArchiveScanner::CArchiveScanner()
 {
+	//ZoneScoped;
 	Clear();
 	// the "cache" dir is created in DataDirLocater
 	ReadCacheData(cachefile = FileSystem::EnsurePathSepAtEnd(FileSystem::GetCacheDir()) + IntToString(INTERNAL_VER, "ArchiveCache%i.lua"));
@@ -397,6 +415,7 @@ CArchiveScanner::CArchiveScanner()
 
 CArchiveScanner::~CArchiveScanner()
 {
+	//ZoneScoped;
 	if (!isDirty)
 		return;
 
@@ -405,6 +424,7 @@ CArchiveScanner::~CArchiveScanner()
 
 uint32_t CArchiveScanner::GetNumScannedArchives()
 {
+	//ZoneScoped;
 	// needs to be a static since archiveScanner remains null until ctor returns
 	return (numScannedArchives.load());
 }
@@ -412,6 +432,7 @@ uint32_t CArchiveScanner::GetNumScannedArchives()
 
 void CArchiveScanner::Clear()
 {
+	//ZoneScoped;
 	archiveInfos.clear();
 	archiveInfos.reserve(256);
 	archiveInfosIndex.clear();
@@ -425,6 +446,7 @@ void CArchiveScanner::Clear()
 
 void CArchiveScanner::Reload()
 {
+	//ZoneScoped;
 	// {Read,Write,Scan}* all grab this too but we need the entire reloading-sequence to appear atomic
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 
@@ -440,6 +462,7 @@ void CArchiveScanner::Reload()
 
 void CArchiveScanner::ScanAllDirs()
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 
 	const std::vector<std::string>& dataDirPaths = dataDirLocater.GetDataDirPaths();
@@ -470,6 +493,7 @@ void CArchiveScanner::ScanAllDirs()
 
 void CArchiveScanner::ScanDirs(const std::vector<std::string>& scanDirs)
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 	std::deque<std::string> foundArchives;
 
@@ -531,6 +555,7 @@ void CArchiveScanner::ScanDirs(const std::vector<std::string>& scanDirs)
 
 void CArchiveScanner::ScanDir(const std::string& curPath, std::deque<std::string>& foundArchives)
 {
+	//ZoneScoped;
 	std::deque<std::string> subDirs = {curPath};
 
 	while (!subDirs.empty()) {
@@ -565,11 +590,13 @@ void CArchiveScanner::ScanDir(const std::string& curPath, std::deque<std::string
 
 static void AddDependency(std::vector<std::string>& deps, const std::string& dependency)
 {
+	//ZoneScoped;
 	spring::VectorInsertUnique(deps, dependency, true);
 }
 
 bool CArchiveScanner::CheckCompression(const IArchive* ar, const std::string& fullName, std::string& error)
 {
+	//ZoneScoped;
 	if (!ar->CheckForSolid())
 		return true;
 
@@ -600,6 +627,7 @@ bool CArchiveScanner::CheckCompression(const IArchive* ar, const std::string& fu
 
 std::string CArchiveScanner::SearchMapFile(const IArchive* ar, std::string& error)
 {
+	//ZoneScoped;
 	assert(ar != nullptr);
 
 	// check for smf and if the uncompression of important files is too costy
@@ -617,6 +645,7 @@ std::string CArchiveScanner::SearchMapFile(const IArchive* ar, std::string& erro
 
 CArchiveScanner::ArchiveInfo& CArchiveScanner::GetAddArchiveInfo(const std::string& lcfn)
 {
+	//ZoneScoped;
 	auto aiIter = archiveInfosIndex.find(lcfn);
 	auto aiPair = std::make_pair(aiIter, false);
 
@@ -631,6 +660,7 @@ CArchiveScanner::ArchiveInfo& CArchiveScanner::GetAddArchiveInfo(const std::stri
 
 CArchiveScanner::BrokenArchive& CArchiveScanner::GetAddBrokenArchive(const std::string& lcfn)
 {
+	//ZoneScoped;
 	auto baIter = brokenArchivesIndex.find(lcfn);
 	auto baPair = std::make_pair(baIter, false);
 
@@ -646,6 +676,7 @@ CArchiveScanner::BrokenArchive& CArchiveScanner::GetAddBrokenArchive(const std::
 
 void CArchiveScanner::ScanArchive(const std::string& fullName, bool doChecksum)
 {
+	//ZoneScoped;
 	unsigned modifiedTime = 0;
 
 	assert(!isInScan);
@@ -780,6 +811,7 @@ void CArchiveScanner::ScanArchive(const std::string& fullName, bool doChecksum)
 
 bool CArchiveScanner::CheckCachedData(const std::string& fullName, unsigned& modified, bool doChecksum)
 {
+	//ZoneScoped;
 	// virtual archives do not exist on disk, and thus do not have a modification time
 	// they should still be scanned as normal archives so we only skip the cache-check
 	if (FileSystem::GetExtension(fullName) == "sva")
@@ -870,6 +902,7 @@ bool CArchiveScanner::CheckCachedData(const std::string& fullName, unsigned& mod
 
 bool CArchiveScanner::ScanArchiveLua(IArchive* ar, const std::string& fileName, ArchiveInfo& ai, std::string& err)
 {
+	//ZoneScoped;
 	std::vector<std::uint8_t> buf;
 
 	if (!ar->GetFile(fileName, buf) || buf.empty()) {
@@ -906,6 +939,7 @@ bool CArchiveScanner::ScanArchiveLua(IArchive* ar, const std::string& fileName, 
 
 IFileFilter* CArchiveScanner::CreateIgnoreFilter(IArchive* ar)
 {
+	//ZoneScoped;
 	IFileFilter* ignore = IFileFilter::Create();
 	std::vector<std::uint8_t> buf;
 
@@ -924,6 +958,7 @@ IFileFilter* CArchiveScanner::CreateIgnoreFilter(IArchive* ar)
  */
 bool CArchiveScanner::GetArchiveChecksum(const std::string& archiveName, ArchiveInfo& archiveInfo)
 {
+	//ZoneScoped;
 	assert(Threading::IsMainThread());
 
 	// try to open an archive
@@ -1015,6 +1050,7 @@ bool CArchiveScanner::GetArchiveChecksum(const std::string& archiveName, Archive
 
 void CArchiveScanner::ReadCacheData(const std::string& filename)
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 	if (!FileSystem::FileExists(filename)) {
 		LOG_L(L_INFO, "[AS::%s] ArchiveCache %s doesn't exist", __func__, filename.c_str());
@@ -1095,6 +1131,7 @@ void CArchiveScanner::ReadCacheData(const std::string& filename)
 
 static inline void SafeStr(FILE* out, const char* prefix, const std::string& str)
 {
+	//ZoneScoped;
 	if (str.empty())
 		return;
 
@@ -1107,12 +1144,14 @@ static inline void SafeStr(FILE* out, const char* prefix, const std::string& str
 
 void FilterDep(std::vector<std::string>& deps, const std::string& exclude)
 {
+	//ZoneScoped;
 	auto it = std::remove_if(deps.begin(), deps.end(), [&](const std::string& dep) { return (dep == exclude); });
 	deps.erase(it, deps.end());
 }
 
 void CArchiveScanner::WriteCacheData(const std::string& filename)
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 	if (!isDirty)
 		return;
@@ -1228,6 +1267,7 @@ void CArchiveScanner::WriteCacheData(const std::string& filename)
 
 static void sortByName(std::vector<CArchiveScanner::ArchiveData>& data)
 {
+	//ZoneScoped;
 	std::stable_sort(data.begin(), data.end(), [](const CArchiveScanner::ArchiveData& a, const CArchiveScanner::ArchiveData& b) {
 		return (a.GetNameVersioned() < b.GetNameVersioned());
 	});
@@ -1235,6 +1275,7 @@ static void sortByName(std::vector<CArchiveScanner::ArchiveData>& data)
 
 std::vector<CArchiveScanner::ArchiveData> CArchiveScanner::GetPrimaryMods() const
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 
 	std::vector<ArchiveData> ret;
@@ -1258,6 +1299,7 @@ std::vector<CArchiveScanner::ArchiveData> CArchiveScanner::GetPrimaryMods() cons
 
 std::vector<CArchiveScanner::ArchiveData> CArchiveScanner::GetAllMods() const
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 
 	std::vector<ArchiveData> ret;
@@ -1302,6 +1344,7 @@ std::vector<CArchiveScanner::ArchiveData> CArchiveScanner::GetAllArchives() cons
 
 std::vector<std::string> CArchiveScanner::GetAllArchivesUsedBy(const std::string& rootArchive) const
 {
+	//ZoneScoped;
 	LOG_S(LOG_SECTION_ARCHIVESCANNER, "GetArchives: %s", rootArchive.c_str());
 
 	// VectorInsertUnique'ing via AddDependency can become a performance hog
@@ -1407,6 +1450,7 @@ std::vector<std::string> CArchiveScanner::GetAllArchivesUsedBy(const std::string
 
 std::vector<std::string> CArchiveScanner::GetMaps() const
 {
+	//ZoneScoped;
 	std::vector<std::string> ret;
 
 	for (const ArchiveInfo& ai: archiveInfos) {
@@ -1421,6 +1465,7 @@ std::vector<std::string> CArchiveScanner::GetMaps() const
 
 std::string CArchiveScanner::MapNameToMapFile(const std::string& versionedMapName) const
 {
+	//ZoneScoped;
 	// Convert map name to map archive
 	const auto pred = [&](const decltype(archiveInfos)::value_type& p) { return (p.archiveData.GetNameVersioned() == versionedMapName); };
 	const auto iter = std::find_if(archiveInfos.cbegin(), archiveInfos.cend(), pred);
@@ -1447,6 +1492,7 @@ void DumpArchiveChecksum(const std::string& lcName, const sha512::raw_digest& cs
 
 sha512::raw_digest CArchiveScanner::GetArchiveSingleChecksumBytes(const std::string& filePath)
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 
 	// compute checksum for archive only when it is actually loaded by e.g. PreGame or LuaVFS
@@ -1472,6 +1518,7 @@ sha512::raw_digest CArchiveScanner::GetArchiveSingleChecksumBytes(const std::str
 
 sha512::raw_digest CArchiveScanner::GetArchiveCompleteChecksumBytes(const std::string& name)
 {
+	//ZoneScoped;
 	sha512::raw_digest checksum;
 	std::fill(checksum.begin(), checksum.end(), 0);
 
@@ -1495,6 +1542,7 @@ void CArchiveScanner::CheckArchive(
 	const sha512::raw_digest& serverChecksum,
 	      sha512::raw_digest& clientChecksum
 ) {
+	//ZoneScoped;
 	/* Dedicated servers often don't actually have the content,
 	 * but this is fine as they just relay traffic - don't warn. */
 	if (serverChecksum == EMPTY_DIGEST)
@@ -1522,6 +1570,7 @@ void CArchiveScanner::CheckArchive(
 
 std::string CArchiveScanner::GetArchivePath(const std::string& archiveName) const
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 
 	const auto aii = archiveInfosIndex.find(StringToLower(FileSystem::GetFilename(archiveName)));
@@ -1534,6 +1583,7 @@ std::string CArchiveScanner::GetArchivePath(const std::string& archiveName) cons
 
 std::string CArchiveScanner::NameFromArchive(const std::string& archiveName) const
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 
 	const auto aii = archiveInfosIndex.find(StringToLower(archiveName));
@@ -1547,17 +1597,20 @@ std::string CArchiveScanner::NameFromArchive(const std::string& archiveName) con
 
 std::string CArchiveScanner::GameHumanNameFromArchive(const std::string& archiveName) const
 {
+	//ZoneScoped;
 	return (ArchiveNameResolver::GetGame(NameFromArchive(archiveName)));
 }
 
 std::string CArchiveScanner::MapHumanNameFromArchive(const std::string& archiveName) const
 {
+	//ZoneScoped;
 	return (ArchiveNameResolver::GetMap(NameFromArchive(archiveName)));
 }
 
 
 std::string CArchiveScanner::ArchiveFromName(const std::string& versionedName) const
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 
 	const auto pred = [&](const decltype(archiveInfos)::value_type& p) { return (p.archiveData.GetNameVersioned() == versionedName); };
@@ -1571,6 +1624,7 @@ std::string CArchiveScanner::ArchiveFromName(const std::string& versionedName) c
 
 CArchiveScanner::ArchiveData CArchiveScanner::GetArchiveData(const std::string& versionedName) const
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 
 	const auto pred = [&](const decltype(archiveInfos)::value_type& p) { return (p.archiveData.GetNameVersioned() == versionedName); };
@@ -1585,6 +1639,7 @@ CArchiveScanner::ArchiveData CArchiveScanner::GetArchiveData(const std::string& 
 
 CArchiveScanner::ArchiveData CArchiveScanner::GetArchiveDataByArchive(const std::string& archive) const
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(scannerMutex)> lck(scannerMutex);
 
 	const auto aii = archiveInfosIndex.find(StringToLower(archive));
@@ -1597,6 +1652,7 @@ CArchiveScanner::ArchiveData CArchiveScanner::GetArchiveDataByArchive(const std:
 
 int CArchiveScanner::GetMetaFileClass(const std::string& filePath)
 {
+	//ZoneScoped;
 	const std::string& lowerFilePath = StringToLower(filePath);
 	// const std::string& ext = FileSystem::GetExtension(lowerFilePath);
 	const auto it = metaFileClasses.find(lowerFilePath);

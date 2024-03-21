@@ -10,6 +10,8 @@
 	#undef GrayScale
 #endif
 
+#include <tracy/Tracy.hpp>
+
 namespace WindowManagerHelper {
 
 void BlockCompositing(SDL_Window* window)
@@ -35,6 +37,7 @@ void BlockCompositing(SDL_Window* window)
 
 int GetWindowState(SDL_Window* window)
 {
+	//ZoneScoped;
 	int flags = 0;
 #ifndef HEADLESS
 	SDL_SysWMinfo info;

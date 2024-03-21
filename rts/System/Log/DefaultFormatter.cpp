@@ -17,6 +17,8 @@
 #include <cstdarg>
 #include <cstring>
 
+#include <tracy/Tracy.hpp>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,6 +31,7 @@ extern "C" {
 
 static inline bool printf_append(log_record_t* log, va_list arguments)
 {
+	//ZoneScoped;
 	const size_t bufferPos = strlen(log->msg);
 	const size_t bufferSize = sizeof(log->msg);
 
@@ -51,6 +54,7 @@ static inline bool printf_append(log_record_t* log, va_list arguments)
 // *******************************************************************************************
 
 static void log_formatter_createPrefix(log_record_t* log) {
+	//ZoneScoped;
 	char* bufEndPtr = &log->msg[0];
 
 	if (!LOG_SECTION_IS_DEFAULT(log->sec)) {
@@ -78,6 +82,7 @@ static void log_formatter_createPrefix(log_record_t* log) {
  */
 void log_formatter_format(log_record_t* log, va_list arguments)
 {
+	//ZoneScoped;
 	memset(&log->msg[0], 0, sizeof(log->msg));
 
 	log_formatter_createPrefix(log);

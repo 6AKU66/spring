@@ -12,16 +12,20 @@
 #include "System/Platform/Misc.h"
 #include "System/Platform/Watchdog.h"
 
+#include <tracy/Tracy.hpp>
+
 #ifdef UNITSYNC
 void ErrorMessageBox(const char*, const char*, unsigned int) { throw; } // pass to US
 #endif
 
 #if (!defined(UNITSYNC) && !defined(DEDICATED))
 static void SetupThreadReg() {
+	//ZoneScoped;
 	Threading::SetFileSysThread();
 	Watchdog::RegisterThread(WDT_VFSI);
 }
 static void ClearThreadReg() {
+	//ZoneScoped;
 	Watchdog::DeregisterThread(WDT_VFSI);
 }
 #else
@@ -35,6 +39,7 @@ std::atomic<bool> FileSystemInitializer::initFailure = {false};
 
 void FileSystemInitializer::PreInitializeConfigHandler(const std::string& configSource, const std::string& configName, const bool safemode)
 {
+	//ZoneScoped;
 	dataDirLocater.LocateDataDirs();
 	dataDirLocater.ChangeCwdToWriteDir();
 
@@ -49,6 +54,7 @@ void FileSystemInitializer::PreInitializeConfigHandler(const std::string& config
 
 void FileSystemInitializer::InitializeLogOutput(const std::string& filename)
 {
+	//ZoneScoped;
 	if (!filename.empty() && !logOutput.IsInitialized())
 		logOutput.SetFileName(filename);
 
@@ -58,6 +64,7 @@ void FileSystemInitializer::InitializeLogOutput(const std::string& filename)
 
 bool FileSystemInitializer::Initialize()
 {
+	//ZoneScoped;
 	if (initSuccess)
 		return true;
 
@@ -95,6 +102,7 @@ bool FileSystemInitializer::Initialize()
 
 void FileSystemInitializer::Cleanup(bool deallocConfigHandler)
 {
+	//ZoneScoped;
 	if (initSuccess) {
 		spring::SafeDelete(archiveScanner);
 		CVFSHandler::FreeGlobalInstance();
@@ -110,6 +118,7 @@ void FileSystemInitializer::Cleanup(bool deallocConfigHandler)
 
 void FileSystemInitializer::Reload()
 {
+	//ZoneScoped;
 	// repopulated by PreGame, etc
 	// stash mod and map archives which may be requested again
 	// useful since reloading the same game is the common case

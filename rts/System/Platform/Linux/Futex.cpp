@@ -8,21 +8,26 @@
 #include <climits>
 #include <algorithm>
 
+#include <tracy/Tracy.hpp>
+
 
 spring_futex::spring_futex() noexcept
 {
+	//ZoneScoped;
 	mtx = 0;
 }
 
 
 spring_futex::~spring_futex()
 {
+	//ZoneScoped;
 	mtx = 0;
 }
 
 
 void spring_futex::lock()
 {
+	//ZoneScoped;
 	native_type c;
 	if ((c = __sync_val_compare_and_swap(&mtx, 0, 1)) == 0)
 		return;
@@ -36,12 +41,14 @@ void spring_futex::lock()
 
 bool spring_futex::try_lock() noexcept
 {
+	//ZoneScoped;
 	return __sync_bool_compare_and_swap(&mtx, 0, 1);
 }
 
 
 void spring_futex::unlock()
 {
+	//ZoneScoped;
 	if (__sync_fetch_and_sub(&mtx, 1) != 1) {
 		mtx = 0;
 		syscall(SYS_futex, &mtx, FUTEX_WAKE_PRIVATE, 4, NULL, NULL, 0);
@@ -114,6 +121,7 @@ linux_signal::linux_signal() noexcept
 
 linux_signal::~linux_signal()
 {
+	//ZoneScoped;
 	gen = {0};
 	mtx = 0;
 }
@@ -121,6 +129,7 @@ linux_signal::~linux_signal()
 
 void linux_signal::wait()
 {
+	//ZoneScoped;
 	int m; // cur gen
 	const int g = gen.load(); // our gen
 	sleepers++;
@@ -133,6 +142,7 @@ void linux_signal::wait()
 
 void linux_signal::wait_for(spring_time t)
 {
+	//ZoneScoped;
 	int m; // cur gen
 	const int g = gen.load(); // our gen
 	sleepers++;
@@ -152,6 +162,7 @@ void linux_signal::wait_for(spring_time t)
 
 void linux_signal::notify_all(const int min_sleepers)
 {
+	//ZoneScoped;
 	if (sleepers.load() < std::max(1, min_sleepers))
 		return;
 

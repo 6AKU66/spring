@@ -16,6 +16,8 @@
 #include "DataDirsAccess.h"
 #include "System/Log/ILog.h"
 
+#include <tracy/Tracy.hpp>
+
 static CPoolArchiveFactory sdpArchiveFactory;
 static CDirArchiveFactory sddArchiveFactory;
 static CZipArchiveFactory sdzArchiveFactory;
@@ -24,6 +26,7 @@ static CVirtualArchiveFactory sdvArchiveFactory;
 
 CArchiveLoader::CArchiveLoader()
 {
+	//ZoneScoped;
 	const auto AddFactory = [&](unsigned archiveType, IArchiveFactory& factory) {
 		archiveFactories[archiveType] = {factory.GetDefaultExtension(), &factory};
 	};
@@ -40,6 +43,7 @@ CArchiveLoader::CArchiveLoader()
 
 const CArchiveLoader& CArchiveLoader::GetInstance()
 {
+	//ZoneScoped;
 	static const CArchiveLoader singleton;
 	return singleton;
 }
@@ -47,6 +51,7 @@ const CArchiveLoader& CArchiveLoader::GetInstance()
 
 bool CArchiveLoader::IsArchiveFile(const std::string& fileName) const
 {
+	//ZoneScoped;
 	const std::string fileExt = FileSystem::GetExtension(fileName);
 
 	using P = decltype(archiveFactories)::value_type;
@@ -60,6 +65,7 @@ bool CArchiveLoader::IsArchiveFile(const std::string& fileName) const
 
 IArchive* CArchiveLoader::OpenArchive(const std::string& fileName, const std::string& type) const
 {
+	//ZoneScoped;
 	IArchive* ret = nullptr;
 
 	const std::string fileExt = type.empty() ? FileSystem::GetExtension(fileName) : type;

@@ -11,6 +11,8 @@
 
 #include <cassert>
 
+#include <tracy/Tracy.hpp>
+
 using namespace creg;
 
 // serialization code
@@ -19,11 +21,13 @@ using namespace creg;
 
 void BasicType::Serialize(ISerializer* s, void* inst)
 {
+	//ZoneScoped;
 	s->SerializeInt(inst, GetSize());
 }
 
 std::string BasicType::GetName() const
 {
+	//ZoneScoped;
 	switch(id) {
 #if defined(SYNCDEBUG) || defined(SYNCCHECK)
 		case crSyncedInt:   return "synced int";
@@ -37,41 +41,49 @@ std::string BasicType::GetName() const
 
 std::unique_ptr<IType> IType::CreateBasicType(BasicTypeID t, size_t size)
 {
+	//ZoneScoped;
 	return std::unique_ptr<IType>(new BasicType(t, size));
 }
 
 std::string ObjectPointerBaseType::GetName() const
 {
+	//ZoneScoped;
 	return std::string(objClass->name) + "*";
 }
 
 std::string StringType::GetName() const
 {
+	//ZoneScoped;
 	return "string";
 }
 
 std::unique_ptr<IType> IType::CreateStringType()
 {
+	//ZoneScoped;
 	return std::unique_ptr<IType>(new StringType());
 }
 
 void ObjectInstanceType::Serialize(ISerializer* s, void* inst)
 {
+	//ZoneScoped;
 	s->SerializeObjectInstance(inst, objectClass);
 }
 
 std::string ObjectInstanceType::GetName() const
 {
+	//ZoneScoped;
 	return objectClass->name;
 }
 
 std::unique_ptr<IType> IType::CreateObjInstanceType(Class* objectType, size_t size)
 {
+	//ZoneScoped;
 	return std::unique_ptr<IType>(new ObjectInstanceType(objectType, size));
 }
 
 std::string StaticArrayBaseType::GetName() const
 {
+	//ZoneScoped;
 	return elemType->GetName() + "[" + IntToString(size / elemType->GetSize()) + "]";
 }
 
@@ -82,5 +94,6 @@ std::string DynamicArrayBaseType::GetName() const
 
 std::unique_ptr<IType> IType::CreateIgnoredType(size_t size)
 {
+	//ZoneScoped;
 	return std::unique_ptr<IType>(new IgnoredType(size));
 }

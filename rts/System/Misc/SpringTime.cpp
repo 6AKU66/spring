@@ -42,6 +42,7 @@ namespace this_thread { using namespace std::this_thread; }
 
 
 
+
 namespace spring_clock {
 	//ZoneScoped;
 	static bool highResMode = false;

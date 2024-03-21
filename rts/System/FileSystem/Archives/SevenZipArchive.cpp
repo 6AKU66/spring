@@ -14,6 +14,8 @@
 #include "System/StringUtil.h"
 #include "System/Log/ILog.h"
 
+#include <tracy/Tracy.hpp>
+
 static Byte kUtf8Limits[5] = {0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
 
 /**
@@ -23,6 +25,7 @@ static Byte kUtf8Limits[5] = {0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
  */
 static bool Utf16_To_Utf8(char* dest, size_t* destLen, const UInt16* src, size_t srcLen)
 {
+	//ZoneScoped;
 	size_t destPos = 0;
 	size_t srcPos = 0;
 	while (destPos < *destLen) {
@@ -68,6 +71,7 @@ static bool Utf16_To_Utf8(char* dest, size_t* destLen, const UInt16* src, size_t
 
 static std::optional<std::string> GetFileName(const CSzArEx* db, int i)
 {
+	//ZoneScoped;
 	constexpr size_t bufferSize = 2048;
 	uint16_t utf16Buffer[bufferSize];
 	char tempBuffer[bufferSize];
@@ -88,6 +92,7 @@ static std::optional<std::string> GetFileName(const CSzArEx* db, int i)
 
 IArchive* CSevenZipArchiveFactory::DoCreateArchive(const std::string& filePath) const
 {
+	//ZoneScoped;
 	return new CSevenZipArchive(filePath);
 }
 
@@ -116,6 +121,7 @@ static inline const char* GetErrorStr(int err)
 
 static inline const char* GetSystemErrorStr(WRes wres)
 {
+	//ZoneScoped;
 	static char buf[16384];
 
 	memset(buf, 0, sizeof(buf));
@@ -140,6 +146,7 @@ CSevenZipArchive::CSevenZipArchive(const std::string& name)
 	, allocImp({SzAlloc, SzFree})
 	, allocTempImp({SzAllocTemp, SzFreeTemp})
 {
+	//ZoneScoped;
 	std::lock_guard<spring::mutex> lck(archiveLock);
 
 	constexpr const size_t kInputBufSize = (size_t)1 << 18;
@@ -199,6 +206,7 @@ CSevenZipArchive::CSevenZipArchive(const std::string& name)
 
 CSevenZipArchive::~CSevenZipArchive()
 {
+	//ZoneScoped;
 	std::lock_guard<spring::mutex> lck(archiveLock);
 
 	if (outBuffer != nullptr) {
@@ -213,6 +221,7 @@ CSevenZipArchive::~CSevenZipArchive()
 
 int CSevenZipArchive::GetFileImpl(unsigned int fid, std::vector<std::uint8_t>& buffer)
 {
+	//ZoneScoped;
 	// assert(archiveLock.locked());
 	assert(IsFileId(fid));
 
@@ -232,6 +241,7 @@ int CSevenZipArchive::GetFileImpl(unsigned int fid, std::vector<std::uint8_t>& b
 
 void CSevenZipArchive::FileInfo(unsigned int fid, std::string& name, int& size) const
 {
+	//ZoneScoped;
 	assert(IsFileId(fid));
 	name = fileEntries[fid].origName;
 	size = fileEntries[fid].size;

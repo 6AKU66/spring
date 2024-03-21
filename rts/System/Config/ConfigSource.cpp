@@ -14,6 +14,8 @@
 #include <stdexcept>
 #include <functional>
 
+#include <tracy/Tracy.hpp>
+
 /******************************************************************************/
 
 using std::map;
@@ -25,11 +27,13 @@ typedef map<string, string> StringMap;
 
 bool ReadOnlyConfigSource::IsSet(const string& key) const
 {
+	//ZoneScoped;
 	return data.find(key) != data.end();
 }
 
 string ReadOnlyConfigSource::GetString(const string& key) const
 {
+	//ZoneScoped;
 	StringMap::const_iterator pos = data.find(key);
 	if (pos == data.end()) {
 		throw std::runtime_error("ConfigSource: Error: Key does not exist: " + key);
@@ -41,11 +45,13 @@ string ReadOnlyConfigSource::GetString(const string& key) const
 
 void ReadWriteConfigSource::SetString(const string& key, const string& value)
 {
+	//ZoneScoped;
 	data[key] = value;
 }
 
 void ReadWriteConfigSource::Delete(const string& key)
 {
+	//ZoneScoped;
 	data.erase(key);
 }
 
@@ -53,6 +59,7 @@ void ReadWriteConfigSource::Delete(const string& key)
 
 FileConfigSource::FileConfigSource(const string& filename) : filename(filename)
 {
+	//ZoneScoped;
 	FILE* file;
 
 	if ((file = fopen(filename.c_str(), "r"))) {
@@ -71,16 +78,19 @@ FileConfigSource::FileConfigSource(const string& filename) : filename(filename)
 
 void FileConfigSource::SetStringInternal(const std::string& key, const std::string& value)
 {
+	//ZoneScoped;
 	ReadWriteConfigSource::SetString(key, value);
 }
 
 void FileConfigSource::SetString(const string& key, const string& value)
 {
+	//ZoneScoped;
 	ReadModifyWrite(std::bind(&FileConfigSource::SetStringInternal, this, key, value));
 }
 
 void FileConfigSource::DeleteInternal(const string& key)
 {
+	//ZoneScoped;
 	ReadWriteConfigSource::Delete(key);
 	// note: comments intentionally not deleted (see Write)
 	// comments.erase(key);
@@ -88,10 +98,12 @@ void FileConfigSource::DeleteInternal(const string& key)
 
 void FileConfigSource::Delete(const string& key)
 {
+	//ZoneScoped;
 	ReadModifyWrite(std::bind(&FileConfigSource::DeleteInternal, this, key));
 }
 
 void FileConfigSource::ReadModifyWrite(std::function<void ()> modify) {
+	//ZoneScoped;
 	FILE* file = fopen(filename.c_str(), "r+");
 
 	if (file) {
@@ -132,6 +144,7 @@ char* FileConfigSource::Strip(char* begin, char* end) {
  */
 void FileConfigSource::Read(FILE* file)
 {
+	//ZoneScoped;
 	std::ostringstream commentBuffer;
 	char line[500];
 	rewind(file);
@@ -176,6 +189,7 @@ void FileConfigSource::Read(FILE* file)
  */
 void FileConfigSource::Write(FILE* file)
 {
+	//ZoneScoped;
 	rewind(file);
 #ifdef _WIN32
 	int err = _chsize(fileno(file), 0);
@@ -213,6 +227,7 @@ void FileConfigSource::Write(FILE* file)
  */
 DefaultConfigSource::DefaultConfigSource()
 {
+	//ZoneScoped;
 	const ConfigVariable::MetaDataMap& vars = ConfigVariable::GetMetaDataMap();
 
 	for (const auto& element: vars) {
@@ -229,6 +244,7 @@ DefaultConfigSource::DefaultConfigSource()
  */
 SafemodeConfigSource::SafemodeConfigSource()
 {
+	//ZoneScoped;
 	const ConfigVariable::MetaDataMap& vars = ConfigVariable::GetMetaDataMap();
 
 	for (const auto& element: vars) {
@@ -244,6 +260,7 @@ SafemodeConfigSource::SafemodeConfigSource()
  */
 DedicatedConfigSource::DedicatedConfigSource()
 {
+	//ZoneScoped;
 	const ConfigVariable::MetaDataMap& vars = ConfigVariable::GetMetaDataMap();
 
 	for (const auto& element: vars) {
@@ -260,6 +277,7 @@ DedicatedConfigSource::DedicatedConfigSource()
  */
 HeadlessConfigSource::HeadlessConfigSource()
 {
+	//ZoneScoped;
 	const ConfigVariable::MetaDataMap& vars = ConfigVariable::GetMetaDataMap();
 
 	for (const auto& element: vars) {

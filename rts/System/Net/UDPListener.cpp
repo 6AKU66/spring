@@ -20,6 +20,8 @@
 #include "System/Platform/errorhandler.h"
 #include "System/StringUtil.h" // for IntToString (header only)
 
+#include <tracy/Tracy.hpp>
+
 
 namespace netcode
 {
@@ -27,6 +29,7 @@ using namespace asio;
 
 UDPListener::UDPListener(int port, const std::string& ip): acceptNewConnections(false)
 {
+	//ZoneScoped;
 	// resets socket on any exception
 	const std::string err = TryBindSocket(port, socket, ip);
 
@@ -40,6 +43,7 @@ UDPListener::UDPListener(int port, const std::string& ip): acceptNewConnections(
 }
 
 UDPListener::~UDPListener() {
+	//ZoneScoped;
 	for (const auto& p: dropMap) {
 		LOG("[%s] dropped %lu packets from unknown IP %s", __func__, (unsigned long) p.second, (p.first).c_str());
 	}
@@ -48,6 +52,7 @@ UDPListener::~UDPListener() {
 
 std::string UDPListener::TryBindSocket(int port, std::shared_ptr<asio::ip::udp::socket>& sock, const std::string& ip)
 {
+	//ZoneScoped;
 	std::string errorMsg;
 
 	try {
@@ -108,6 +113,7 @@ std::string UDPListener::TryBindSocket(int port, std::shared_ptr<asio::ip::udp::
 }
 
 void UDPListener::Update() {
+	//ZoneScoped;
 	netservice.poll();
 
 	size_t bytesAvailable = 0;
@@ -188,6 +194,7 @@ void UDPListener::Update() {
 
 std::shared_ptr<UDPConnection> UDPListener::SpawnConnection(const std::string& ip, const unsigned port)
 {
+	//ZoneScoped;
 	std::shared_ptr<UDPConnection> newConn(new UDPConnection(socket, ip::udp::endpoint(WrapIP(ip), port)));
 	connMap[newConn->GetEndpoint()] = newConn;
 	return newConn;
@@ -195,6 +202,7 @@ std::shared_ptr<UDPConnection> UDPListener::SpawnConnection(const std::string& i
 
 std::shared_ptr<UDPConnection> UDPListener::AcceptConnection()
 {
+	//ZoneScoped;
 	std::shared_ptr<UDPConnection> newConn = waiting.front();
 	waiting.pop();
 	connMap[newConn->GetEndpoint()] = newConn;
@@ -203,6 +211,7 @@ std::shared_ptr<UDPConnection> UDPListener::AcceptConnection()
 
 
 void UDPListener::UpdateConnections() {
+	//ZoneScoped;
 	for (auto i = connMap.begin(); i != connMap.end(); ) {
 		std::shared_ptr<UDPConnection> uc = i->second.lock();
 

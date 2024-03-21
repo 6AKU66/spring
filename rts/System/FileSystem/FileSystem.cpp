@@ -19,6 +19,8 @@
 #include <io.h>
 #endif
 
+#include <tracy/Tracy.hpp>
+
 ////////////////////////////////////////
 ////////// FileSystem
 
@@ -41,6 +43,7 @@
 
 std::string FileSystem::ConvertGlobToRegex(const std::string& glob)
 {
+	//ZoneScoped;
 	std::string regex;
 	regex.reserve(glob.size() << 1);
 	int braces = 0;
@@ -107,6 +110,7 @@ std::string FileSystem::ConvertGlobToRegex(const std::string& glob)
 
 bool FileSystem::ComparePaths(std::string path1, std::string path2)
 {
+	//ZoneScoped;
 	path1 = FileSystem::EnsureNoPathSepAtEnd(FileSystem::GetNormalizedPath(path1));
 	path2 = FileSystem::EnsureNoPathSepAtEnd(FileSystem::GetNormalizedPath(path2));
 	return FileSystemAbstraction::ComparePaths(path1, path2);
@@ -115,11 +119,13 @@ bool FileSystem::ComparePaths(std::string path1, std::string path2)
 
 bool FileSystem::FileExists(std::string file)
 {
+	//ZoneScoped;
 	return FileSystemAbstraction::FileExists(FileSystem::GetNormalizedPath(file));
 }
 
 size_t FileSystem::GetFileSize(std::string file)
 {
+	//ZoneScoped;
 	if (!CheckFile(file))
 		return 0;
 
@@ -128,6 +134,7 @@ size_t FileSystem::GetFileSize(std::string file)
 
 bool FileSystem::CreateDirectory(std::string dir)
 {
+	//ZoneScoped;
 	if (!CheckFile(dir))
 		return false;
 
@@ -146,6 +153,7 @@ bool FileSystem::CreateDirectory(std::string dir)
 
 bool FileSystem::TouchFile(std::string filePath)
 {
+	//ZoneScoped;
 	if (!CheckFile(filePath))
 		return false;
 
@@ -165,6 +173,7 @@ bool FileSystem::TouchFile(std::string filePath)
 
 std::string FileSystem::GetDirectory(const std::string& path)
 {
+	//ZoneScoped;
 	const size_t s = path.find_last_of("\\/");
 
 	if (s != std::string::npos)
@@ -175,6 +184,7 @@ std::string FileSystem::GetDirectory(const std::string& path)
 
 std::string FileSystem::GetFilename(const std::string& path)
 {
+	//ZoneScoped;
 	const size_t s = path.find_last_of("\\/");
 
 	if (s != std::string::npos)
@@ -185,6 +195,7 @@ std::string FileSystem::GetFilename(const std::string& path)
 
 std::string FileSystem::GetBasename(const std::string& path)
 {
+	//ZoneScoped;
 	std::string fn = GetFilename(path);
 	const size_t dot = fn.find_last_of('.');
 
@@ -196,6 +207,7 @@ std::string FileSystem::GetBasename(const std::string& path)
 
 std::string FileSystem::GetExtension(const std::string& path)
 {
+	//ZoneScoped;
 	const std::string fileName = GetFilename(path);
 	size_t l = fileName.length();
 //#ifdef _WIN32
@@ -218,11 +230,13 @@ std::string FileSystem::GetExtension(const std::string& path)
 }
 
 std::string FileSystem::GetNormalizedPath(const std::string& path) {
+	//ZoneScoped;
 	return std::filesystem::path(path).lexically_normal().generic_string();
 }
 
 std::string& FileSystem::FixSlashes(std::string& path)
 {
+	//ZoneScoped;
 	const char sep = GetNativePathSeparator();
 	const auto P = [](const char c) { return (c == '/' || c == '\\'); };
 
@@ -233,6 +247,7 @@ std::string& FileSystem::FixSlashes(std::string& path)
 
 std::string& FileSystem::ForwardSlashes(std::string& path)
 {
+	//ZoneScoped;
 	std::replace(std::begin(path), std::end(path), '\\', '/');
 
 	return path;
@@ -241,6 +256,7 @@ std::string& FileSystem::ForwardSlashes(std::string& path)
 
 bool FileSystem::CheckFile(const std::string& file)
 {
+	//ZoneScoped;
 	// Don't allow code to escape from the data directories.
 	// Note: this does NOT mean this is a SAFE fopen function:
 	// symlink-, hardlink-, you name it-attacks are all very well possible.
@@ -251,6 +267,7 @@ bool FileSystem::CheckFile(const std::string& file)
 
 bool FileSystem::Remove(std::string file)
 {
+	//ZoneScoped;
 	if (!CheckFile(file))
 		return false;
 
@@ -259,12 +276,14 @@ bool FileSystem::Remove(std::string file)
 
 const std::string& FileSystem::GetCacheBaseDir()
 {
+	//ZoneScoped;
 	static const std::string cacheBaseDir = "cache";
 	return cacheBaseDir;
 }
 
 const std::string& FileSystem::GetCacheDir()
 {
+	//ZoneScoped;
 	// cache-dir versioning must not be too finegrained,
 	// we do want to regenerate cache after every commit
 	//

@@ -7,11 +7,14 @@
 #include "System/FileSystem/FileSystem.h"
 #include "System/Log/ILog.h"
 
+#include <tracy/Tracy.hpp>
+
 SaveFileData globalSaveFileData;
 
 
 ILoadSaveHandler* ILoadSaveHandler::CreateHandler(const std::string& saveFile)
 {
+	//ZoneScoped;
 	const std::string& ext = FileSystem::GetExtension(saveFile);
 
 	if (ext == "ssf")
@@ -28,6 +31,7 @@ bool ILoadSaveHandler::CreateSave(
 	const std::string& saveFile,
 	const std::string& saveArgs
 ) {
+	//ZoneScoped;
 	if (!FileSystem::CreateDirectory("Saves"))
 		return false;
 
@@ -47,6 +51,7 @@ bool ILoadSaveHandler::CreateSave(
 
 std::string ILoadSaveHandler::FindSaveFile(const std::string& file)
 {
+	//ZoneScoped;
 	if (FileSystem::FileExists(file))
 		return file;
 

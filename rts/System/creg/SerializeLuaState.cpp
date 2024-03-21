@@ -16,6 +16,8 @@
 #include "System/Log/ILog.h"
 #include <deque>
 
+#include <tracy/Tracy.hpp>
+
 struct creg_lua_State;
 struct creg_Proto;
 struct creg_UpVal;
@@ -49,10 +51,12 @@ private:
 };
 
 void freeProtector(void *m) {
+	//ZoneScoped;
 	assert(false);
 }
 
 void* allocProtector(size_t size) {
+	//ZoneScoped;
 	assert(false);
 	return nullptr;
 }
@@ -657,6 +661,7 @@ CR_REG_METADATA(creg_LG, (
 template<typename T, typename C>
 inline void SerializeCVector(creg::ISerializer* s, T** vecPtr, C count)
 {
+	//ZoneScoped;
 	std::unique_ptr<creg::IType> elemType = creg::DeduceType<T>::Get();
 	T* vec;
 	if (!(s->IsWriting())) {
@@ -673,17 +678,20 @@ inline void SerializeCVector(creg::ISerializer* s, T** vecPtr, C count)
 
 template<typename T>
 void SerializePtr(creg::ISerializer* s, T** t) {
+	//ZoneScoped;
 	creg::ObjectPointerType<T> opt;
 	opt.Serialize(s, t);
 }
 
 template<typename T>
 void SerializeInstance(creg::ISerializer* s, T* t) {
+	//ZoneScoped;
 	s->SerializeObjectInstance(t, t->GetClass());
 }
 
 void SerializeLightUserData(creg::ISerializer* s, void **p)
 {
+	//ZoneScoped;
 	if (!inClosure) {
 		s->SerializeInt(p, sizeof(*p));
 		return;
@@ -728,6 +736,7 @@ void SerializeLightUserData(creg::ISerializer* s, void **p)
 
 void creg_TValue::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	switch(tt) {
 		case LUA_TNIL: { return; }
 		case LUA_TBOOLEAN: { s->SerializeInt(&value.b, sizeof(value.b)); return; }
@@ -746,6 +755,7 @@ void creg_TValue::Serialize(creg::ISerializer* s)
 
 void creg_Node::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	SerializeInstance(s, &i_key.tvk);
 	SerializePtr(s, &i_key.nk.next);
 }
@@ -753,6 +763,7 @@ void creg_Node::Serialize(creg::ISerializer* s)
 
 void creg_Table::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	int sizenode = twoto(lsizenode);
 
 	SerializeCVector(s, &array, sizearray);
@@ -785,6 +796,7 @@ void creg_Table::Serialize(creg::ISerializer* s)
 
 void creg_Table::PostLoad()
 {
+	//ZoneScoped;
 	// table may contain pointers as keys so will require reordering
 	int sizenode = twoto(lsizenode);
 
@@ -817,6 +829,7 @@ void creg_Table::PostLoad()
 
 void creg_Proto::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	SerializeCVector(s, &k,        sizek);
 	SerializeCVector(s, &code,     sizecode);
 	SerializeCVector(s, &p,        sizep);
@@ -828,6 +841,7 @@ void creg_Proto::Serialize(creg::ISerializer* s)
 
 void creg_UpVal::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	bool closed;
 	if (s->IsWriting())
 		closed = (v == &u.value);
@@ -845,6 +859,7 @@ void creg_UpVal::Serialize(creg::ISerializer* s)
 
 void creg_TString::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	SerializePtr(s, &u.tsv.next);
 	s->SerializeInt(&u.tsv.tt, sizeof(u.tsv.tt));
 	s->SerializeInt(&u.tsv.marked, sizeof(u.tsv.marked));
@@ -860,12 +875,14 @@ void creg_TString::Serialize(creg::ISerializer* s)
 
 size_t creg_TString::GetSize()
 {
+	//ZoneScoped;
 	return sizeof(creg_TString) + u.tsv.len + 1;
 }
 
 
 void creg_CClosure::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	inClosure = true;
 	for (unsigned i = 0; i < nupvalues; ++i) {
 		SerializeInstance(s, &upvalue[i]);
@@ -894,12 +911,14 @@ void creg_CClosure::Serialize(creg::ISerializer* s)
 
 size_t creg_CClosure::GetSize()
 {
+	//ZoneScoped;
 	return sizeCclosure(nupvalues);
 }
 
 
 void creg_LClosure::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	for (unsigned i = 0; i < nupvalues; ++i) {
 		SerializePtr(s, &upvals[i]);
 	}
@@ -908,12 +927,14 @@ void creg_LClosure::Serialize(creg::ISerializer* s)
 
 size_t creg_LClosure::GetSize()
 {
+	//ZoneScoped;
 	return sizeLclosure(nupvalues);
 }
 
 
 void creg_Udata::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	SerializePtr(s, &u.uv.next);
 	s->SerializeInt(&u.uv.tt, sizeof(u.uv.tt));
 	s->SerializeInt(&u.uv.marked, sizeof(u.uv.marked));
@@ -929,28 +950,33 @@ void creg_Udata::Serialize(creg::ISerializer* s)
 
 size_t creg_Udata::GetSize()
 {
+	//ZoneScoped;
 	return sizeof(creg_Udata) + u.uv.len;
 }
 
 
 void creg_stringtable::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	SerializeCVector(s, &hash, size);
 }
 
 inline creg_Proto* GetProtoFromCallInfo(CallInfo* ci)
 {
+	//ZoneScoped;
 	return ((creg_TValue*) ci->func)->value.gc->cl.l.p;
 }
 
 inline bool InstructionInCode(const Instruction* inst, CallInfo* ci)
 {
+	//ZoneScoped;
 	const creg_Proto* p = GetProtoFromCallInfo(ci);
 	return (inst >= p->code) && (inst < (p->code + p->sizecode));
 }
 
 void creg_lua_State::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	ptrdiff_t ci_offset;
 	ptrdiff_t base_offset;
 	ptrdiff_t top_offset;
@@ -1033,6 +1059,7 @@ void creg_lua_State::Serialize(creg::ISerializer* s)
 
 void creg_lua_State::PostLoad()
 {
+	//ZoneScoped;
 	if (base_ci == ci)
 		return;
 
@@ -1048,6 +1075,7 @@ void creg_lua_State::PostLoad()
 
 void creg_global_State::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	if (s->IsWriting()) {
 		assert(fopen_func  == nullptr);
 		assert(popen_func  == nullptr);
@@ -1092,6 +1120,7 @@ namespace creg {
 
 void SerializeLuaState(creg::ISerializer* s, lua_State** L)
 {
+	//ZoneScoped;
 	creg_LG* clg;
 	if (s->IsWriting()) {
 		assert(*L != nullptr);
@@ -1111,11 +1140,13 @@ void SerializeLuaState(creg::ISerializer* s, lua_State** L)
 
 void SerializeLuaThread(creg::ISerializer* s, lua_State** L)
 {
+	//ZoneScoped;
 	s->SerializeObjectPtr((void**)(L), creg_lua_State::StaticClass());
 }
 
 void RegisterCFunction(const char* name, lua_CFunction f)
 {
+	//ZoneScoped;
 	assert((nameToFunc.find(std::string(name)) == nameToFunc.end()) || (nameToFunc[name] == f));
 	nameToFunc[name] = f;
 
@@ -1133,6 +1164,7 @@ void RecursiveAutoRegisterTable(const std::string& handle, lua_State* L, int dep
 
 void RecursiveAutoRegisterFunction(const std::string& handle, lua_State* L, int depth)
 {
+	//ZoneScoped;
 	if (depth > MAX_REC_DEPTH)
 		return;
 
@@ -1151,6 +1183,7 @@ void RecursiveAutoRegisterFunction(const std::string& handle, lua_State* L, int 
 
 void RecursiveAutoRegisterTable(const std::string& handle, lua_State* L, int depth)
 {
+	//ZoneScoped;
 	if (depth > MAX_REC_DEPTH)
 		return;
 
@@ -1177,6 +1210,7 @@ void RecursiveAutoRegisterTable(const std::string& handle, lua_State* L, int dep
 
 void AutoRegisterCFunctions(const std::string& handle, lua_State* L)
 {
+	//ZoneScoped;
 #ifndef UNIT_TEST
 	ScopedOnceTimer timer("creg::AutoRegisterCFunctions(" + handle + ")");
 #endif
@@ -1189,12 +1223,14 @@ void AutoRegisterCFunctions(const std::string& handle, lua_State* L)
 }
 
 void UnregisterAllCFunctions() {
+	//ZoneScoped;
 	funcToName.clear();
 	nameToFunc.clear();
 }
 
 void CopyLuaContext(lua_State* L)
 {
+	//ZoneScoped;
 	luaContext.SetContext(G(L)->ud, G(L)->frealloc, G(L)->panic);
 }
 }

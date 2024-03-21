@@ -12,6 +12,8 @@
 #include <iostream>
 #include <cinttypes>
 
+#include <tracy/Tracy.hpp>
+
 namespace ArchiveNameResolver {
 	//////////////////////////////////////////////////////////////////////////////
 //
@@ -20,6 +22,7 @@ namespace ArchiveNameResolver {
 
 	static std::uint64_t ExtractVersionNumber(const std::string& version)
 	{
+	//ZoneScoped;
 		std::istringstream iss(version);
 		std::uint64_t versionInt = 0;
 		int num;
@@ -41,6 +44,7 @@ namespace ArchiveNameResolver {
 
 	static bool GetGameByExactName(const std::string& lazyName, std::string* applicableName)
 	{
+	//ZoneScoped;
 		const CArchiveScanner::ArchiveData& aData = archiveScanner->GetArchiveData(lazyName);
 
 		std::string error;
@@ -57,6 +61,7 @@ namespace ArchiveNameResolver {
 
 	static bool GetGameByShortName(const std::string& lazyName, std::string* applicableName)
 	{
+	//ZoneScoped;
 		const std::string lowerLazyName = StringToLower(lazyName);
 		const std::vector<CArchiveScanner::ArchiveData>& found = archiveScanner->GetPrimaryMods();
 
@@ -100,6 +105,7 @@ namespace ArchiveNameResolver {
 
 	static bool GetRandomGame(const std::string& lazyName, std::string* applicableName)
 	{
+	//ZoneScoped;
 #if !defined(UNITSYNC) && !defined(DEDICATED)
 		if (lazyName == "random") {
 			const std::vector<CArchiveScanner::ArchiveData>& games = archiveScanner->GetPrimaryMods();
@@ -115,6 +121,7 @@ namespace ArchiveNameResolver {
 
 	static bool GetMapByExactName(const std::string& lazyName, std::string* applicableName)
 	{
+	//ZoneScoped;
 		const CArchiveScanner::ArchiveData& aData = archiveScanner->GetArchiveData(lazyName);
 
 		std::string error;
@@ -131,6 +138,7 @@ namespace ArchiveNameResolver {
 
 	static bool GetMapBySubString(const std::string& lazyName, std::string* applicableName)
 	{
+	//ZoneScoped;
 		const std::string lowerLazyName = StringToLower(lazyName);
 		const std::vector<std::string>& found = archiveScanner->GetMaps();
 
@@ -178,6 +186,7 @@ namespace ArchiveNameResolver {
 
 	static bool GetRandomMap(const std::string& lazyName, std::string* applicableName)
 	{
+	//ZoneScoped;
 #if !defined(UNITSYNC) && !defined(DEDICATED)
 		if (lazyName == "random") {
 			const std::vector<std::string>& maps = archiveScanner->GetMaps();
@@ -192,6 +201,7 @@ namespace ArchiveNameResolver {
 
 	static bool GetGameByRapidTag(const std::string& lazyName, std::string& tag)
 	{
+	//ZoneScoped;
 		if (!ParseRapidUri(lazyName, tag))
 			return false;
 
@@ -210,6 +220,7 @@ namespace ArchiveNameResolver {
 
 std::string GetGame(const std::string& lazyName)
 {
+	//ZoneScoped;
 	std::string applicableName = lazyName;
 	if (GetGameByExactName(lazyName, &applicableName)) return applicableName;
 	if (GetGameByShortName(lazyName, &applicableName)) return applicableName;
@@ -222,6 +233,7 @@ std::string GetGame(const std::string& lazyName)
 
 std::string GetMap(const std::string& lazyName)
 {
+	//ZoneScoped;
 	std::string applicableName = lazyName;
 	if (GetMapByExactName(lazyName, &applicableName)) return applicableName;
 	if (GetMapBySubString(lazyName, &applicableName)) return applicableName;

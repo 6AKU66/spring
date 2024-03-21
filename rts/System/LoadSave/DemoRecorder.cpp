@@ -18,6 +18,8 @@
 #include "System/Log/ILog.h"
 #include "System/Threading/ThreadPool.h"
 
+#include <tracy/Tracy.hpp>
+
 #ifdef CreateDirectory
 #undef CreateDirectory
 #endif
@@ -34,6 +36,7 @@ static spring::mutex demoMutex;
 
 CDemoRecorder::CDemoRecorder(const std::string& mapName, const std::string& modName, bool serverDemo): isServerDemo(serverDemo)
 {
+	//ZoneScoped;
 	std::lock_guard<spring::mutex> lock(demoMutex);
 
 	SetStream();
@@ -46,6 +49,7 @@ CDemoRecorder::CDemoRecorder(const std::string& mapName, const std::string& modN
 
 CDemoRecorder::~CDemoRecorder()
 {
+	//ZoneScoped;
 	if (file == nullptr)
 		return;
 
@@ -59,12 +63,14 @@ CDemoRecorder::~CDemoRecorder()
 
 void CDemoRecorder::SetStream()
 {
+	//ZoneScoped;
 	demoStreams[isServerDemo].clear();
 	demoStreams[isServerDemo].reserve(8 * 1024 * 1024);
 }
 
 void CDemoRecorder::SetFileHeader()
 {
+	//ZoneScoped;
 	memset(&fileHeader, 0, sizeof(DemoFileHeader));
 	strcpy(fileHeader.magic, DEMOFILE_MAGIC);
 	fileHeader.version = DEMOFILE_VERSION;
@@ -79,6 +85,7 @@ void CDemoRecorder::SetFileHeader()
 
 void CDemoRecorder::WriteDemoFile()
 {
+	//ZoneScoped;
 	// zlib FAQ claims the lib is thread-safe, "however any library routines that zlib uses and
 	// any application-provided memory allocation routines must also be thread-safe. zlib's gz*
 	// functions use stdio library routines, and most of zlib's functions use the library memory
@@ -106,6 +113,7 @@ void CDemoRecorder::WriteDemoFile()
 
 void CDemoRecorder::WriteSetupText(const std::string& text)
 {
+	//ZoneScoped;
 	LOG_L(L_INFO, "[CDemoRecorder::%s] SetupText=\"%s\"", __func__,
 		base64_encode(reinterpret_cast<const uint8_t*>(text.c_str()), text.size()).c_str());
 
@@ -125,6 +133,7 @@ void CDemoRecorder::WriteSetupText(const std::string& text)
 
 void CDemoRecorder::SaveToDemo(const unsigned char* buf, const unsigned length, const float modGameTime)
 {
+	//ZoneScoped;
 	DemoStreamChunkHeader chunkHeader;
 
 	chunkHeader.modGameTime = modGameTime;
@@ -137,6 +146,7 @@ void CDemoRecorder::SaveToDemo(const unsigned char* buf, const unsigned length, 
 
 void CDemoRecorder::SetName(const std::string& mapName, const std::string& modName)
 {
+	//ZoneScoped;
 	// Returns the current UTC time as "JJJJMMDD_HHmmSS", eg: "20091231_115959"
 	const std::string curTime = CTimeUtil::GetCurrentTimeStr(true);
 	const std::string demoDir = isServerDemo? "demos-server/": "demos/";
@@ -172,18 +182,21 @@ void CDemoRecorder::SetName(const std::string& mapName, const std::string& modNa
 
 void CDemoRecorder::SetGameID(const unsigned char* buf)
 {
+	//ZoneScoped;
 	memcpy(&fileHeader.gameID, buf, sizeof(fileHeader.gameID));
 	WriteFileHeader(false);
 }
 
 void CDemoRecorder::SetTime(int gameTime, int wallclockTime)
 {
+	//ZoneScoped;
 	fileHeader.gameTime = gameTime;
 	fileHeader.wallclockTime = wallclockTime;
 }
 
 void CDemoRecorder::InitializeStats(int numPlayers, int numTeams)
 {
+	//ZoneScoped;
 	playerStats.resize(numPlayers);
 	// must be here so WriteWinnerList works
 	teamStats.resize(fileHeader.numTeams = numTeams);
@@ -192,6 +205,7 @@ void CDemoRecorder::InitializeStats(int numPlayers, int numTeams)
 
 void CDemoRecorder::AddNewPlayer(const std::string& name, int playerNum)
 {
+	//ZoneScoped;
 	if (playerNum >= playerStats.size()) {
 		playerStats.resize(playerNum + 1);
 	}
@@ -201,6 +215,7 @@ void CDemoRecorder::AddNewPlayer(const std::string& name, int playerNum)
 /** @brief Set (overwrite) the CPlayer::Statistics for player playerNum */
 void CDemoRecorder::SetPlayerStats(int playerNum, const PlayerStatistics& stats)
 {
+	//ZoneScoped;
 	if (playerNum >= playerStats.size())
 		playerStats.resize(playerNum + 1);
 
@@ -210,6 +225,7 @@ void CDemoRecorder::SetPlayerStats(int playerNum, const PlayerStatistics& stats)
 /** @brief Set (overwrite) the TeamStatistics history for team teamNum */
 void CDemoRecorder::SetTeamStats(int teamNum, const std::vector<TeamStatistics>& stats)
 {
+	//ZoneScoped;
 	assert((unsigned)teamNum < teamStats.size()); //FIXME
 
 	teamStats[teamNum].clear();
@@ -224,6 +240,7 @@ void CDemoRecorder::SetTeamStats(int teamNum, const std::vector<TeamStatistics>&
 /** @brief Set (overwrite) the list of winning allyTeams */
 void CDemoRecorder::SetWinningAllyTeams(const std::vector<unsigned char>& winningAllyTeamIDs)
 {
+	//ZoneScoped;
 	fileHeader.winningAllyTeamsSize = (winningAllyTeamIDs.size() * sizeof(unsigned char));
 	winningAllyTeams = winningAllyTeamIDs;
 }
@@ -233,6 +250,7 @@ Write the DemoFileHeader at the start of the file and restores the original
 position in the file afterwards. */
 unsigned int CDemoRecorder::WriteFileHeader(bool updateStreamLength)
 {
+	//ZoneScoped;
 	DemoFileHeader tmpHeader;
 	memcpy(&tmpHeader, &fileHeader, sizeof(fileHeader));
 
@@ -255,6 +273,7 @@ unsigned int CDemoRecorder::WriteFileHeader(bool updateStreamLength)
 /** @brief Write the CPlayer::Statistics at the current position in the file. */
 void CDemoRecorder::WritePlayerStats()
 {
+	//ZoneScoped;
 	const size_t pos = demoStreams[isServerDemo].size();
 
 	for (PlayerStatistics& stats: playerStats) {
@@ -273,6 +292,7 @@ void CDemoRecorder::WritePlayerStats()
 /** @brief Write the winningAllyTeams at the current position in the file. */
 void CDemoRecorder::WriteWinnerList()
 {
+	//ZoneScoped;
 	if (fileHeader.numTeams == 0)
 		return;
 
@@ -291,6 +311,7 @@ void CDemoRecorder::WriteWinnerList()
 /** @brief Write the TeamStatistics at the current position in the file. */
 void CDemoRecorder::WriteTeamStats()
 {
+	//ZoneScoped;
 	const size_t pos = demoStreams[isServerDemo].size();
 
 	// Write array of dwords indicating number of TeamStatistics per team.

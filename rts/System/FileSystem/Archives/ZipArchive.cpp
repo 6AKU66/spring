@@ -10,15 +10,19 @@
 #include "System/StringUtil.h"
 #include "System/Log/ILog.h"
 
+#include <tracy/Tracy.hpp>
+
 
 IArchive* CZipArchiveFactory::DoCreateArchive(const std::string& filePath) const
 {
+	//ZoneScoped;
 	return new CZipArchive(filePath);
 }
 
 
 CZipArchive::CZipArchive(const std::string& archiveName): CBufferedArchive(archiveName)
 {
+	//ZoneScoped;
 	std::lock_guard<spring::mutex> lck(archiveLock);
 
 	if ((zip = unzOpen(archiveName.c_str())) == nullptr) {
@@ -63,6 +67,7 @@ CZipArchive::CZipArchive(const std::string& archiveName): CBufferedArchive(archi
 
 CZipArchive::~CZipArchive()
 {
+	//ZoneScoped;
 	std::lock_guard<spring::mutex> lck(archiveLock);
 
 	if (zip != nullptr) {
@@ -74,6 +79,7 @@ CZipArchive::~CZipArchive()
 
 void CZipArchive::FileInfo(unsigned int fid, std::string& name, int& size) const
 {
+	//ZoneScoped;
 	assert(IsFileId(fid));
 
 	name = fileEntries[fid].origName;
@@ -86,6 +92,7 @@ void CZipArchive::FileInfo(unsigned int fid, std::string& name, int& size) const
 // than one file at a time
 int CZipArchive::GetFileImpl(unsigned int fid, std::vector<std::uint8_t>& buffer)
 {
+	//ZoneScoped;
 	// Prevent opening files on missing/invalid archives
 	if (zip == nullptr)
 		return -4;

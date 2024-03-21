@@ -13,6 +13,8 @@
 #include "LogUtil.h"
 #include "System/MainDefines.h"
 
+#include <tracy/Tracy.hpp>
+
 #define MAX_LOG_SINKS 8
 
 namespace log_formatter {
@@ -51,16 +53,20 @@ namespace log_formatter {
 
 
 	bool insert_sink(log_sink_ptr sink) {
+	//ZoneScoped;
 		return (array_insert(sinks, sink, numSinks));
 	}
 	bool remove_sink(log_sink_ptr sink) {
+	//ZoneScoped;
 		return (array_remove(sinks, sink, numSinks));
 	}
 
 	bool insert_func(log_cleanup_ptr func) {
+	//ZoneScoped;
 		return (array_insert(cleanupFuncs, func, numFuncs));
 	}
 	bool remove_func(log_cleanup_ptr func) {
+	//ZoneScoped;
 		return (array_remove(cleanupFuncs, func, numFuncs));
 	}
 }
@@ -94,6 +100,7 @@ void log_backend_unregisterCleanup(log_cleanup_ptr cleanupFunc) { log_formatter:
 // formats and routes the record to all sinks
 void log_backend_record(int level, const char* section, const char* fmt, va_list arguments)
 {
+	//ZoneScoped;
 	const auto& sinks = log_formatter::sinks;
 
 	if (log_formatter::numSinks == 0)
@@ -130,6 +137,7 @@ void log_backend_record(int level, const char* section, const char* fmt, va_list
 
 /// Passes on a cleanup request to all sinks
 void log_backend_cleanup() {
+	//ZoneScoped;
 	const auto& funcs = log_formatter::cleanupFuncs;
 
 	for (size_t i = 0; i < log_formatter::numFuncs; i++) {

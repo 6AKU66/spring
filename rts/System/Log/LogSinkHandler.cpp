@@ -6,17 +6,21 @@
 #include <string>
 #include <cassert>
 
+#include <tracy/Tracy.hpp>
+
 
 
 // forwards a log entry to all ILogSinks (e.g. InfoConsole) added to the handler
 static void log_sink_record_logSinkHandler(int level, const char* section, const char* record)
 {
+	//ZoneScoped;
 	logSinkHandler.RecordLogMessage(level, (section == nullptr) ? "" : section, record);
 }
 
 
 
 void LogSinkHandler::AddSink(ILogSink* logSink) {
+	//ZoneScoped;
 	assert(logSink != nullptr);
 
 	if (sinks.empty())
@@ -26,6 +30,7 @@ void LogSinkHandler::AddSink(ILogSink* logSink) {
 }
 
 void LogSinkHandler::RemoveSink(ILogSink* logSink) {
+	//ZoneScoped;
 	assert(logSink != nullptr);
 	sinks.erase(logSink);
 
@@ -40,6 +45,7 @@ void LogSinkHandler::RecordLogMessage(
 	const std::string& section,
 	const std::string& message
 ) {
+	//ZoneScoped;
 	if (!sinking)
 		return;
 

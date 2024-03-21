@@ -31,6 +31,8 @@
 #include "System/Platform/Misc.h"
 #include "System/SafeUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 CONFIG(std::string, SpringData)
 	.defaultValue("")
 	.description("List of additional data-directories, separated by ';' on Windows and ':' on other OSs")
@@ -44,6 +46,7 @@ CONFIG(std::string, SpringDataRoot)
 
 static inline std::string GetSpringBinaryName()
 {
+	//ZoneScoped;
 #if defined(_WIN32)
 	return "spring.exe";
 #else
@@ -53,6 +56,7 @@ static inline std::string GetSpringBinaryName()
 
 static inline std::string GetUnitsyncLibName()
 {
+	//ZoneScoped;
 #if   defined(_WIN32)
 	return "unitsync.dll";
 #elif defined(__APPLE__)
@@ -65,6 +69,7 @@ static inline std::string GetUnitsyncLibName()
 
 static std::string GetBinaryLocation()
 {
+	//ZoneScoped;
 #if  defined(UNITSYNC)
 	return Platform::GetModulePath();
 #else
@@ -75,6 +80,7 @@ static std::string GetBinaryLocation()
 
 static inline void SplitColonString(const std::string& str, const std::function<void(const std::string&)>& cbf)
 {
+	//ZoneScoped;
 	size_t prev_colon = 0;
 	size_t colon;
 
@@ -91,18 +97,21 @@ static inline void SplitColonString(const std::string& str, const std::function<
 
 DataDir::DataDir(const std::string& path): path(path)
 {
+	//ZoneScoped;
 	FileSystem::EnsurePathSepAtEnd(this->path);
 }
 
 
 DataDirLocater::DataDirLocater()
 {
+	//ZoneScoped;
 	UpdateIsolationModeByEnvVar();
 }
 
 
 void DataDirLocater::UpdateIsolationModeByEnvVar()
 {
+	//ZoneScoped;
 	isolationMode = false;
 	isolationModeDir = "";
 
@@ -122,12 +131,14 @@ void DataDirLocater::UpdateIsolationModeByEnvVar()
 
 const std::vector<DataDir>& DataDirLocater::GetDataDirs() const
 {
+	//ZoneScoped;
 	assert(!dataDirs.empty());
 	return dataDirs;
 }
 
 std::string DataDirLocater::SubstEnvVars(const std::string& in) const
 {
+	//ZoneScoped;
 	std::string out;
 
 #ifdef _WIN32
@@ -167,6 +178,7 @@ std::string DataDirLocater::SubstEnvVars(const std::string& in) const
 
 void DataDirLocater::AddDirs(const std::string& dirs)
 {
+	//ZoneScoped;
 	if (dirs.empty())
 		return;
 
@@ -175,6 +187,7 @@ void DataDirLocater::AddDirs(const std::string& dirs)
 
 void DataDirLocater::AddDir(const std::string& dir)
 {
+	//ZoneScoped;
 	if (dir.empty())
 		return;
 
@@ -192,6 +205,7 @@ void DataDirLocater::AddDir(const std::string& dir)
 
 bool DataDirLocater::DeterminePermissions(DataDir* dataDir)
 {
+	//ZoneScoped;
 #ifndef _WIN32
 	if ((dataDir->path.c_str()[0] != '/') || (dataDir->path.find("..") != std::string::npos))
 #else
@@ -206,6 +220,7 @@ bool DataDirLocater::DeterminePermissions(DataDir* dataDir)
 
 void DataDirLocater::FilterUsableDataDirs()
 {
+	//ZoneScoped;
 	std::vector<DataDir> newDatadirs;
 	std::string previous; // used to filter out consecutive duplicates
 	// (I did not bother filtering out non-consecutive duplicates because then
@@ -233,6 +248,7 @@ void DataDirLocater::FilterUsableDataDirs()
 
 bool DataDirLocater::IsWriteableDir(DataDir* dataDir)
 {
+	//ZoneScoped;
 	if (FileSystem::DirExists(dataDir->path))
 		return FileSystem::DirIsWritable(dataDir->path);
 
@@ -243,6 +259,7 @@ bool DataDirLocater::IsWriteableDir(DataDir* dataDir)
 
 void DataDirLocater::FindWriteableDataDir()
 {
+	//ZoneScoped;
 	writeDir = nullptr;
 
 	for (DataDir& d: dataDirs) {
@@ -258,11 +275,13 @@ void DataDirLocater::FindWriteableDataDir()
 
 void DataDirLocater::AddCurWorkDir()
 {
+	//ZoneScoped;
 	AddDir(Platform::GetOrigCWD());
 }
 
 void DataDirLocater::AddPortableDir()
 {
+	//ZoneScoped;
 	const std::string dd_curWorkDir = GetBinaryLocation();
 
 	// This is useful in case of multiple engine/unitsync versions installed
@@ -285,6 +304,7 @@ void DataDirLocater::AddPortableDir()
 
 void DataDirLocater::AddHomeDirs()
 {
+	//ZoneScoped;
 #ifdef _WIN32
 	// All MS Windows variants
 
@@ -320,6 +340,7 @@ void DataDirLocater::AddHomeDirs()
 
 void DataDirLocater::AddEtcDirs()
 {
+	//ZoneScoped;
 #ifndef _WIN32
 	// Linux, FreeBSD, Solaris, Apple non-bundle
 
@@ -353,6 +374,7 @@ void DataDirLocater::AddEtcDirs()
 
 void DataDirLocater::AddShareDirs()
 {
+	//ZoneScoped;
 	// always true under Windows and true for `multi-engine` setups under *nix
 	if (IsInstallDirDataDir())
 		AddDirs(GetBinaryLocation());
@@ -386,6 +408,7 @@ void DataDirLocater::AddShareDirs()
 
 void DataDirLocater::LocateDataDirs()
 {
+	//ZoneScoped;
 	// Construct the list of dataDirs from various sources.
 	// Note: The first dir added will be the writable data dir!
 	dataDirs.clear();
@@ -442,6 +465,7 @@ void DataDirLocater::LocateDataDirs()
 
 void DataDirLocater::Check()
 {
+	//ZoneScoped;
 	if (IsIsolationMode()) {
 		LOG("[DataDirLocater::%s] Isolation Mode!", __func__);
 	} else if (IsPortableMode()) {
@@ -476,6 +500,7 @@ void DataDirLocater::Check()
 
 void DataDirLocater::CreateCacheDir(const std::string& cacheDir)
 {
+	//ZoneScoped;
 	// tag the cache dir
 	if (!FileSystem::CreateDirectory(cacheDir))
 		return;
@@ -486,6 +511,7 @@ void DataDirLocater::CreateCacheDir(const std::string& cacheDir)
 
 void DataDirLocater::ChangeCwdToWriteDir()
 {
+	//ZoneScoped;
 	// for now, chdir to the data directory as a safety measure:
 	// Not only safety anymore, it's just easier if other code can safely assume that
 	// writeDir == current working directory
@@ -515,6 +541,7 @@ bool DataDirLocater::IsInstallDirDataDir()
 
 bool DataDirLocater::IsPortableMode()
 {
+	//ZoneScoped;
 	// Test 1
 	// Check if spring binary & unitsync library are in the same folder
 	if (!IsInstallDirDataDir())
@@ -538,6 +565,7 @@ bool DataDirLocater::IsPortableMode()
 
 bool DataDirLocater::LooksLikeMultiVersionDataDir(const std::string& dirPath)
 {
+	//ZoneScoped;
 	bool looksLikeDataDir = true;
 	const std::string dir = FileSystem::EnsurePathSepAtEnd(dirPath);
 
@@ -552,6 +580,7 @@ bool DataDirLocater::LooksLikeMultiVersionDataDir(const std::string& dirPath)
 
 std::string DataDirLocater::GetWriteDirPath() const
 {
+	//ZoneScoped;
 	if (writeDir == nullptr) {
 		LOG_L(L_ERROR, "[DataDirLocater::%s] called before DataDirLocater::LocateDataDirs()", __func__);
 		return "";
@@ -564,6 +593,7 @@ std::string DataDirLocater::GetWriteDirPath() const
 
 std::vector<std::string> DataDirLocater::GetDataDirPaths() const
 {
+	//ZoneScoped;
 	assert(!dataDirs.empty());
 	std::vector<std::string> dataDirPaths;
 
@@ -576,6 +606,7 @@ std::vector<std::string> DataDirLocater::GetDataDirPaths() const
 
 std::vector<std::string> DataDirLocater::GetDataDirRoots() const
 {
+	//ZoneScoped;
 	std::vector<std::string> dataDirRoots {"base", "maps", "games", "packages"};
 
 	SplitColonString(configHandler->GetString("SpringDataRoot"), [&](const std::string& dir) { dataDirRoots.push_back(dir); });
@@ -587,6 +618,7 @@ std::vector<std::string> DataDirLocater::GetDataDirRoots() const
 static DataDirLocater* instance = nullptr;
 DataDirLocater& DataDirLocater::GetInstance()
 {
+	//ZoneScoped;
 	if (instance == nullptr)
 		instance = new DataDirLocater();
 
@@ -595,6 +627,7 @@ DataDirLocater& DataDirLocater::GetInstance()
 
 void DataDirLocater::FreeInstance()
 {
+	//ZoneScoped;
 	spring::SafeDelete(instance);
 }
 

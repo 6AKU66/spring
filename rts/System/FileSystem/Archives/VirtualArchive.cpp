@@ -10,21 +10,26 @@
 #include "minizip/zip.h"
 #include <cassert>
 
+#include <tracy/Tracy.hpp>
+
 CVirtualArchiveFactory* virtualArchiveFactory;
 
 CVirtualArchiveFactory::CVirtualArchiveFactory() : IArchiveFactory("sva")
 {
+	//ZoneScoped;
 	virtualArchiveFactory = this;
 }
 
 CVirtualArchiveFactory::~CVirtualArchiveFactory()
 {
+	//ZoneScoped;
 	virtualArchiveFactory = nullptr;
 }
 
 
 CVirtualArchive* CVirtualArchiveFactory::AddArchive(const std::string& fileName)
 {
+	//ZoneScoped;
 	CVirtualArchive* archive = new CVirtualArchive(fileName);
 	archives.push_back(archive);
 	return archive;
@@ -32,6 +37,7 @@ CVirtualArchive* CVirtualArchiveFactory::AddArchive(const std::string& fileName)
 
 IArchive* CVirtualArchiveFactory::DoCreateArchive(const std::string& fileName) const
 {
+	//ZoneScoped;
 	const std::string baseName = FileSystem::GetBasename(fileName);
 
 	for (CVirtualArchive* archive: archives) {
@@ -44,6 +50,7 @@ IArchive* CVirtualArchiveFactory::DoCreateArchive(const std::string& fileName) c
 
 CVirtualArchiveOpen::CVirtualArchiveOpen(CVirtualArchive* archive, const std::string& fileName) : IArchive(fileName), archive(archive)
 {
+	//ZoneScoped;
 	// set subclass name index to archive's index (doesn't update while archive is open)
 	lcNameIndex = archive->GetNameIndex();
 }
@@ -51,16 +58,19 @@ CVirtualArchiveOpen::CVirtualArchiveOpen(CVirtualArchive* archive, const std::st
 
 unsigned int CVirtualArchiveOpen::NumFiles() const
 {
+	//ZoneScoped;
 	return archive->NumFiles();
 }
 
 bool CVirtualArchiveOpen::GetFile( unsigned int fid, std::vector<std::uint8_t>& buffer )
 {
+	//ZoneScoped;
 	return archive->GetFile(fid, buffer);
 }
 
 void CVirtualArchiveOpen::FileInfo( unsigned int fid, std::string& name, int& size ) const
 {
+	//ZoneScoped;
 	return archive->FileInfo(fid, name, size);
 }
 
@@ -68,12 +78,14 @@ void CVirtualArchiveOpen::FileInfo( unsigned int fid, std::string& name, int& si
 
 CVirtualArchiveOpen* CVirtualArchive::Open()
 {
+	//ZoneScoped;
 	return new CVirtualArchiveOpen(this, fileName);
 }
 
 
 bool CVirtualArchive::GetFile(unsigned int fid, std::vector<std::uint8_t>& buffer)
 {
+	//ZoneScoped;
 	if (fid >= files.size())
 		return false;
 
@@ -83,6 +95,7 @@ bool CVirtualArchive::GetFile(unsigned int fid, std::vector<std::uint8_t>& buffe
 
 void CVirtualArchive::FileInfo(unsigned int fid, std::string& name, int& size) const
 {
+	//ZoneScoped;
 	assert(fid < files.size());
 
 	name = files[fid].name;
@@ -91,6 +104,7 @@ void CVirtualArchive::FileInfo(unsigned int fid, std::string& name, int& size) c
 
 unsigned int CVirtualArchive::AddFile(const std::string& name)
 {
+	//ZoneScoped;
 	lcNameIndex[name] = files.size();
 	files.emplace_back(files.size(), name);
 
@@ -99,6 +113,7 @@ unsigned int CVirtualArchive::AddFile(const std::string& name)
 
 void CVirtualArchive::WriteToFile()
 {
+	//ZoneScoped;
 	const std::string zipFilePath = dataDirsAccess.LocateFile(fileName, FileQueryFlags::WRITE) + ".sdz";
 	LOG("Writing zip file for virtual archive %s to %s", fileName.c_str(), zipFilePath.c_str());
 
@@ -118,6 +133,7 @@ void CVirtualArchive::WriteToFile()
 
 void CVirtualFile::WriteZip(void* zf) const
 {
+	//ZoneScoped;
 	zipFile zip = static_cast<zipFile>(zf);
 
 	zipOpenNewFileInZip(zip, name.c_str(), nullptr, nullptr, 0, nullptr, 0, nullptr, Z_DEFLATED, Z_BEST_COMPRESSION);

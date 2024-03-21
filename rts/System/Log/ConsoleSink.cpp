@@ -12,6 +12,8 @@
 
 #include <cstdio>
 
+#include <tracy/Tracy.hpp>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,6 +31,7 @@ static bool colorizedOutput = false;
 
 
 void log_console_colorizedOutput(bool enable) {
+	//ZoneScoped;
 	colorizedOutput = enable;
 }
 
@@ -36,6 +39,7 @@ void log_console_colorizedOutput(bool enable) {
 /// Records a log entry
 static void log_sink_record_console(int level, const char* section, const char* record)
 {
+	//ZoneScoped;
 	char framePrefix[128] = {'\0'};
 	log_framePrefixer_createPrefix(framePrefix, sizeof(framePrefix));
 

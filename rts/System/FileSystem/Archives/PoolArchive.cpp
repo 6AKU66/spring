@@ -17,6 +17,8 @@
 #include "System/StringUtil.h"
 #include "System/Log/ILog.h"
 
+#include <tracy/Tracy.hpp>
+
 
 CPoolArchiveFactory::CPoolArchiveFactory(): IArchiveFactory("sdp")
 {
@@ -24,6 +26,7 @@ CPoolArchiveFactory::CPoolArchiveFactory(): IArchiveFactory("sdp")
 
 IArchive* CPoolArchiveFactory::DoCreateArchive(const std::string& filePath) const
 {
+	//ZoneScoped;
 	return new CPoolArchive(filePath);
 }
 
@@ -31,6 +34,7 @@ IArchive* CPoolArchiveFactory::DoCreateArchive(const std::string& filePath) cons
 
 static uint32_t parse_uint32(uint8_t c[4])
 {
+	//ZoneScoped;
 	uint32_t i = 0;
 	i = c[0] << 24 | i;
 	i = c[1] << 16 | i;
@@ -41,6 +45,7 @@ static uint32_t parse_uint32(uint8_t c[4])
 
 static bool gz_really_read(gzFile file, voidp buf, unsigned int len)
 {
+	//ZoneScoped;
 	return (gzread(file, reinterpret_cast<char*>(buf), len) == len);
 }
 
@@ -48,6 +53,7 @@ static bool gz_really_read(gzFile file, voidp buf, unsigned int len)
 
 CPoolArchive::CPoolArchive(const std::string& name): CBufferedArchive(name)
 {
+	//ZoneScoped;
 	memset(&dummyFileHash, 0, sizeof(dummyFileHash));
 
 	char c_name[255];
@@ -100,6 +106,7 @@ CPoolArchive::CPoolArchive(const std::string& name): CBufferedArchive(name)
 
 CPoolArchive::~CPoolArchive()
 {
+	//ZoneScoped;
 	const std::string& archiveFile = GetArchiveFile();
 	const std::pair<uint64_t, uint64_t>& sums = GetSums();
 
@@ -125,6 +132,7 @@ CPoolArchive::~CPoolArchive()
 
 int CPoolArchive::GetFileImpl(unsigned int fid, std::vector<std::uint8_t>& buffer)
 {
+	//ZoneScoped;
 	assert(IsFileId(fid));
 
 	FileData* f = &files[fid];

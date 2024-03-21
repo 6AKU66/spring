@@ -6,12 +6,15 @@
 
 #include <sstream>
 
+#include <tracy/Tracy.hpp>
+
 
 CSimpleParser::CSimpleParser(CFileHandler& fh)
 	: curPos(0)
 	, lineNumber(0)
 //	, inComment(false) // /* text */ comments are not implemented
 {
+	//ZoneScoped;
 	fh.LoadStringData(file);
 }
 
@@ -27,12 +30,14 @@ CSimpleParser::CSimpleParser(const std::string& filecontent)
 
 int CSimpleParser::GetLineNumber() const
 {
+	//ZoneScoped;
 	return lineNumber;
 }
 
 
 std::string CSimpleParser::GetLine()
 {
+	//ZoneScoped;
 	lineNumber++;
 	std::stringstream s;
 	while (curPos < file.size()) {
@@ -46,6 +51,7 @@ std::string CSimpleParser::GetLine()
 
 std::string CSimpleParser::GetCleanLine()
 {
+	//ZoneScoped;
 	std::string::size_type pos;
 	while (true) {
 		if (curPos >= file.size()) {
@@ -74,6 +80,7 @@ std::string CSimpleParser::GetCleanLine()
 
 std::vector<std::string> CSimpleParser::Tokenize(const std::string& line, int minWords)
 {
+	//ZoneScoped;
 	std::vector<std::string> words;
 	std::string::size_type start;
 	std::string::size_type end = 0;
@@ -111,6 +118,7 @@ std::vector<std::string> CSimpleParser::Tokenize(const std::string& line, int mi
 
 
 std::vector<std::string> CSimpleParser::Split(const std::string& str, const std::string& delimitters) {
+	//ZoneScoped;
 
 	std::vector<std::string> tokens;
 

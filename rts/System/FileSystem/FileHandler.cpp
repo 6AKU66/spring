@@ -24,6 +24,8 @@
 	#include "System/Platform/Misc.h"
 #endif
 
+	//ZoneScoped;
+
 using std::string;
 
 
@@ -33,6 +35,7 @@ using std::string;
 
 CFileHandler::CFileHandler(const char* fileName, const char* modes)
 {
+	//ZoneScoped;
 	Close();
 	Open(fileName, modes);
 }
@@ -40,6 +43,7 @@ CFileHandler::CFileHandler(const char* fileName, const char* modes)
 
 CFileHandler::CFileHandler(const string& fileName, const string& modes)
 {
+	//ZoneScoped;
 	Close();
 	Open(fileName, modes);
 }
@@ -50,6 +54,7 @@ CFileHandler::CFileHandler(const string& fileName, const string& modes)
 
 bool CFileHandler::TryReadFromPWD(const string& fileName)
 {
+	//ZoneScoped;
 #ifndef TOOLS
 	if (FileSystem::IsAbsolutePath(fileName))
 		return false;
@@ -71,6 +76,7 @@ bool CFileHandler::TryReadFromPWD(const string& fileName)
 
 bool CFileHandler::TryReadFromRawFS(const string& fileName)
 {
+	//ZoneScoped;
 #ifndef TOOLS
 	const string rawpath = dataDirsAccess.LocateFile(fileName);
 	ifs.open(rawpath.c_str(), std::ios::in | std::ios::binary);
@@ -88,6 +94,7 @@ bool CFileHandler::TryReadFromRawFS(const string& fileName)
 
 bool CFileHandler::TryReadFromVFS(const string& fileName, int section)
 {
+	//ZoneScoped;
 #ifndef TOOLS
 	if (vfsHandler == nullptr)
 		return (loadCode = -2, false);
@@ -106,6 +113,7 @@ bool CFileHandler::TryReadFromVFS(const string& fileName, int section)
 
 void CFileHandler::Open(const string& fileName, const string& modes)
 {
+	//ZoneScoped;
 	this->fileName = fileName;
 	for (char c: modes) {
 #ifndef TOOLS
@@ -124,6 +132,7 @@ void CFileHandler::Open(const string& fileName, const string& modes)
 
 void CFileHandler::Close()
 {
+	//ZoneScoped;
 	filePos = 0;
 	fileSize = -1;
 	loadCode = -3;
@@ -138,6 +147,7 @@ void CFileHandler::Close()
 
 bool CFileHandler::FileExists(const std::string& filePath, const std::string& modes)
 {
+	//ZoneScoped;
 	for (char c: modes) {
 #ifndef TOOLS
 		CVFSHandler::Section section = CVFSHandler::GetModeSection(c);
@@ -168,6 +178,7 @@ bool CFileHandler::FileExists(const std::string& filePath, const std::string& mo
 
 int CFileHandler::Read(void* buf, int length)
 {
+	//ZoneScoped;
 	if (ifs.is_open()) {
 		ifs.read(static_cast<char*>(buf), length);
 		return ifs.gcount();
@@ -191,6 +202,7 @@ int CFileHandler::Read(void* buf, int length)
 
 int CFileHandler::ReadString(void* buf, int length)
 {
+	//ZoneScoped;
 	assert(buf != nullptr);
 	assert(length > 0);
 	const int pos = GetPos();
@@ -210,6 +222,7 @@ int CFileHandler::ReadString(void* buf, int length)
 
 void CFileHandler::Seek(int length, std::ios_base::seekdir where)
 {
+	//ZoneScoped;
 	if (ifs.is_open()) {
 		// Status bits must be cleared before seeking, otherwise it might fail
 		// in the common case of EOF
@@ -231,6 +244,7 @@ void CFileHandler::Seek(int length, std::ios_base::seekdir where)
 
 bool CFileHandler::Eof() const
 {
+	//ZoneScoped;
 	if (ifs.is_open())
 		return ifs.eof();
 
@@ -243,6 +257,7 @@ bool CFileHandler::Eof() const
 
 int CFileHandler::GetPos()
 {
+	//ZoneScoped;
 	if (ifs.is_open())
 		return ifs.tellg();
 
@@ -252,6 +267,7 @@ int CFileHandler::GetPos()
 
 bool CFileHandler::LoadStringData(string& data)
 {
+	//ZoneScoped;
 	if (!FileExists())
 		return false;
 
@@ -266,11 +282,13 @@ bool CFileHandler::LoadStringData(string& data)
 
 std::string CFileHandler::GetFileExt() const
 {
+	//ZoneScoped;
 	return FileSystem::GetExtension(fileName);
 }
 
 std::string CFileHandler::GetFileAbsolutePath(const std::string& filePath, const std::string& modes)
 {
+	//ZoneScoped;
 	for (char c: modes) {
 #ifndef TOOLS
 		CVFSHandler::Section section = CVFSHandler::GetModeSection(c);
@@ -300,6 +318,7 @@ std::string CFileHandler::GetFileAbsolutePath(const std::string& filePath, const
 
 std::string CFileHandler::GetArchiveContainingFile(const std::string& filePath, const std::string& modes)
 {
+	//ZoneScoped;
 	for (char c: modes) {
 #ifndef TOOLS
 		CVFSHandler::Section section = CVFSHandler::GetModeSection(c);
@@ -331,6 +350,7 @@ std::vector<string> CFileHandler::DirList(
 	const string& modes,
 	bool recursive
 ) {
+	//ZoneScoped;
 	std::vector<string> fileSet;
 
 #ifndef TOOLS
@@ -360,6 +380,7 @@ bool CFileHandler::InsertRawFiles(
 	const string& pattern,
 	bool recursive
 ) {
+	//ZoneScoped;
 #ifndef TOOLS
 	const int flags = recursive * FileQueryFlags::RECURSE;
 	std::vector<string> found = dataDirsAccess.FindFiles(path, pattern, flags);
@@ -382,6 +403,7 @@ bool CFileHandler::InsertVFSFiles(
 	bool recursive,
 	int section
 ) {
+	//ZoneScoped;
 #ifndef TOOLS
 	if (vfsHandler == nullptr)
 		return false;
@@ -415,6 +437,7 @@ std::vector<string> CFileHandler::SubDirs(
 	const string& modes,
 	bool recursive
 ) {
+	//ZoneScoped;
 	std::vector<string> dirSet;
 
 #ifndef TOOLS
@@ -443,6 +466,7 @@ bool CFileHandler::InsertRawDirs(
 	const string& pattern,
 	bool recursive
 ) {
+	//ZoneScoped;
 #ifndef TOOLS
 	const int flags = FileQueryFlags::ONLY_DIRS | (recursive * FileQueryFlags::RECURSE);
 	std::vector<string> found = dataDirsAccess.FindFiles(path, pattern, flags);
@@ -465,6 +489,7 @@ bool CFileHandler::InsertVFSDirs(
 	bool recursive,
 	int section
 ) {
+	//ZoneScoped;
 #ifndef TOOLS
 	if (vfsHandler == nullptr)
 		return false;
@@ -494,6 +519,7 @@ bool CFileHandler::InsertVFSDirs(
 
 string CFileHandler::AllowModes(const string& modes, const string& allowed)
 {
+	//ZoneScoped;
 	string newModes;
 	for (char mode: modes) {
 		if (allowed.find(mode) != string::npos) {
@@ -505,6 +531,7 @@ string CFileHandler::AllowModes(const string& modes, const string& allowed)
 
 string CFileHandler::ForbidModes(const string& modes, const string& forbidden)
 {
+	//ZoneScoped;
 	string newModes;
 	for (char mode: modes) {
 		if (forbidden.find(mode) == string::npos) {

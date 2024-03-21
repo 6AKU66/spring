@@ -11,6 +11,8 @@
 
 #include "KeyInput.h"
 
+#include <tracy/Tracy.hpp>
+
 /**
 * @brief keys
 *
@@ -26,6 +28,7 @@ namespace KeyInput {
 
 
 	bool IsKeyPressed(int keyCode) {
+	//ZoneScoped;
 		const auto& pred = keyCmp;
 		const auto  iter = std::lower_bound(keyVec.begin(), keyVec.end(), Key{keyCode, false}, pred);
 
@@ -33,6 +36,7 @@ namespace KeyInput {
 	}
 
 	bool IsScanPressed(int scanCode) {
+	//ZoneScoped;
 		const auto& pred = keyCmp;
 		const auto  iter = std::lower_bound(scanVec.begin(), scanVec.end(), Key{scanCode, false}, pred);
 
@@ -40,6 +44,7 @@ namespace KeyInput {
 	}
 
 	void SetScanPressed(int scanCode, bool isPressed) {
+	//ZoneScoped;
 		const auto& pred = keyCmp;
 		const auto  iter = std::lower_bound(scanVec.begin(), scanVec.end(), Key{scanCode, false}, pred);
 
@@ -51,6 +56,7 @@ namespace KeyInput {
 	}
 
 	void SetKeyPressed(int keyCode, bool isPressed) {
+	//ZoneScoped;
 		const auto& pred = keyCmp;
 		const auto  iter = std::lower_bound(keyVec.begin(), keyVec.end(), Key{keyCode, false}, pred);
 
@@ -62,6 +68,7 @@ namespace KeyInput {
 	}
 
 	void SetKeyModState(int mod, bool isPressed) {
+	//ZoneScoped;
 		if (isPressed) {
 			keyMods = SDL_Keymod(keyMods | mod);
 		} else {
@@ -70,6 +77,7 @@ namespace KeyInput {
 	}
 
 	bool GetKeyModState(int mod) {
+	//ZoneScoped;
 		return (keyMods & mod);
 	}
 
@@ -78,6 +86,7 @@ namespace KeyInput {
 	*/
 	void Update(int fakeMetaKey)
 	{
+	//ZoneScoped;
 		int numKeys = 0;
 		const uint8_t* kbState = SDL_GetKeyboardState(&numKeys);
 
@@ -112,16 +121,19 @@ namespace KeyInput {
 
 	const std::vector<Key>& GetPressedKeys()
 	{
+	//ZoneScoped;
 		return keyVec;
 	}
 
 	const std::vector<Key>& GetPressedScans()
 	{
+	//ZoneScoped;
 		return scanVec;
 	}
 
 	void ReleaseAllKeys()
 	{
+	//ZoneScoped;
 		for (const auto& key: keyVec) {
 			auto keycode  = (SDL_Keycode)key.first;
 			auto scancode = SDL_GetScancodeFromKey(keycode);
