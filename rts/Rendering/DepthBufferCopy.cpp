@@ -8,17 +8,21 @@
 #include "Rendering/GL/myGL.h"
 #include "Rendering/GL/FBO.h"
 
+#include <tracy/Tracy.hpp>
+
 std::unique_ptr<DepthBufferCopy> depthBufferCopy = nullptr;
 
 DepthBufferCopy::DepthBufferCopy()
 	: CEventClient("[DepthBufferCopy]", 012345, false)
 {
+	//ZoneScoped;
 	eventHandler.AddClient(this);
 	ViewResize();
 }
 
 DepthBufferCopy::~DepthBufferCopy()
 {
+	//ZoneScoped;
 	assert(consumersCount[false] == 0);
 	assert(consumersCount[true ] == 0);
 
@@ -28,16 +32,19 @@ DepthBufferCopy::~DepthBufferCopy()
 
 void DepthBufferCopy::Init()
 {
+	//ZoneScoped;
 	depthBufferCopy = std::make_unique<DepthBufferCopy>();
 }
 
 void DepthBufferCopy::Kill()
 {
+	//ZoneScoped;
 	depthBufferCopy = nullptr;
 }
 
 void DepthBufferCopy::AddConsumer(bool ms)
 {
+	//ZoneScoped;
 	if (consumersCount[ms] == 0)
 		CreateTextureAndFBO(ms);
 
@@ -46,6 +53,7 @@ void DepthBufferCopy::AddConsumer(bool ms)
 
 void DepthBufferCopy::DelConsumer(bool ms)
 {
+	//ZoneScoped;
 	consumersCount[ms]--;
 
 	if (consumersCount[ms] == 0)
@@ -54,6 +62,7 @@ void DepthBufferCopy::DelConsumer(bool ms)
 
 void DepthBufferCopy::ViewResize()
 {
+	//ZoneScoped;
 	for (size_t ms = 0; ms < depthFBOs.size(); ++ms) {
 		if (consumersCount[ms] == 0)
 			continue;
@@ -63,12 +72,14 @@ void DepthBufferCopy::ViewResize()
 }
 
 bool DepthBufferCopy::IsValid(bool ms) const {
+	//ZoneScoped;
 	const auto& depthFBO = depthFBOs[ms];
 	return depthFBO && depthFBO->IsValid() && depthTextures[ms] > 0;
 }
 
 void DepthBufferCopy::MakeDepthBufferCopy() const
 {
+	//ZoneScoped;
 	const std::array<int, 4> srcScreenRect = { globalRendering->viewPosX, globalRendering->viewPosY, globalRendering->viewPosX + globalRendering->viewSizeX, globalRendering->viewPosY + globalRendering->viewSizeY };
 	const std::array<int, 4> dstScreenRect = { 0, 0, globalRendering->viewSizeX, globalRendering->viewSizeY };
 
@@ -91,6 +102,7 @@ void DepthBufferCopy::MakeDepthBufferCopy() const
 
 void DepthBufferCopy::DestroyTextureAndFBO(bool ms)
 {
+	//ZoneScoped;
 	auto& depthFBO = depthFBOs[ms];
 	auto& depthTexture = depthTextures[ms];
 
@@ -114,6 +126,7 @@ void DepthBufferCopy::DestroyTextureAndFBO(bool ms)
 
 void DepthBufferCopy::CreateTextureAndFBO(bool ms)
 {
+	//ZoneScoped;
 	auto& depthTexture = depthTextures[ms];
 	auto& depthFBO     = depthFBOs[ms];
 	const auto target = ms ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
