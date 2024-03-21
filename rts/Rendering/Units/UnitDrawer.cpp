@@ -75,6 +75,7 @@ class CUnitDrawerHelper
 {
 public:
 	static void LoadUnitExplosionGenerators() {
+		//ZoneScoped;
 		using F = decltype(&UnitDef::AddModelExpGenID);
 		using T = decltype(UnitDef::modelCEGTags);
 
@@ -99,6 +100,7 @@ public:
 	}
 
 	static inline float GetUnitIconScale(const CUnit* unit) {
+		//ZoneScoped;
 		float scale = unit->myIcon->GetSize();
 
 		if (!minimap->UseUnitIcons())
@@ -1523,6 +1525,7 @@ void CUnitDrawerGL4::DrawOpaqueObjects(int modelType, bool drawReflection, bool 
 
 void CUnitDrawerGL4::DrawAlphaObjects(int modelType, bool drawReflection, bool drawRefraction) const
 {
+	//ZoneScoped;
 	const uint8_t thisPassMask =
 		(1 - (drawReflection || drawRefraction)) * DrawFlags::SO_ALPHAF_FLAG +
 		(drawReflection * DrawFlags::SO_REFLEC_FLAG) +
@@ -1902,4 +1905,3 @@ void CUnitDrawerGL4::DrawUnitModelBeingBuiltOpaque(const CUnit* unit, bool noLua
 
 	glPopAttrib();
 }
-

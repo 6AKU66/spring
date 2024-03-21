@@ -15,6 +15,8 @@
 #include "Textures/Bitmap.h"
 #include "System/Exceptions.h"
 
+#include <tracy/Tracy.hpp>
+
 namespace icon {
 
 CIconHandler iconHandler;
@@ -29,6 +31,7 @@ static CIconData dummyIconData[CIconHandler::ICON_DATA_OFFSET];
 
 void CIconHandler::Kill()
 {
+	//ZoneScoped;
 	glDeleteTextures(1, &defTexID);
 
 	defTexID = 0;
@@ -47,6 +50,7 @@ void CIconHandler::Kill()
 
 bool CIconHandler::LoadIcons(const std::string& filename)
 {
+	//ZoneScoped;
 	LuaParser luaParser(filename, SPRING_VFS_MOD_BASE, SPRING_VFS_MOD_BASE);
 
 	if (!luaParser.Execute())
@@ -92,6 +96,7 @@ bool CIconHandler::AddIcon(
 	float distance,
 	bool radAdj
 ) {
+	//ZoneScoped;
 	if (numIcons == iconData.size()) {
 		LOG_L(L_DEBUG, "[IconHandler::%s] too many icons added (maximum=%u)", __func__, numIcons);
 		return false;
@@ -146,6 +151,7 @@ bool CIconHandler::AddIcon(
 
 bool CIconHandler::FreeIcon(const std::string& iconName)
 {
+	//ZoneScoped;
 	const auto it = iconMap.find(iconName);
 
 	if (it == iconMap.end())
@@ -163,6 +169,7 @@ bool CIconHandler::FreeIcon(const std::string& iconName)
 
 CIcon CIconHandler::GetIcon(const std::string& iconName) const
 {
+	//ZoneScoped;
 	const auto it = iconMap.find(iconName);
 
 	if (it == iconMap.end())
@@ -177,6 +184,7 @@ const CIconData* CIconHandler::GetDefaultIconData() { return &dummyIconData[DEFA
 
 unsigned int CIconHandler::GetDefaultTexture()
 {
+	//ZoneScoped;
 	// FIXME: just use a PNG ?
 
 	if (defTexID != 0)
@@ -267,6 +275,7 @@ CIcon& CIcon::operator=(const CIcon& icon)
 
 
 void CIcon::UnRefData(CIconHandler* ih) {
+	//ZoneScoped;
 	if (ih != nullptr)
 		ih->GetIconDataMut(dataIdx)->UnRef();
 
@@ -327,6 +336,7 @@ CIconData::~CIconData()
 
 void CIconData::CopyData(const CIconData* iconData)
 {
+	//ZoneScoped;
 	name         = iconData->name;
 	texID        = iconData->texID;
 	size         = iconData->size;
@@ -340,12 +350,14 @@ void CIconData::CopyData(const CIconData* iconData)
 
 void CIconData::BindTexture() const
 {
+	//ZoneScoped;
 	glBindTexture(GL_TEXTURE_2D, texID);
 }
 
 
 void CIconData::Draw(float x0, float y0, float x1, float y1) const
 {
+	//ZoneScoped;
 	glBindTexture(GL_TEXTURE_2D, texID);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f); glVertex2f(x0, y0);
@@ -356,4 +368,3 @@ void CIconData::Draw(float x0, float y0, float x1, float y1) const
 }
 
 }
-
