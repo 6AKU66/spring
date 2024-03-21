@@ -5,6 +5,8 @@
 
 #include <cassert>
 
+#include <tracy/Tracy.hpp>
+
 CR_BIND(CRectangleOverlapHandler, )
 CR_REG_METADATA(CRectangleOverlapHandler, (
 	CR_MEMBER(rectangles),
@@ -17,6 +19,7 @@ size_t CRectangleOverlapHandler::statsOptimSize = 0;
 
 CRectangleOverlapHandler::~CRectangleOverlapHandler()
 {
+	//ZoneScoped;
 	float reduction = 0.0f;
 
 	if (statsTotalSize > 0)
@@ -28,6 +31,7 @@ CRectangleOverlapHandler::~CRectangleOverlapHandler()
 
 size_t CRectangleOverlapHandler::GetTotalArea() const
 {
+	//ZoneScoped;
 	size_t ret = 0;
 	for (const SRectangle& r: rectangles) {
 		ret += r.GetArea();
@@ -38,6 +42,7 @@ size_t CRectangleOverlapHandler::GetTotalArea() const
 
 void CRectangleOverlapHandler::Process(bool noSplit)
 {
+	//ZoneScoped;
 	if (!needsUpdate)
 		return;
 
@@ -58,6 +63,7 @@ void CRectangleOverlapHandler::Process(bool noSplit)
 
 void CRectangleOverlapHandler::StageDedup()
 {
+	//ZoneScoped;
 	for (size_t i = frontIdx, n = rectangles.size(); i < n; i++) {
 		for (size_t j = i + 1; j < n; j++) {
 			if (rectangles[i] == rectangles[j]) {
@@ -70,6 +76,7 @@ void CRectangleOverlapHandler::StageDedup()
 
 void CRectangleOverlapHandler::StageMerge()
 {
+	//ZoneScoped;
 	std::sort(begin(), end());
 
 	for (size_t i = frontIdx, n = rectangles.size(); i < n; i++) {
@@ -94,6 +101,7 @@ void CRectangleOverlapHandler::StageMerge()
 
 void CRectangleOverlapHandler::StageOverlap()
 {
+	//ZoneScoped;
 	// fix overlap
 	// NOTE: unlike HandleMerge, HandleOverlapping can add new rects
 	for (size_t i = frontIdx; i < rectangles.size(); i++) {
@@ -132,6 +140,7 @@ void CRectangleOverlapHandler::StageOverlap()
 
 void CRectangleOverlapHandler::StageSplitTooLarge()
 {
+	//ZoneScoped;
 	// split too-large rects
 	for (size_t i = frontIdx; i < rectangles.size(); i++) {
 		SRectangle& rect1 = rectangles[i];
@@ -161,6 +170,7 @@ void CRectangleOverlapHandler::StageSplitTooLarge()
 
 inline std::bitset<4> CRectangleOverlapHandler::GetEdgesInRect(const SRectangle& rect1, const SRectangle& rect2)
 {
+	//ZoneScoped;
 	std::bitset<4> bits;
 	bits[0] = (rect2.x1 >= rect1.x1) && (rect2.x1 <= rect1.x2);
 	bits[1] = (rect2.x2 >= rect1.x1) && (rect2.x2 <= rect1.x2);
@@ -172,6 +182,7 @@ inline std::bitset<4> CRectangleOverlapHandler::GetEdgesInRect(const SRectangle&
 
 inline std::bitset<4> CRectangleOverlapHandler::GetSharedEdges(const SRectangle& rect1, const SRectangle& rect2)
 {
+	//ZoneScoped;
 	std::bitset<4> bits;
 	bits[0] = (rect2.x1 == rect1.x1) || (rect2.x1 == rect1.x2);
 	bits[1] = (rect2.x2 == rect1.x1) || (rect2.x2 == rect1.x2);
@@ -183,6 +194,7 @@ inline std::bitset<4> CRectangleOverlapHandler::GetSharedEdges(const SRectangle&
 
 inline bool CRectangleOverlapHandler::AreMergable(const SRectangle& rect1, const SRectangle& rect2)
 {
+	//ZoneScoped;
 	if (!rect1.CheckOverlap(rect2))
 		return false;
 
@@ -193,6 +205,7 @@ inline bool CRectangleOverlapHandler::AreMergable(const SRectangle& rect1, const
 
 bool CRectangleOverlapHandler::HandleMerge(SRectangle& rect1, SRectangle& rect2)
 {
+	//ZoneScoped;
 	//  ____
 	// |    |_____
 	// |    |     |  etc.
@@ -243,6 +256,7 @@ bool CRectangleOverlapHandler::HandleMerge(SRectangle& rect1, SRectangle& rect2)
 
 int CRectangleOverlapHandler::HandleOverlapping(SRectangle* rect1, SRectangle* rect2)
 {
+	//ZoneScoped;
 	//  ______
 	// |      |  ___
 	// |      | |   |

@@ -16,6 +16,8 @@
 #include <algorithm>
 #include <climits>
 
+#include <tracy/Tracy.hpp>
+
 
 bool CTeamHighlight::highlight = false;
 
@@ -23,6 +25,7 @@ static spring::unsynced_map<int, int> oldColors;
 
 void CTeamHighlight::Enable(unsigned currentTime)
 {
+	//ZoneScoped;
 	if (!highlight)
 		return;
 
@@ -48,6 +51,7 @@ void CTeamHighlight::Enable(unsigned currentTime)
 
 void CTeamHighlight::Disable()
 {
+	//ZoneScoped;
 	if (oldColors.empty())
 		return;
 
@@ -60,6 +64,7 @@ void CTeamHighlight::Disable()
 }
 
 void CTeamHighlight::Update(int frameNum) {
+	//ZoneScoped;
 	if ((frameNum % TEAM_SLOWUPDATE_RATE))
 		return;
 

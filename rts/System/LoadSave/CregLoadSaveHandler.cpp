@@ -48,6 +48,8 @@
 #include "System/Exceptions.h"
 #include "System/Log/ILog.h"
 
+#include <tracy/Tracy.hpp>
+
 #define MAX_STRING_SIZE (1 << 19) // 512kB excluding null-term
 
 
@@ -75,6 +77,7 @@ CR_REG_METADATA(CGameStateCollector, (
 
 void CGameStateCollector::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	s->SerializeObjectInstance(gs, gs->GetClass());
 	s->SerializeObjectInstance(gu, gu->GetClass());
 	s->SerializeObjectInstance(gameSetup, gameSetup->GetClass());
@@ -113,6 +116,7 @@ void CGameStateCollector::Serialize(creg::ISerializer* s)
 
 class CLuaStateCollector
 {
+	//ZoneScoped;
 	CR_DECLARE_STRUCT(CLuaStateCollector)
 
 public:
@@ -148,6 +152,7 @@ CR_REG_METADATA(CLuaStateCollector, (
 ))
 
 void CLuaStateCollector::Read(const CSplitLuaHandle* handle) {
+	//ZoneScoped;
 	valid = (handle != nullptr) && handle->syncedLuaHandle.IsValid();
 	if (!valid)
 		return;
@@ -169,6 +174,7 @@ void CLuaStateCollector::Read(const CSplitLuaHandle* handle) {
 }
 
 void CLuaStateCollector::Write(CSplitLuaHandle* handle) {
+	//ZoneScoped;
 	if ((handle == nullptr) || !handle->syncedLuaHandle.IsValid() || !valid)
 		return;
 
@@ -182,6 +188,7 @@ void CLuaStateCollector::Write(CSplitLuaHandle* handle) {
 }
 
 void CLuaStateCollector::Serialize(creg::ISerializer* s) {
+	//ZoneScoped;
 	if (!valid)
 		return;
 
@@ -191,6 +198,7 @@ void CLuaStateCollector::Serialize(creg::ISerializer* s) {
 
 static void WriteString(std::ostream& s, const std::string& str)
 {
+	//ZoneScoped;
 	if (str.length() > MAX_STRING_SIZE)
 		throw content_error("[creg::WriteString] string \"" + str + "\" too long");
 
@@ -199,6 +207,7 @@ static void WriteString(std::ostream& s, const std::string& str)
 
 static void PrintSize(const char* txt, int size)
 {
+	//ZoneScoped;
 	if (size > (1024 * 1024 * 1024)) {
 		LOG("%s %.1f GB", txt, size / (1024.0f * 1024 * 1024));
 	} else if (size >  (1024 * 1024)) {
@@ -213,6 +222,7 @@ static void PrintSize(const char* txt, int size)
 
 static void ReadString(std::istream& s, std::string& str)
 {
+	//ZoneScoped;
 	char cstr[MAX_STRING_SIZE + 1];
 	s.getline(cstr, sizeof(cstr) - 1, 0);
 	str.clear();
@@ -222,6 +232,7 @@ static void ReadString(std::istream& s, std::string& str)
 
 static void SaveLuaState(CSplitLuaHandle* handle, creg::COutputStreamSerializer& os, std::stringstream& oss)
 {
+	//ZoneScoped;
 	CLuaStateCollector lsc;
 	lsc.Read(handle);
 	os.SavePackage(&oss, &lsc, lsc.GetClass());
@@ -230,6 +241,7 @@ static void SaveLuaState(CSplitLuaHandle* handle, creg::COutputStreamSerializer&
 
 static void LoadLuaState(CSplitLuaHandle* handle, creg::CInputStreamSerializer& is, std::stringstream& iss)
 {
+	//ZoneScoped;
 	void* plsc;
 	creg::Class* plsccls = nullptr;
 
@@ -248,6 +260,7 @@ static void LoadLuaState(CSplitLuaHandle* handle, creg::CInputStreamSerializer& 
 
 void CCregLoadSaveHandler::SaveGame(const std::string& path)
 {
+	//ZoneScoped;
 #ifdef USING_CREG
 	LOG("[LSH::%s] saving game to \"%s\"", __func__, path.c_str());
 
@@ -338,6 +351,7 @@ void CCregLoadSaveHandler::SaveGame(const std::string& path)
 /// loads the data (map&mod-name,setup-script) needed by PreGame
 bool CCregLoadSaveHandler::LoadGameStartInfo(const std::string& path)
 {
+	//ZoneScoped;
 	CGZFileHandler saveFile(dataDirsAccess.LocateFile(FindSaveFile(path)), SPRING_VFS_RAW_FIRST);
 
 	std::stringbuf* sbuf = iss.rdbuf();
@@ -369,6 +383,7 @@ bool CCregLoadSaveHandler::LoadGameStartInfo(const std::string& path)
 /// this should be called on frame 0 when the game has started
 void CCregLoadSaveHandler::LoadGame()
 {
+	//ZoneScoped;
 #ifdef USING_CREG
 	ENTER_SYNCED_CODE();
 	{
@@ -401,6 +416,7 @@ void CCregLoadSaveHandler::LoadGame()
 /// this should be called on frame 0 when the game has started
 void CCregLoadSaveHandler::LoadAIData()
 {
+	//ZoneScoped;
 #ifdef USING_CREG
 	ENTER_SYNCED_CODE();
 

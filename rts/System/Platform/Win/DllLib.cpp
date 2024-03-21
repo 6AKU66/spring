@@ -7,11 +7,14 @@
 
 #include "DllLib.h"
 
+#include <tracy/Tracy.hpp>
+
 /**
  * Attempts to LoadLibrary on the given DLL
  */
 DllLib::DllLib(const char* fileName) : dll(NULL)
 {
+	//ZoneScoped;
 	dll = LoadLibrary(fileName);
 }
 
@@ -19,12 +22,14 @@ DllLib::DllLib(const char* fileName) : dll(NULL)
  * Does a FreeLibrary on the given DLL
  */
 void DllLib::Unload() {
+	//ZoneScoped;
 
 	FreeLibrary(dll);
 	dll = NULL;
 }
 
 bool DllLib::LoadFailed() {
+	//ZoneScoped;
 	return dll == NULL;
 }
 
@@ -33,6 +38,7 @@ bool DllLib::LoadFailed() {
  */
 DllLib::~DllLib()
 {
+	//ZoneScoped;
 	Unload();
 }
 
@@ -41,5 +47,6 @@ DllLib::~DllLib()
  */
 void* DllLib::FindAddress(const char* symbol)
 {
+	//ZoneScoped;
 	return (void*) GetProcAddress(dll,symbol);
 }

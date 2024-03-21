@@ -50,6 +50,7 @@ static spring::unordered_map<int32_t, uint32_t> localSyncChecksums;
 
 void CGame::AddTraffic(int playerID, int packetCode, int length)
 {
+	//ZoneScoped;
 	auto it = playerTraffic.find(playerID);
 
 	if (it == playerTraffic.end()) {
@@ -71,6 +72,7 @@ void CGame::AddTraffic(int playerID, int packetCode, int length)
 
 void CGame::SendClientProcUsage()
 {
+	//ZoneScoped;
 	auto& profiler = CTimeProfiler::GetInstance();
 	static spring_time lastProcUsageUpdateTime = spring_gettime();
 
@@ -119,6 +121,7 @@ void CGame::SendClientProcUsage()
 
 uint32_t CGame::GetNumQueuedSimFrameMessages(uint32_t maxFrames) const
 {
+	//ZoneScoped;
 	// read ahead to find number of NETMSG_XXXFRAMES we still have to process
 	// this number is effectively a measure of current user network conditions
 	std::shared_ptr<const netcode::RawPacket> packet;
@@ -159,6 +162,7 @@ uint32_t CGame::GetNumQueuedSimFrameMessages(uint32_t maxFrames) const
 
 void CGame::UpdateNumQueuedSimFrames()
 {
+	//ZoneScoped;
 	// on any *incoming* ping-response, just process NETMSG_{PING, GAME_FRAME_PROGRESS}
 	// (even if host, self-ping processing time is useful to know for testing purposes)
 	if (clientNet->GetNumWaitingPingPackets() > 0)
@@ -216,6 +220,7 @@ void CGame::UpdateNumQueuedSimFrames()
 
 void CGame::UpdateNetMessageProcessingTimeLeft()
 {
+	//ZoneScoped;
 	// compute new msgProcTimeLeft to "smooth" out SimFrame() calls
 	if (gameServer == nullptr) {
 		const spring_time currentReadNetTime = spring_gettime();
@@ -243,6 +248,7 @@ void CGame::UpdateNetMessageProcessingTimeLeft()
 
 float CGame::GetNetMessageProcessingTimeLimit() const
 {
+	//ZoneScoped;
 	// balance the time spent in simulation & drawing (esp. when reconnecting)
 	// use the following algo: i.e. with gu->reconnectSimDrawBalance = 0.2f
 	//  -> try to spend minimum 20% of the time in drawing

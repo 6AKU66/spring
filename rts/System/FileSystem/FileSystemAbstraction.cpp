@@ -39,10 +39,13 @@
 	#endif
 #endif
 
+#include <tracy/Tracy.hpp>
+
 
 
 std::string FileSystemAbstraction::RemoveLocalPathPrefix(const std::string& path)
 {
+	//ZoneScoped;
 	std::string p(path);
 
 	if ((p.length() >= 2) && (p[0] == '.') && IsPathSeparator(p[1])) {
@@ -54,6 +57,7 @@ std::string FileSystemAbstraction::RemoveLocalPathPrefix(const std::string& path
 
 bool FileSystemAbstraction::IsFSRoot(const std::string& p)
 {
+	//ZoneScoped;
 
 #ifdef _WIN32
 	// examples: "C:\", "C:/", "C:", "c:", "D:"
@@ -73,6 +77,7 @@ bool FileSystemAbstraction::IsNativePathSeparator(char aChar) { return (aChar ==
 
 bool FileSystemAbstraction::HasPathSepAtEnd(const std::string& path)
 {
+	//ZoneScoped;
 	bool pathSepAtEnd = false;
 
 	if (!path.empty()) {
@@ -84,6 +89,7 @@ bool FileSystemAbstraction::HasPathSepAtEnd(const std::string& path)
 
 std::string& FileSystemAbstraction::EnsurePathSepAtEnd(std::string& path)
 {
+	//ZoneScoped;
 	if (path.empty()) {
 		path += "." sPS;
 	} else if (!HasPathSepAtEnd(path)) {
@@ -94,6 +100,7 @@ std::string& FileSystemAbstraction::EnsurePathSepAtEnd(std::string& path)
 }
 std::string FileSystemAbstraction::EnsurePathSepAtEnd(const std::string& path)
 {
+	//ZoneScoped;
 	std::string pathCopy(path);
 	EnsurePathSepAtEnd(pathCopy);
 	return pathCopy;
@@ -101,6 +108,7 @@ std::string FileSystemAbstraction::EnsurePathSepAtEnd(const std::string& path)
 
 void FileSystemAbstraction::EnsureNoPathSepAtEnd(std::string& path)
 {
+	//ZoneScoped;
 	if (HasPathSepAtEnd(path)) {
 		path.resize(path.size() - 1);
 	}
@@ -108,6 +116,7 @@ void FileSystemAbstraction::EnsureNoPathSepAtEnd(std::string& path)
 
 std::string FileSystemAbstraction::EnsureNoPathSepAtEnd(const std::string& path)
 {
+	//ZoneScoped;
 	std::string pathCopy(path);
 	EnsureNoPathSepAtEnd(pathCopy);
 	return pathCopy;
@@ -115,6 +124,7 @@ std::string FileSystemAbstraction::EnsureNoPathSepAtEnd(const std::string& path)
 
 std::string FileSystemAbstraction::StripTrailingSlashes(const std::string& path)
 {
+	//ZoneScoped;
 	size_t len = path.length();
 
 	while (len > 0) {
@@ -130,6 +140,7 @@ std::string FileSystemAbstraction::StripTrailingSlashes(const std::string& path)
 
 std::string FileSystemAbstraction::GetParent(const std::string& path)
 {
+	//ZoneScoped;
 	//TODO uncomment and test if it breaks other code
 	/*try {
 		const boost::filesystem::path p(path);
@@ -153,6 +164,7 @@ std::string FileSystemAbstraction::GetParent(const std::string& path)
 
 size_t FileSystemAbstraction::GetFileSize(const std::string& file)
 {
+	//ZoneScoped;
 	struct stat info;
 
 	if ((stat(file.c_str(), &info) == 0) && (!S_ISDIR(info.st_mode)))
@@ -163,6 +175,7 @@ size_t FileSystemAbstraction::GetFileSize(const std::string& file)
 
 bool FileSystemAbstraction::IsReadableFile(const std::string& file)
 {
+	//ZoneScoped;
 	// Exclude directories!
 	if (!FileExists(file))
 		return false;
@@ -176,6 +189,7 @@ bool FileSystemAbstraction::IsReadableFile(const std::string& file)
 
 unsigned int FileSystemAbstraction::GetFileModificationTime(const std::string& file)
 {
+	//ZoneScoped;
 	struct stat info;
 
 	if (stat(file.c_str(), &info) != 0) {
@@ -188,6 +202,7 @@ unsigned int FileSystemAbstraction::GetFileModificationTime(const std::string& f
 
 std::string FileSystemAbstraction::GetFileModificationDate(const std::string& file)
 {
+	//ZoneScoped;
 	const std::time_t t = GetFileModificationTime(file);
 
 	if (t == 0)
@@ -213,6 +228,7 @@ char FileSystemAbstraction::GetNativePathSeparator()
 
 bool FileSystemAbstraction::IsAbsolutePath(const std::string& path)
 {
+	//ZoneScoped;
 	//TODO uncomment this and test if there are conflicts in the code when this returns true but other custom code doesn't (e.g. with IsFSRoot)
 	//const boost::filesystem::path f(file);
 	//return f.is_absolute();
@@ -241,6 +257,7 @@ bool FileSystemAbstraction::IsAbsolutePath(const std::string& path)
  */
 bool FileSystemAbstraction::MkDir(const std::string& dir)
 {
+	//ZoneScoped;
 	// First check if directory exists. We'll return success if it does.
 	if (DirExists(dir))
 		return true;
@@ -262,6 +279,7 @@ bool FileSystemAbstraction::MkDir(const std::string& dir)
 
 bool FileSystemAbstraction::DeleteFile(const std::string& file)
 {
+	//ZoneScoped;
 #ifdef _WIN32
 	if (DirExists(file)) {
 		if (!RemoveDirectory(StripTrailingSlashes(file).c_str())) {
@@ -287,12 +305,14 @@ bool FileSystemAbstraction::DeleteFile(const std::string& file)
 
 bool FileSystemAbstraction::FileExists(const std::string& file)
 {
+	//ZoneScoped;
 	struct stat info;
 	return ((stat(file.c_str(), &info) == 0 && !S_ISDIR(info.st_mode)));
 }
 
 bool FileSystemAbstraction::DirExists(const std::string& dir)
 {
+	//ZoneScoped;
 	struct stat info;
 	return ((stat(StripTrailingSlashes(dir).c_str(), &info) == 0 && S_ISDIR(info.st_mode)));
 }
@@ -300,6 +320,7 @@ bool FileSystemAbstraction::DirExists(const std::string& dir)
 
 bool FileSystemAbstraction::DirIsWritable(const std::string& dir)
 {
+	//ZoneScoped;
 #ifdef _WIN32
 	// this exists because _access does not do the right thing
 	// see http://msdn.microsoft.com/en-us/library/1w06ktdy(VS.71).aspx
@@ -342,6 +363,7 @@ bool FileSystemAbstraction::DirIsWritable(const std::string& dir)
 
 bool FileSystemAbstraction::ComparePaths(const std::string& path1, const std::string& path2)
 {
+	//ZoneScoped;
 #ifndef _WIN32
 	struct stat info1, info2;
 	const int ret1 = stat(path1.c_str(), &info1);
@@ -411,6 +433,7 @@ bool FileSystemAbstraction::ComparePaths(const std::string& path1, const std::st
 
 std::string FileSystemAbstraction::GetSpringExecutableDir()
 {
+	//ZoneScoped;
 	std::string springFullName = Platform::GetProcessExecutableFile();
 	std::size_t pos = springFullName.find_last_of("/\\");
 	if (pos != std::string::npos)
@@ -421,6 +444,7 @@ std::string FileSystemAbstraction::GetSpringExecutableDir()
 
 std::string FileSystemAbstraction::GetCwd()
 {
+	//ZoneScoped;
 #ifndef _WIN32
 	#define GETCWD getcwd
 #else
@@ -437,6 +461,7 @@ std::string FileSystemAbstraction::GetCwd()
 
 void FileSystemAbstraction::ChDir(const std::string& dir)
 {
+	//ZoneScoped;
 #ifndef _WIN32
 	const int err = chdir(dir.c_str());
 #else
@@ -450,6 +475,7 @@ void FileSystemAbstraction::ChDir(const std::string& dir)
 
 static void FindFiles(std::vector<std::string>& matches, const std::string& datadir, const std::string& dir, const spring::regex& regexPattern, int flags)
 {
+	//ZoneScoped;
 #ifdef _WIN32
 	WIN32_FIND_DATA wfd;
 	HANDLE hFind = FindFirstFile((datadir + dir + "\\*").c_str(), &wfd);
@@ -520,6 +546,7 @@ static void FindFiles(std::vector<std::string>& matches, const std::string& data
 
 void FileSystemAbstraction::FindFiles(std::vector<std::string>& matches, const std::string& dataDir, const std::string& dir, const std::string& regex, int flags)
 {
+	//ZoneScoped;
 	const spring::regex regexPattern(regex);
 	::FindFiles(matches, dataDir, dir, regexPattern, flags);
 }

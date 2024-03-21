@@ -10,14 +10,18 @@
 #include <set>
 #include <cmath>
 
+#include <tracy/Tracy.hpp>
+
 
 static void PreCregTest(const char* logmsg)
 {
+	//ZoneScoped;
 	LOG("%s", logmsg);
 }
 
 static bool PostCregTest(int fineClasses, int brokenClasses, int ignore = 0)
 {
+	//ZoneScoped;
 	if (brokenClasses > 0) {
 		LOG_L(L_WARNING, "CREG Results: %i of %i classes are broken", brokenClasses, brokenClasses + fineClasses);
 		if (ignore>0) { //FIXME: remove this
@@ -35,6 +39,7 @@ static bool PostCregTest(int fineClasses, int brokenClasses, int ignore = 0)
  */
 static bool TestCregClasses1()
 {
+	//ZoneScoped;
 	PreCregTest("CREG: Test1 (Duplicated Members)");
 
 	int fineClasses = 0;
@@ -69,6 +74,7 @@ static bool TestCregClasses1()
 
 static bool TestCregClasses2()
 {
+	//ZoneScoped;
 	PreCregTest("CREG: Test2 (Class' Sizes)");
 
 	int fineClasses = 0;
@@ -112,6 +118,7 @@ static bool TestCregClasses2()
 
 static bool TestCregClasses3()
 {
+	//ZoneScoped;
 	PreCregTest("CREG: Test3 (Missing Class Members)");
 
 	int fineClasses = 0;
@@ -246,6 +253,7 @@ static bool TestCregClasses3()
 
 static bool TestCregClasses4()
 {
+	//ZoneScoped;
 	PreCregTest("CREG: Test4 (Incorrect Usage of CR_DECLARE vs. CR_DECLARE_STRUCT)");
 	LOG("  CR_DECLARE_STRUCT is for plain structs without a vTable while");
 	LOG("  CR_DECLARE should be used for classes that have virtual members.");
@@ -292,6 +300,7 @@ static bool TestCregClasses4()
 namespace creg {
 	bool RuntimeTest()
 	{
+	//ZoneScoped;
 		bool res = true;
 		res &= TestCregClasses1();
 		res &= TestCregClasses2();

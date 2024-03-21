@@ -7,13 +7,17 @@
 #include "System/Log/ILog.h"
 #include "System/Net/Connection.h"
 
+#include <tracy/Tracy.hpp>
+
 GameParticipant::GameParticipant()
 {
+	//ZoneScoped;
 	aiClientLinks[MAX_AIS] = ClientLinkData(false);
 }
 
 GameParticipant::~GameParticipant()
 {
+	//ZoneScoped;
 	if (myState == DISCONNECTING) {
 		CloseConnection(true);
 		myState = DISCONNECTED;
@@ -22,12 +26,14 @@ GameParticipant::~GameParticipant()
 
 void GameParticipant::SendData(std::shared_ptr<const netcode::RawPacket> packet)
 {
+	//ZoneScoped;
 	if (clientLink != nullptr && myState != GameParticipant::State::DISCONNECTING)
 		clientLink->SendData(packet);
 }
 
 void GameParticipant::Connected(std::shared_ptr<netcode::CConnection> _link, bool local)
 {
+	//ZoneScoped;
 	CloseConnection(false);
 
 	clientLink = _link;
@@ -40,6 +46,7 @@ void GameParticipant::Connected(std::shared_ptr<netcode::CConnection> _link, boo
 
 void GameParticipant::Kill(const std::string& reason, const bool flush)
 {
+	//ZoneScoped;
 	bool disconnected = true;
 
 	if (clientLink != nullptr) {
@@ -68,6 +75,7 @@ void GameParticipant::Kill(const std::string& reason, const bool flush)
 }
 
 void GameParticipant::CheckForExpiredConnection() {
+	//ZoneScoped;
 	if (myState == DISCONNECTING) {
 		if (spring_gettime() >= disconnectDelay) {
 			CloseConnection(true);
@@ -78,6 +86,7 @@ void GameParticipant::CheckForExpiredConnection() {
 }
 
 void GameParticipant::CloseConnection(bool flush) {
+	//ZoneScoped;
 	if (clientLink != nullptr) {
 		LOG("%s: client connection closed", __func__);
 		clientLink->Close(flush);

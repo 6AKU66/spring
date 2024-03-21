@@ -20,8 +20,11 @@
 #include "System/Platform/Misc.h"
 #include "System/Platform/Win/win32.h"
 
+#include <tracy/Tracy.hpp>
+
 static void AddCfgFile(std::vector<std::string>& locations, const std::string& filepath)
 {
+	//ZoneScoped;
 	for (const std::string& fp: locations) {
 		if (FileSystem::ComparePaths(fp, filepath))
 			return;
@@ -33,6 +36,7 @@ static void AddCfgFile(std::vector<std::string>& locations, const std::string& f
 
 static void LoadCfgs(std::vector<std::string>& locations, const std::string& defCfg, const std::string& verCfg)
 {
+	//ZoneScoped;
 	if (locations.empty()) {
 		// add the config file we write to
 		AddCfgFile(locations, defCfg);
@@ -61,6 +65,7 @@ static void LoadCfgs(std::vector<std::string>& locations, const std::string& def
 
 static void LoadCfgsInFolder(std::vector<std::string>& locations, const std::string& path, const bool hidden = false)
 {
+	//ZoneScoped;
 	// all platforms: springsettings.cfg
 	const std::string defCfg = path + "springsettings.cfg";
 	const std::string verCfg = path + "springsettings-" + SpringVersion::Get() + ".cfg";
@@ -82,6 +87,7 @@ static void LoadCfgsInFolder(std::vector<std::string>& locations, const std::str
  */
 void ConfigLocater::GetDefaultLocations(std::vector<std::string>& locations)
 {
+	//ZoneScoped;
 	// first, add writeable config file
 	LoadCfgsInFolder(locations, dataDirLocater.GetWriteDirPath(), false);
 

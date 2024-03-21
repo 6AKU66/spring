@@ -10,6 +10,8 @@
 #include <sstream>
 #include <vector>
 
+#include <tracy/Tracy.hpp>
+
 using std::string;
 using std::vector;
 
@@ -36,6 +38,7 @@ private:
 
 IFileFilter* IFileFilter::Create()
 {
+	//ZoneScoped;
 	return new CFileFilter();
 }
 
@@ -66,6 +69,7 @@ Note that:
 */
 void CFileFilter::AddRule(const string& rule)
 {
+	//ZoneScoped;
 	if (rule.empty())
 		return;
 
@@ -118,6 +122,7 @@ void CFileFilter::AddRule(const string& rule)
 /** @brief Checks whether filename matches this filter. */
 bool CFileFilter::Match(const string& filename) const
 {
+	//ZoneScoped;
 	bool match = false;
 	for (const auto& rule: rules) {
 		if (spring::regex_search(filename, rule.regex))
@@ -129,6 +134,7 @@ bool CFileFilter::Match(const string& filename) const
 
 string CFileFilter::glob_to_regex(const string& glob) // FIXME remove; duplicate in FileSystem::ConvertGlobToRegex
 {
+	//ZoneScoped;
 #define PATH_SEPARATORS "/\\:"
 
 	std::stringstream regex;

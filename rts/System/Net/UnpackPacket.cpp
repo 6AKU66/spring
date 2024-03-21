@@ -4,6 +4,8 @@
 
 #include <memory>
 
+#include <tracy/Tracy.hpp>
+
 namespace netcode
 {
 
@@ -11,6 +13,7 @@ UnpackPacket::UnpackPacket(std::shared_ptr<const RawPacket> packet, size_t skipB
 	: pckt(packet)
 	, pos(skipBytes)
 {
+	//ZoneScoped;
 	if (pos > pckt->length) {
 		throw UnpackPacketException("Unpack failure (byte skip)");
 	}

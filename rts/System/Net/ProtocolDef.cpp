@@ -7,26 +7,32 @@
 
 #include "Exception.h"
 
+#include <tracy/Tracy.hpp>
+
 namespace netcode {
 
 ProtocolDef* ProtocolDef::GetInstance()
 {
+	//ZoneScoped;
 	static ProtocolDef instance;
 	return &instance;
 }
 
 ProtocolDef::ProtocolDef()
 {
+	//ZoneScoped;
 	memset(msg, '\0', sizeof(MsgType) * 256);
 }
 
 void ProtocolDef::AddType(const unsigned char id, const int msgLength)
 {
+	//ZoneScoped;
 	msg[id].length = msgLength;
 }
 
 int ProtocolDef::PacketLength(const unsigned char* const buf, const unsigned bufLength) const
 {
+	//ZoneScoped;
 	if (bufLength == 0) {
 		return 0;
 	}
@@ -58,11 +64,13 @@ int ProtocolDef::PacketLength(const unsigned char* const buf, const unsigned buf
 
 bool ProtocolDef::IsValidLength(const int pktLength, const unsigned bufLength) const
 {
+	//ZoneScoped;
 	return (pktLength > 0) && (bufLength >= (unsigned)pktLength);
 }
 
 bool ProtocolDef::IsValidPacket(const unsigned char* const buf, const unsigned bufLength) const
 {
+	//ZoneScoped;
 	return IsValidLength(PacketLength(buf, bufLength), bufLength);
 }
 

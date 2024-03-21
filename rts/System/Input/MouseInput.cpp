@@ -33,12 +33,15 @@
 #include <SDL_hints.h>
 #include <SDL_syswm.h>
 
+#include <tracy/Tracy.hpp>
+
 
 IMouseInput* mouseInput = nullptr;
 
 
 IMouseInput::IMouseInput(bool relModeWarp)
 {
+	//ZoneScoped;
 	inputCon = input.AddHandler(std::bind(&IMouseInput::HandleSDLMouseEvent, this, std::placeholders::_1));
 	#ifndef HEADLESS
 	// Windows 10 FCU (Fall Creators Update) causes spurious SDL_MOUSEMOTION
@@ -59,6 +62,7 @@ IMouseInput::IMouseInput(bool relModeWarp)
 
 IMouseInput::~IMouseInput()
 {
+	//ZoneScoped;
 	#ifndef HEADLESS
 	SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "0");
 	#endif
@@ -68,6 +72,7 @@ IMouseInput::~IMouseInput()
 
 bool IMouseInput::HandleSDLMouseEvent(const SDL_Event& event)
 {
+	//ZoneScoped;
 	switch (event.type) {
 		case SDL_MOUSEMOTION: {
 			mousepos = int2(event.motion.x, event.motion.y);
@@ -133,6 +138,7 @@ public:
 
 	static LRESULT CALLBACK SpringWndProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
+	//ZoneScoped;
 		switch (msg) {
 			case WM_SETCURSOR: {
 				if (inst->hCursor != nullptr) {
@@ -150,11 +156,13 @@ public:
 
 	void SetWMMouseCursor(void* wmcursor)
 	{
+	//ZoneScoped;
 		hCursor = (HCURSOR)wmcursor;
 	}
 
 	void InstallWndCallback()
 	{
+	//ZoneScoped;
 		SDL_SysWMinfo info;
 		SDL_VERSION(&info.version);
 		if (!SDL_GetWindowWMInfo(globalRendering->GetWindow(), &info))
@@ -202,6 +210,7 @@ static SDL_Event events[100];
 
 bool IMouseInput::SetPos(int2 pos)
 {
+	//ZoneScoped;
 	if (!globalRendering->active)
 		return false;
 
@@ -214,6 +223,7 @@ bool IMouseInput::SetPos(int2 pos)
 
 bool IMouseInput::WarpPos(int2 pos)
 {
+	//ZoneScoped;
 	SDL_WarpMouseInWindow(globalRendering->GetWindow(), pos.x, pos.y);
 
 	// SDL_WarpMouse generates SDL_MOUSEMOTION events
@@ -241,6 +251,7 @@ bool IMouseInput::WarpPos(int2 pos)
 
 IMouseInput* IMouseInput::GetInstance(bool relModeWarp)
 {
+	//ZoneScoped;
 	if (mouseInput == nullptr) {
 #if defined(_WIN32) && !defined(HEADLESS)
 		mouseInput = new (mouseInputMem) CWin32MouseInput(relModeWarp);
@@ -253,6 +264,7 @@ IMouseInput* IMouseInput::GetInstance(bool relModeWarp)
 }
 
 void IMouseInput::FreeInstance(IMouseInput* mouseInp) {
+	//ZoneScoped;
 	assert(mouseInp == mouseInput);
 	spring::SafeDestruct(mouseInp);
 	memset(mouseInputMem, 0, sizeof(mouseInputMem));

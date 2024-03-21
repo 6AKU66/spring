@@ -9,17 +9,21 @@
 #include "System/Net/ProtocolDef.h"
 #include <cinttypes>
 
+#include <tracy/Tracy.hpp>
+
 using netcode::PackPacket;
 typedef std::shared_ptr<const netcode::RawPacket> PacketType;
 
 CBaseNetProtocol& CBaseNetProtocol::Get()
 {
+	//ZoneScoped;
 	static CBaseNetProtocol instance;
 	return instance;
 }
 
 PacketType CBaseNetProtocol::SendKeyFrame(int32_t frameNum)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(frameNum), NETMSG_KEYFRAME);
 	*packet << frameNum;
 	return PacketType(packet);
@@ -27,12 +31,14 @@ PacketType CBaseNetProtocol::SendKeyFrame(int32_t frameNum)
 
 PacketType CBaseNetProtocol::SendNewFrame()
 {
+	//ZoneScoped;
 	return PacketType(new PackPacket(sizeof(uint8_t), NETMSG_NEWFRAME));
 }
 
 
 PacketType CBaseNetProtocol::SendQuit(const std::string& reason)
 {
+	//ZoneScoped;
 	// NOTE:
 	//   transmit size as uint16, but calculate it using uint32's so overflow is safe
 	//   the extra null-terminator +1 is necessary, PackPacket adds a byte for strings
@@ -48,6 +54,7 @@ PacketType CBaseNetProtocol::SendQuit(const std::string& reason)
 
 PacketType CBaseNetProtocol::SendStartPlaying(uint32_t countdown)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(countdown), NETMSG_STARTPLAYING);
 	*packet << countdown;
 	return PacketType(packet);
@@ -55,6 +62,7 @@ PacketType CBaseNetProtocol::SendStartPlaying(uint32_t countdown)
 
 PacketType CBaseNetProtocol::SendSetPlayerNum(uint8_t playerNum)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum), NETMSG_SETPLAYERNUM);
 	*packet << playerNum;
 	return PacketType(packet);
@@ -62,6 +70,7 @@ PacketType CBaseNetProtocol::SendSetPlayerNum(uint8_t playerNum)
 
 PacketType CBaseNetProtocol::SendPlayerName(uint8_t playerNum, const std::string& playerName)
 {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + (playerName.size() + 1);
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint8_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -73,6 +82,7 @@ PacketType CBaseNetProtocol::SendPlayerName(uint8_t playerNum, const std::string
 
 PacketType CBaseNetProtocol::SendRandSeed(uint32_t randSeed)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(randSeed), NETMSG_RANDSEED);
 	*packet << randSeed;
 	return PacketType(packet);
@@ -81,6 +91,7 @@ PacketType CBaseNetProtocol::SendRandSeed(uint32_t randSeed)
 // NETMSG_GAMEID = 9, char gameID[16];
 PacketType CBaseNetProtocol::SendGameID(const uint8_t* buf)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + 16, NETMSG_GAMEID);
 	memcpy(packet->GetWritingPos(), buf, 16);
 	return PacketType(packet);
@@ -88,6 +99,7 @@ PacketType CBaseNetProtocol::SendGameID(const uint8_t* buf)
 
 PacketType CBaseNetProtocol::SendPathCheckSum(uint8_t playerNum, uint32_t checksum)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(uint32_t), NETMSG_PATH_CHECKSUM);
 	*packet << playerNum;
 	*packet << checksum;
@@ -97,6 +109,7 @@ PacketType CBaseNetProtocol::SendPathCheckSum(uint8_t playerNum, uint32_t checks
 
 PacketType CBaseNetProtocol::SendSelect(uint8_t playerNum, const std::vector<int16_t>& selectedUnitIDs)
 {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + (selectedUnitIDs.size() * sizeof(int16_t));
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint16_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -109,6 +122,7 @@ PacketType CBaseNetProtocol::SendSelect(uint8_t playerNum, const std::vector<int
 
 PacketType CBaseNetProtocol::SendPause(uint8_t playerNum, uint8_t bPaused)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(bPaused), NETMSG_PAUSE);
 	*packet << playerNum << bPaused;
 	return PacketType(packet);
@@ -123,6 +137,7 @@ PacketType CBaseNetProtocol::SendCommand(
 	uint32_t numParams,
 	const float* params
 ) {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + sizeof(commandID) + sizeof(timeout) + sizeof(options) + sizeof(numParams) + (numParams * sizeof(float));
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint16_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -149,6 +164,7 @@ PacketType CBaseNetProtocol::SendAICommand(
 	uint32_t numParams,
 	const float* params
 ) {
+	//ZoneScoped;
 	const int32_t commandTypeID = (aiCommandID != -1)? NETMSG_AICOMMAND_TRACKED: NETMSG_AICOMMAND;
 
 	const uint32_t payloadSize =
@@ -185,6 +201,7 @@ PacketType CBaseNetProtocol::SendAIShare(
 	float energy,
 	const std::vector<int16_t>& unitIDs
 ) {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + sizeof(aiID) + sizeof(sourceTeam) + sizeof(destTeam) + (2 * sizeof(float)) + (unitIDs.size() * sizeof(int16_t));
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint16_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -200,6 +217,7 @@ PacketType CBaseNetProtocol::SendAIShare(
 
 PacketType CBaseNetProtocol::SendUserSpeed(uint8_t playerNum, float userSpeed)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(userSpeed), NETMSG_USER_SPEED);
 	*packet << playerNum << userSpeed;
 	return PacketType(packet);
@@ -207,6 +225,7 @@ PacketType CBaseNetProtocol::SendUserSpeed(uint8_t playerNum, float userSpeed)
 
 PacketType CBaseNetProtocol::SendInternalSpeed(float internalSpeed)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(internalSpeed), NETMSG_INTERNAL_SPEED);
 	*packet << internalSpeed;
 	return PacketType(packet);
@@ -214,6 +233,7 @@ PacketType CBaseNetProtocol::SendInternalSpeed(float internalSpeed)
 
 PacketType CBaseNetProtocol::SendCPUUsage(float cpuUsage)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(cpuUsage), NETMSG_CPU_USAGE);
 	*packet << cpuUsage;
 	return PacketType(packet);
@@ -221,6 +241,7 @@ PacketType CBaseNetProtocol::SendCPUUsage(float cpuUsage)
 
 PacketType CBaseNetProtocol::SendDirectControl(uint8_t playerNum)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum), NETMSG_DIRECT_CONTROL);
 	*packet << playerNum;
 	return PacketType(packet);
@@ -228,6 +249,7 @@ PacketType CBaseNetProtocol::SendDirectControl(uint8_t playerNum)
 
 PacketType CBaseNetProtocol::SendDirectControlUpdate(uint8_t playerNum, uint8_t status, int16_t heading, int16_t pitch)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(status) + sizeof(heading) + sizeof(pitch), NETMSG_DC_UPDATE);
 	*packet << playerNum << status << heading << pitch;
 	return PacketType(packet);
@@ -242,6 +264,7 @@ PacketType CBaseNetProtocol::SendAttemptConnect(
 	int32_t netloss,
 	bool reconnect
 ) {
+	//ZoneScoped;
 	const uint32_t payloadSize =
 		sizeof(NETWORK_VERSION) +
 		sizeof(static_cast<uint8_t>(netloss)) +
@@ -269,6 +292,7 @@ PacketType CBaseNetProtocol::SendAttemptConnect(
 
 PacketType CBaseNetProtocol::SendRejectConnect(const std::string& reason)
 {
+	//ZoneScoped;
 	const uint32_t payloadSize = reason.size() + 1;
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint16_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -281,6 +305,7 @@ PacketType CBaseNetProtocol::SendRejectConnect(const std::string& reason)
 
 PacketType CBaseNetProtocol::SendShare(uint8_t playerNum, uint8_t shareTeam, uint8_t bShareUnits, float shareMetal, float shareEnergy)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(shareTeam) + sizeof(bShareUnits) + (sizeof(shareMetal) * 2), NETMSG_SHARE);
 	*packet << playerNum << shareTeam << bShareUnits << shareMetal << shareEnergy;
 	return PacketType(packet);
@@ -288,6 +313,7 @@ PacketType CBaseNetProtocol::SendShare(uint8_t playerNum, uint8_t shareTeam, uin
 
 PacketType CBaseNetProtocol::SendSetShare(uint8_t playerNum, uint8_t myTeam, float metalShareFraction, float energyShareFraction)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(myTeam) + (sizeof(metalShareFraction) * 2), NETMSG_SETSHARE);
 	*packet << playerNum << myTeam << metalShareFraction << energyShareFraction;
 	return PacketType(packet);
@@ -296,6 +322,7 @@ PacketType CBaseNetProtocol::SendSetShare(uint8_t playerNum, uint8_t myTeam, flo
 
 PacketType CBaseNetProtocol::SendPlayerStat(uint8_t playerNum, const PlayerStatistics& currentStats)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(PlayerStatistics), NETMSG_PLAYERSTAT);
 	*packet << playerNum << currentStats;
 	return PacketType(packet);
@@ -303,6 +330,7 @@ PacketType CBaseNetProtocol::SendPlayerStat(uint8_t playerNum, const PlayerStati
 
 PacketType CBaseNetProtocol::SendTeamStat(uint8_t teamNum, const TeamStatistics& currentStats)
 {
+	//ZoneScoped;
 	PackPacket* packet = new netcode::PackPacket(sizeof(uint8_t) + sizeof(teamNum) + sizeof(TeamStatistics), NETMSG_TEAMSTAT);
 	*packet << teamNum << currentStats;
 	return PacketType(packet);
@@ -312,6 +340,7 @@ PacketType CBaseNetProtocol::SendTeamStat(uint8_t teamNum, const TeamStatistics&
 
 PacketType CBaseNetProtocol::SendGameOver(uint8_t playerNum, const std::vector<uint8_t>& winningAllyTeams)
 {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + (winningAllyTeams.size() * sizeof(uint8_t));
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint8_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -324,6 +353,7 @@ PacketType CBaseNetProtocol::SendGameOver(uint8_t playerNum, const std::vector<u
 
 PacketType CBaseNetProtocol::SendMapErase(uint8_t playerNum, int16_t x, int16_t z)
 {
+	//ZoneScoped;
 	constexpr uint8_t drawType = MAPDRAW_ERASE;
 
 	const uint32_t payloadSize = sizeof(playerNum) + sizeof(drawType) + sizeof(x) + sizeof(z);
@@ -338,6 +368,7 @@ PacketType CBaseNetProtocol::SendMapErase(uint8_t playerNum, int16_t x, int16_t 
 
 PacketType CBaseNetProtocol::SendMapDrawPoint(uint8_t playerNum, int16_t x, int16_t z, const std::string& label, bool fromLua)
 {
+	//ZoneScoped;
 	constexpr uint8_t drawType = MAPDRAW_POINT;
 
 	const uint32_t payloadSize = sizeof(playerNum) + sizeof(drawType) + sizeof(x) + sizeof(z) + sizeof(fromLua) + (label.size() + 1);
@@ -358,6 +389,7 @@ PacketType CBaseNetProtocol::SendMapDrawPoint(uint8_t playerNum, int16_t x, int1
 
 PacketType CBaseNetProtocol::SendMapDrawLine(uint8_t playerNum, int16_t x1, int16_t z1, int16_t x2, int16_t z2, bool fromLua)
 {
+	//ZoneScoped;
 	constexpr uint8_t drawType = MAPDRAW_LINE;
 
 	const uint32_t payloadSize = sizeof(playerNum) + sizeof(drawType) + sizeof(x1) + sizeof(z1) + sizeof(x2) + sizeof(z2) + sizeof(fromLua);
@@ -378,6 +410,7 @@ PacketType CBaseNetProtocol::SendMapDrawLine(uint8_t playerNum, int16_t x1, int1
 
 PacketType CBaseNetProtocol::SendSyncResponse(uint8_t playerNum, int32_t frameNum, uint32_t checksum)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(frameNum) + sizeof(checksum), NETMSG_SYNCRESPONSE);
 	*packet << playerNum << frameNum << checksum;
 	return PacketType(packet);
@@ -385,6 +418,7 @@ PacketType CBaseNetProtocol::SendSyncResponse(uint8_t playerNum, int32_t frameNu
 
 PacketType CBaseNetProtocol::SendSystemMessage(uint8_t playerNum, std::string message)
 {
+	//ZoneScoped;
 	if (message.size() > 65000) {
 		message.resize(65000);
 		message.append("...");
@@ -401,6 +435,7 @@ PacketType CBaseNetProtocol::SendSystemMessage(uint8_t playerNum, std::string me
 
 PacketType CBaseNetProtocol::SendStartPos(uint8_t playerNum, uint8_t teamNum, uint8_t readyState, float x, float y, float z)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(teamNum) + sizeof(readyState) + (3 * sizeof(x)), NETMSG_STARTPOS);
 	*packet << playerNum << teamNum << readyState << x << y << z;
 	return PacketType(packet);
@@ -408,6 +443,7 @@ PacketType CBaseNetProtocol::SendStartPos(uint8_t playerNum, uint8_t teamNum, ui
 
 PacketType CBaseNetProtocol::SendPlayerInfo(uint8_t playerNum, float cpuUsage, int32_t ping)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(cpuUsage) + sizeof(ping), NETMSG_PLAYERINFO);
 	*packet << playerNum << cpuUsage << static_cast<uint32_t>(ping);
 	return PacketType(packet);
@@ -415,6 +451,7 @@ PacketType CBaseNetProtocol::SendPlayerInfo(uint8_t playerNum, float cpuUsage, i
 
 PacketType CBaseNetProtocol::SendPlayerLeft(uint8_t playerNum, uint8_t bIntended)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(bIntended), NETMSG_PLAYERLEFT);
 	*packet << playerNum << bIntended;
 	return PacketType(packet);
@@ -423,6 +460,7 @@ PacketType CBaseNetProtocol::SendPlayerLeft(uint8_t playerNum, uint8_t bIntended
 
 PacketType CBaseNetProtocol::SendLogMsg(uint8_t playerNum, uint8_t logMsgLvl, const std::string& strData)
 {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + sizeof(logMsgLvl) + (strData.size() + 1);
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint16_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -437,6 +475,7 @@ PacketType CBaseNetProtocol::SendLogMsg(uint8_t playerNum, uint8_t logMsgLvl, co
 
 PacketType CBaseNetProtocol::SendLuaMsg(uint8_t playerNum, uint16_t script, uint8_t mode, const std::vector<uint8_t>& rawData)
 {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + sizeof(script) + sizeof(mode) + rawData.size();
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint16_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -452,6 +491,7 @@ PacketType CBaseNetProtocol::SendLuaMsg(uint8_t playerNum, uint16_t script, uint
 
 PacketType CBaseNetProtocol::SendGiveAwayEverything(uint8_t playerNum, uint8_t giveToTeam, uint8_t takeFromTeam)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + 1 + sizeof(giveToTeam) + sizeof(takeFromTeam), NETMSG_TEAM);
 	*packet << playerNum << static_cast<uint8_t>(TEAMMSG_GIVEAWAY) << giveToTeam << takeFromTeam;
 	return PacketType(packet);
@@ -459,6 +499,7 @@ PacketType CBaseNetProtocol::SendGiveAwayEverything(uint8_t playerNum, uint8_t g
 
 PacketType CBaseNetProtocol::SendResign(uint8_t playerNum)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + 1 + 1 + 1, NETMSG_TEAM);
 	*packet << playerNum << static_cast<uint8_t>(TEAMMSG_RESIGN) << static_cast<uint8_t>(0) << static_cast<uint8_t>(0);
 	return PacketType(packet);
@@ -466,6 +507,7 @@ PacketType CBaseNetProtocol::SendResign(uint8_t playerNum)
 
 PacketType CBaseNetProtocol::SendJoinTeam(uint8_t playerNum, uint8_t wantedTeamNum)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + 1 + sizeof(wantedTeamNum) + 1, NETMSG_TEAM);
 	*packet << playerNum << static_cast<uint8_t>(TEAMMSG_JOIN_TEAM) << wantedTeamNum << static_cast<uint8_t>(0);
 	return PacketType(packet);
@@ -473,6 +515,7 @@ PacketType CBaseNetProtocol::SendJoinTeam(uint8_t playerNum, uint8_t wantedTeamN
 
 PacketType CBaseNetProtocol::SendTeamDied(uint8_t playerNum, uint8_t whichTeam)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + 1 + sizeof(whichTeam) + 1, NETMSG_TEAM);
 	*packet << playerNum << static_cast<uint8_t>(TEAMMSG_TEAM_DIED) << whichTeam << static_cast<uint8_t>(0);
 	return PacketType(packet);
@@ -480,6 +523,7 @@ PacketType CBaseNetProtocol::SendTeamDied(uint8_t playerNum, uint8_t whichTeam)
 
 PacketType CBaseNetProtocol::SendAICreated(uint8_t playerNum, uint8_t whichSkirmishAI, uint8_t team, const std::string& name)
 {
+	//ZoneScoped;
 	// do not hand optimize this math; the compiler will do that
 	const uint32_t payloadSize = sizeof(playerNum) + sizeof(whichSkirmishAI) + sizeof(team) + (name.size() + 1);
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint8_t);
@@ -497,6 +541,7 @@ PacketType CBaseNetProtocol::SendAICreated(uint8_t playerNum, uint8_t whichSkirm
 
 PacketType CBaseNetProtocol::SendAIStateChanged(uint8_t playerNum, uint8_t whichSkirmishAI, uint8_t newState)
 {
+	//ZoneScoped;
 	// do not hand optimize this math; the compiler will do that
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(whichSkirmishAI) + sizeof(newState), NETMSG_AI_STATE_CHANGED);
 	*packet << playerNum << whichSkirmishAI << newState;
@@ -505,6 +550,7 @@ PacketType CBaseNetProtocol::SendAIStateChanged(uint8_t playerNum, uint8_t which
 
 PacketType CBaseNetProtocol::SendSetAllied(uint8_t playerNum, uint8_t whichAllyTeam, uint8_t state)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(playerNum) + sizeof(whichAllyTeam) + sizeof(state), NETMSG_ALLIANCE);
 	*packet << playerNum << whichAllyTeam << state;
 	return PacketType(packet);
@@ -513,6 +559,7 @@ PacketType CBaseNetProtocol::SendSetAllied(uint8_t playerNum, uint8_t whichAllyT
 
 PacketType CBaseNetProtocol::SendCreateNewPlayer(uint8_t playerNum, bool spectator, uint8_t teamNum, const std::string& playerName )
 {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + sizeof(spectator) + sizeof(teamNum) + (playerName.size() + 1);
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint16_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -525,6 +572,7 @@ PacketType CBaseNetProtocol::SendCreateNewPlayer(uint8_t playerNum, bool spectat
 
 PacketType CBaseNetProtocol::SendCurrentFrameProgress(int32_t frameNum)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(frameNum), NETMSG_GAME_FRAME_PROGRESS);
 	*packet << frameNum;
 	return PacketType(packet);
@@ -532,6 +580,7 @@ PacketType CBaseNetProtocol::SendCurrentFrameProgress(int32_t frameNum)
 
 PacketType CBaseNetProtocol::SendPing(uint8_t playerNum, uint8_t pingTag, float localTime)
 {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + sizeof(pingTag) + sizeof(localTime);
 	const uint32_t headerSize = sizeof(uint8_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -546,6 +595,7 @@ PacketType CBaseNetProtocol::SendPing(uint8_t playerNum, uint8_t pingTag, float 
 
 PacketType CBaseNetProtocol::SendClientData(uint8_t playerNum, const std::vector<uint8_t>& data)
 {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + data.size();
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint16_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -563,6 +613,7 @@ PacketType CBaseNetProtocol::SendClientData(uint8_t playerNum, const std::vector
 #ifdef SYNCDEBUG
 PacketType CBaseNetProtocol::SendSdCheckrequest(int32_t frameNum)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(5, NETMSG_SD_CHKREQUEST);
 	*packet << frameNum;
 	return PacketType(packet);
@@ -570,6 +621,7 @@ PacketType CBaseNetProtocol::SendSdCheckrequest(int32_t frameNum)
 
 PacketType CBaseNetProtocol::SendSdCheckresponse(uint8_t playerNum, uint64_t flop, std::vector<uint32_t> checksums)
 {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + sizeof(flop) + (checksums.size() * sizeof(uint32_t));
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint16_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -581,12 +633,14 @@ PacketType CBaseNetProtocol::SendSdCheckresponse(uint8_t playerNum, uint64_t flo
 
 PacketType CBaseNetProtocol::SendSdReset()
 {
+	//ZoneScoped;
 	return PacketType(new PackPacket(sizeof(uint8_t), NETMSG_SD_RESET));
 }
 
 
 PacketType CBaseNetProtocol::SendSdBlockrequest(uint16_t begin, uint16_t length, uint16_t requestSize)
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t) + sizeof(begin) + sizeof(length) + sizeof(requestSize), NETMSG_SD_BLKREQUEST);
 	*packet << begin << length << requestSize;
 	return PacketType(packet);
@@ -595,6 +649,7 @@ PacketType CBaseNetProtocol::SendSdBlockrequest(uint16_t begin, uint16_t length,
 
 PacketType CBaseNetProtocol::SendSdBlockresponse(uint8_t playerNum, std::vector<uint32_t> checksums)
 {
+	//ZoneScoped;
 	const uint32_t payloadSize = sizeof(playerNum) + (checksums.size() * sizeof(uint32_t));
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint16_t);
 	const uint32_t packetSize = headerSize + payloadSize;
@@ -607,12 +662,14 @@ PacketType CBaseNetProtocol::SendSdBlockresponse(uint8_t playerNum, std::vector<
 
 PacketType CBaseNetProtocol::SendGameStateDump()
 {
+	//ZoneScoped;
 	PackPacket* packet = new PackPacket(sizeof(uint8_t), NETMSG_GAMESTATE_DUMP);
 	return PacketType(packet);
 }
 
 CBaseNetProtocol::CBaseNetProtocol()
 {
+	//ZoneScoped;
 	netcode::ProtocolDef* proto = netcode::ProtocolDef::GetInstance();
 	// proto->AddType() length parameter:
 	//   > 0:  if its fixed length

@@ -15,8 +15,11 @@
 #include <algorithm>
 #include <vector>
 
+#include <tracy/Tracy.hpp>
+
 
 namespace log_file {
+	//ZoneScoped;
 	struct LogFileDetails {
 		LogFileDetails(
 			FILE* outStream = nullptr,
@@ -112,15 +115,18 @@ namespace log_file {
 
 
 	inline logRecords_t& getRecordBuffer() {
+	//ZoneScoped;
 		static logRecords_t buffer;
 		return buffer;
 	}
 
 	inline bool isActivelyLogging() {
+	//ZoneScoped;
 		return (!getLogFiles().empty());
 	}
 
 	void writeToFile(FILE* outStream, const char* record, bool flush) {
+	//ZoneScoped;
 		char framePrefix[128] = {'\0'};
 		log_framePrefixer_createPrefix(framePrefix, sizeof(framePrefix));
 
@@ -135,6 +141,7 @@ namespace log_file {
 	 */
 	void writeToFiles(int level, const char* section, const char* record)
 	{
+	//ZoneScoped;
 		const auto& logFiles = getLogFiles();
 
 		for (const auto& p: logFiles) {
@@ -151,6 +158,7 @@ namespace log_file {
 	 * Flushes the buffers of the individual log files.
 	 */
 	void flushFiles() {
+	//ZoneScoped;
 		const auto& logFiles = getLogFiles();
 
 		for (const auto& p: logFiles) {
@@ -166,6 +174,7 @@ namespace log_file {
 	 * files.
 	 */
 	void writeBufferToFiles() {
+	//ZoneScoped;
 		logRecords_t& logRecords = getRecordBuffer();
 
 		for (LogRecord& logRec: logRecords) {
@@ -177,6 +186,7 @@ namespace log_file {
 
 	inline void writeToBuffer(int level, const std::string& section, const std::string& record)
 	{
+	//ZoneScoped;
 		logRecords_t& logRecords = getRecordBuffer();
 
 		if (logRecords.empty())
@@ -197,6 +207,7 @@ void log_file_addLogFile(
 	int minLevel,
 	int flushLevel
 ) {
+	//ZoneScoped;
 	assert(filePath != nullptr);
 
 	auto& logFiles = log_file::getLogFiles();
@@ -232,6 +243,7 @@ void log_file_addLogFile(
 }
 
 void log_file_removeLogFile(const char* filePath) {
+	//ZoneScoped;
 	assert(filePath != nullptr);
 
 	auto& logFiles = log_file::getLogFiles();
@@ -256,6 +268,7 @@ void log_file_removeLogFile(const char* filePath) {
 }
 
 void log_file_removeAllLogFiles() {
+	//ZoneScoped;
 	auto& logFiles = log_file::getLogFiles();
 
 	for (auto& logFilePair: logFiles) {
@@ -267,6 +280,7 @@ void log_file_removeAllLogFiles() {
 
 
 FILE* log_file_getLogFileStream(const char* filePath) {
+	//ZoneScoped;
 	const auto& logFiles = log_file::getLogFiles();
 
 	for (const auto& p: logFiles) {
@@ -290,6 +304,7 @@ FILE* log_file_getLogFileStream(const char* filePath) {
 /// Records a log entry
 static void log_sink_record_file(int level, const char* section, const char* record)
 {
+	//ZoneScoped;
 	if (log_file::validTracker && log_file::isActivelyLogging()) {
 		// write buffer to log file
 		log_file::writeBufferToFiles();
@@ -315,6 +330,7 @@ static void log_sink_cleanup_file() {
 
 
 namespace {
+	//ZoneScoped;
 	/// Auto-registers the sink defined in this file before main() is called
 	struct FileSinkRegistrator {
 		FileSinkRegistrator() {

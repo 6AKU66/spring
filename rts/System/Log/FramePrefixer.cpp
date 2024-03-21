@@ -11,6 +11,8 @@
 #include <cstring>
 #include <chrono>
 
+#include <tracy/Tracy.hpp>
+
 constexpr static int64_t  SECS_TO_NANOSECS = 1000 * 1000 * 1000;
 constexpr static int64_t  MINS_TO_NANOSECS = SECS_TO_NANOSECS * 60;
 constexpr static int64_t HOURS_TO_NANOSECS = MINS_TO_NANOSECS * 60;
@@ -25,11 +27,13 @@ static int* frameNumRef = nullptr;
 
 void log_framePrefixer_setFrameNumReference(int* frameNumReference)
 {
+	//ZoneScoped;
 	frameNumRef = frameNumReference;
 }
 
 size_t log_framePrefixer_createPrefix(char* result, size_t resultSize)
 {
+	//ZoneScoped;
 	const static auto refTime = std::chrono::high_resolution_clock::now();
 	const        auto curTime = std::chrono::high_resolution_clock::now();
 

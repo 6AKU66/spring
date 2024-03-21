@@ -14,6 +14,8 @@
 #include "System/StringUtil.h"
 #include "System/SpringHash.h"
 
+#include <tracy/Tracy.hpp>
+
 
 using namespace creg;
 
@@ -24,6 +26,7 @@ using namespace creg;
 //FIXME - Allow synced order traversal
 static spring::unsynced_map<const Class*, std::vector<Class*>>& derivedClasses()
 {
+	//ZoneScoped;
 	// note: we cannot save this in `class Class`, cause those are created with
 	//   global statics, and those have an arbitrary init order. And when a Class
 	//   gets created, it doesn't mean its parent class already has. (Still its
@@ -37,12 +40,14 @@ static spring::unsynced_map<const Class*, std::vector<Class*>>& derivedClasses()
 
 static spring::unsynced_map<std::string, Class*>& mapNameToClass()
 {
+	//ZoneScoped;
 	static spring::unsynced_map<std::string, Class*> m;
 	return m;
 }
 
 static std::vector<Class*>& classes()
 {
+	//ZoneScoped;
 	static std::vector<Class*> v;
 	return v;
 }
@@ -96,6 +101,7 @@ Class::Class(const char* className, ClassFlags cf,
 
 void Class::PropagatePoolFuncs()
 {
+	//ZoneScoped;
 	for (Class* dc: derivedClasses()[this]) {
 		if (dc->poolAlloc != nullptr || dc->poolFree != nullptr)
 			continue;
@@ -110,6 +116,7 @@ void Class::PropagatePoolFuncs()
 
 bool Class::IsSubclassOf(Class* other) const
 {
+	//ZoneScoped;
 	for (const Class* c = this; c; c = c->base()) {
 		if (c == other)
 			return true;
@@ -120,6 +127,7 @@ bool Class::IsSubclassOf(Class* other) const
 
 std::vector<Class*> Class::GetImplementations()
 {
+	//ZoneScoped;
 	std::vector<Class*> classes;
 
 	for (Class* dc: derivedClasses()[this]) {
@@ -136,17 +144,20 @@ std::vector<Class*> Class::GetImplementations()
 
 const std::vector<Class*>& Class::GetDerivedClasses() const
 {
+	//ZoneScoped;
 	return derivedClasses()[this];
 }
 
 
 void Class::SetFlag(ClassFlags flag)
 {
+	//ZoneScoped;
 	flags = (ClassFlags) (flags | flag);
 }
 
 void Class::AddMember(const char* name, std::unique_ptr<IType> type, unsigned int offset, int alignment, ClassMemberFlag flags)
 {
+	//ZoneScoped;
 	assert(!FindMember(name, false));
 
 	members.emplace_back();
@@ -161,6 +172,7 @@ void Class::AddMember(const char* name, std::unique_ptr<IType> type, unsigned in
 
 Class::Member* Class::FindMember(const char* name, const bool inherited)
 {
+	//ZoneScoped;
 	for (Class* c = this; c; c = c->base()) {
 		for (Member& m: members) {
 			if (!STRCASECMP(m.name, name))
@@ -174,6 +186,7 @@ Class::Member* Class::FindMember(const char* name, const bool inherited)
 
 void Class::SetMemberFlag(const char* name, ClassMemberFlag f)
 {
+	//ZoneScoped;
 	for (Member& m: members) {
 		if (!strcmp(m.name, name)) {
 			m.flags |= (int)f;
@@ -184,6 +197,7 @@ void Class::SetMemberFlag(const char* name, ClassMemberFlag f)
 
 void* Class::CreateInstance(size_t size)
 {
+	//ZoneScoped;
 	void* inst;
 	if (poolAlloc != nullptr) {
 		inst = poolAlloc(size);
@@ -199,6 +213,7 @@ void* Class::CreateInstance(size_t size)
 
 void* Class::CreateInstance(size_t size, void* addr)
 {
+	//ZoneScoped;
 	void* inst = ::operator new(size, addr);
 
 	if (constructor != nullptr)
@@ -209,6 +224,7 @@ void* Class::CreateInstance(size_t size, void* addr)
 
 void Class::DeleteInstance(void* inst)
 {
+	//ZoneScoped;
 	if (destructor != nullptr)
 		destructor(inst);
 
@@ -221,6 +237,7 @@ void Class::DeleteInstance(void* inst)
 
 void Class::CalculateChecksum(unsigned int& checksum)
 {
+	//ZoneScoped;
 	for (Member& m: members) {
 		checksum += m.flags;
 		checksum = spring::LiteHash(m.name, strlen(m.name), checksum);
@@ -238,11 +255,13 @@ void Class::CalculateChecksum(unsigned int& checksum)
 
 const std::vector<Class*>& System::GetClasses()
 {
+	//ZoneScoped;
 	return classes();
 }
 
 Class* System::GetClass(const std::string& name)
 {
+	//ZoneScoped;
 	const auto it = mapNameToClass().find(name);
 	if (it == mapNameToClass().end()) {
 		return nullptr;
@@ -252,6 +271,7 @@ Class* System::GetClass(const std::string& name)
 
 void System::AddClass(Class* c)
 {
+	//ZoneScoped;
 	classes().push_back(c);
 	mapNameToClass()[c->name] = c;
 }

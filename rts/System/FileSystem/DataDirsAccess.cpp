@@ -10,12 +10,15 @@
 #include <string>
 #include <vector>
 
+#include <tracy/Tracy.hpp>
+
 
 DataDirsAccess dataDirsAccess;
 
 
 std::vector<std::string> DataDirsAccess::FindFiles(std::string dir, const std::string& pattern, int flags) const
 {
+	//ZoneScoped;
 	if (!FileSystem::CheckFile(dir)) {
 		return std::vector<std::string>();
 	}
@@ -32,6 +35,7 @@ std::vector<std::string> DataDirsAccess::FindFiles(std::string dir, const std::s
 
 std::vector<std::string> DataDirsAccess::FindFilesInternal(const std::string& dir, const std::string& pattern, int flags) const
 {
+	//ZoneScoped;
 	std::vector<std::string> matches;
 
 	// if it is an absolute path, do not look for it in the data directories
@@ -53,6 +57,7 @@ std::vector<std::string> DataDirsAccess::FindFilesInternal(const std::string& di
 
 std::string DataDirsAccess::LocateFileInternal(const std::string& file) const
 {
+	//ZoneScoped;
 	// if it's an absolute path, don't look for it in the data directories
 	if (FileSystem::IsAbsolutePath(file)) {
 		return file;
@@ -73,6 +78,7 @@ std::string DataDirsAccess::LocateFileInternal(const std::string& file) const
 
 void DataDirsAccess::FindFilesSingleDir(std::vector<std::string>& matches, const std::string& datadir, const std::string& dir, const std::string& pattern, int flags) const
 {
+	//ZoneScoped;
 	assert(datadir.empty() || datadir[datadir.length() - 1] == FileSystem::GetNativePathSeparator());
 
 	const std::string regexPattern = FileSystem::ConvertGlobToRegex(pattern);
@@ -84,6 +90,7 @@ void DataDirsAccess::FindFilesSingleDir(std::vector<std::string>& matches, const
 
 std::string DataDirsAccess::LocateFile(std::string file, int flags) const
 {
+	//ZoneScoped;
 	if (!FileSystem::CheckFile(file)) {
 		return "";
 	}
@@ -109,6 +116,7 @@ std::string DataDirsAccess::LocateFile(std::string file, int flags) const
 
 std::string DataDirsAccess::LocateDir(std::string dir, int flags) const
 {
+	//ZoneScoped;
 	if (!FileSystem::CheckFile(dir)) {
 		return "";
 	}
@@ -139,6 +147,7 @@ std::string DataDirsAccess::LocateDir(std::string dir, int flags) const
 }
 std::vector<std::string> DataDirsAccess::LocateDirs(std::string dir) const
 {
+	//ZoneScoped;
 	std::vector<std::string> found;
 
 	if (!FileSystem::CheckFile(dir) || FileSystem::IsAbsolutePath(dir)) {
@@ -160,6 +169,7 @@ std::vector<std::string> DataDirsAccess::LocateDirs(std::string dir) const
 
 std::vector<std::string> DataDirsAccess::FindDirsInDirectSubDirs(
 		const std::string& relPath) const {
+	//ZoneScoped;
 
 	std::vector<std::string> found;
 
@@ -190,6 +200,7 @@ std::vector<std::string> DataDirsAccess::FindDirsInDirectSubDirs(
 
 bool DataDirsAccess::InReadDir(const std::string& path)
 {
+	//ZoneScoped;
 	std::string locatedFile = LocateFile(path);
 	return (!locatedFile.empty() && locatedFile != path);
 }
@@ -197,6 +208,7 @@ bool DataDirsAccess::InReadDir(const std::string& path)
 
 bool DataDirsAccess::InWriteDir(const std::string& path)
 {
+	//ZoneScoped;
 	std::string locatedFile = LocateFile(path, FileQueryFlags::WRITE);
 	return (!locatedFile.empty() && locatedFile != path);
 }

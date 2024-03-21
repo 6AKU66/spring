@@ -7,11 +7,14 @@
 
 #include "System/Log/ILog.h"
 
+#include <tracy/Tracy.hpp>
+
 namespace netcode
 {
 
 RawPacket::RawPacket(const uint8_t* const tdata, const uint32_t newLength): length(newLength)
 {
+	//ZoneScoped;
 	if (length > 0) {
 		data = new uint8_t[length];
 		memcpy(data, tdata, length);
@@ -23,6 +26,7 @@ RawPacket::RawPacket(const uint8_t* const tdata, const uint32_t newLength): leng
 
 RawPacket& RawPacket::operator<<(const std::string& text)
 {
+	//ZoneScoped;
 	size_t size = text.size() + 1;
 
 	if (std::string::npos != text.find_first_of('\0')) {

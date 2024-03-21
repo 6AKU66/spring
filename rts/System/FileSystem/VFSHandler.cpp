@@ -17,6 +17,8 @@
 #include "System/SafeUtil.h"
 #include "System/StringUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 
 #define LOG_SECTION_VFS "VFS"
 LOG_REGISTER_SECTION_GLOBAL(LOG_SECTION_VFS)
@@ -43,6 +45,7 @@ void CVFSHandler::FreeLock() { vfsMutex.unlock(); }
 void CVFSHandler::FreeGlobalInstance() { FreeInstance(vfs); }
 void CVFSHandler::FreeInstance(CVFSHandler* handler)
 {
+	//ZoneScoped;
 	if (handler != vfs) {
 		// never happens
 		delete handler;
@@ -54,12 +57,14 @@ void CVFSHandler::FreeInstance(CVFSHandler* handler)
 
 void CVFSHandler::SetGlobalInstance(CVFSHandler* handler)
 {
+	//ZoneScoped;
 	GrabLock();
 	SetGlobalInstanceRaw(handler);
 	FreeLock();
 }
 void CVFSHandler::SetGlobalInstanceRaw(CVFSHandler* handler)
 {
+	//ZoneScoped;
 	const char* curHandlerName = (vfs != nullptr)? vfs->GetName(): "null";
 	const char* newHandlerName = handler->GetName();
 
@@ -70,6 +75,7 @@ void CVFSHandler::SetGlobalInstanceRaw(CVFSHandler* handler)
 }
 
 CVFSHandler* CVFSHandler::GetGlobalInstance() {
+	//ZoneScoped;
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 	return vfs;
 }
@@ -78,6 +84,7 @@ CVFSHandler* CVFSHandler::GetGlobalInstance() {
 
 CVFSHandler::Section CVFSHandler::GetModeSection(char mode)
 {
+	//ZoneScoped;
 	switch (mode) {
 		case SPRING_VFS_MOD[0]:  return Section::Mod;
 		case SPRING_VFS_MAP[0]:  return Section::Map;
@@ -89,6 +96,7 @@ CVFSHandler::Section CVFSHandler::GetModeSection(char mode)
 
 CVFSHandler::Section CVFSHandler::GetModTypeSection(int mt)
 {
+	//ZoneScoped;
 	switch (mt) {
 		case modtype::hidden:  return Section::Mod;
 		case modtype::primary: return Section::Mod;
@@ -101,6 +109,7 @@ CVFSHandler::Section CVFSHandler::GetModTypeSection(int mt)
 
 
 static const std::string GetArchivePath(const std::string& name) {
+	//ZoneScoped;
 	if (name.empty())
 		return name;
 
@@ -114,6 +123,7 @@ static const std::string GetArchivePath(const std::string& name) {
 
 CVFSHandler::Section CVFSHandler::GetArchiveSection(const std::string& archiveName)
 {
+	//ZoneScoped;
 	const CArchiveScanner::ArchiveData& archiveData = archiveScanner->GetArchiveData(archiveName);
 	return GetModTypeSection(archiveData.GetModType());
 }
@@ -122,6 +132,7 @@ CVFSHandler::Section CVFSHandler::GetArchiveSection(const std::string& archiveNa
 
 bool CVFSHandler::HasArchive(const std::string& archiveName, Section archiveSection) const
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 
 	return (!archiveName.empty() && archives[archiveSection].find(GetArchivePath(archiveName)) != archives[archiveSection].end());
@@ -131,6 +142,7 @@ bool CVFSHandler::HasArchive(const std::string& archiveName, Section archiveSect
 
 bool CVFSHandler::AddArchive(const std::string& archiveName, bool overwrite)
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 
 	if (!insertAllowed)
@@ -209,6 +221,7 @@ bool CVFSHandler::AddArchive(const std::string& archiveName, bool overwrite)
 
 bool CVFSHandler::AddArchiveWithDeps(const std::string& archiveName, bool overwrite)
 {
+	//ZoneScoped;
 	const std::vector<std::string> ars = archiveScanner->GetAllArchivesUsedBy(archiveName);
 
 	if (ars.empty())
@@ -225,6 +238,7 @@ bool CVFSHandler::AddArchiveWithDeps(const std::string& archiveName, bool overwr
 
 bool CVFSHandler::RemoveArchive(const std::string& archiveName)
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 
 	if (!removeAllowed)
@@ -283,6 +297,7 @@ bool CVFSHandler::RemoveArchive(const std::string& archiveName)
 
 void CVFSHandler::DeleteArchives()
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 
 	LOG_L(L_INFO, "[%s::%s<this=%p>]", vfsName, __func__, this);
@@ -298,6 +313,7 @@ void CVFSHandler::DeleteArchives()
 
 void CVFSHandler::DeleteArchives(Section section)
 {
+	//ZoneScoped;
 	LOG_L(L_INFO, "[%s::%s<this=%p>(section=%d)] #archives[section]=" _STPF_ " #files[section]=" _STPF_ "", vfsName, __func__, this, section, archives[section].size(), files[section].size());
 
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
@@ -313,6 +329,7 @@ void CVFSHandler::DeleteArchives(Section section)
 
 void CVFSHandler::ReserveArchives()
 {
+	//ZoneScoped;
 	LOG_L(L_INFO, "[%s::%s<this=%p>]", vfsName, __func__, this);
 
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
@@ -334,6 +351,7 @@ void CVFSHandler::ReserveArchives()
 
 void CVFSHandler::UnMapArchives(bool reload)
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 
 	LOG_L(L_INFO, "[%s::%s<this=%p>(reload=%d)] (#mod=" _STPF_ " #map=" _STPF_ " #menu=" _STPF_ ")", vfsName, __func__, this, reload, files[Section::Mod].size(), files[Section::Map].size(), files[Section::Menu].size());
@@ -373,6 +391,7 @@ void CVFSHandler::UnMapArchives(bool reload)
 
 void CVFSHandler::ReMapArchives(bool reload)
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 
 	LOG_L(L_INFO, "[%s::%s<this=%p>(reload=%d)] (#mod=" _STPF_ " #map=" _STPF_ " #menu=" _STPF_ ")", vfsName, __func__, this, reload, files[Section::Mod].size(), files[Section::Map].size(), files[Section::Menu].size());
@@ -393,6 +412,7 @@ void CVFSHandler::ReMapArchives(bool reload)
 
 void CVFSHandler::SwapArchiveSections(Section src, Section dst)
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 
 	LOG_L(L_INFO, "[%s::%s<this=%p>(src=%d dst=%d)]", vfsName, __func__, this, src, dst);
@@ -405,6 +425,7 @@ void CVFSHandler::SwapArchiveSections(Section src, Section dst)
 
 std::string CVFSHandler::GetNormalizedPath(const std::string& rawPath)
 {
+	//ZoneScoped;
 	std::string lcPath = StringToLower(rawPath);
 	std::string nPath = std::move(FileSystem::ForwardSlashes(lcPath));
 	return nPath;
@@ -413,6 +434,7 @@ std::string CVFSHandler::GetNormalizedPath(const std::string& rawPath)
 
 CVFSHandler::FileData CVFSHandler::GetFileData(const std::string& normalizedFilePath, Section section) const
 {
+	//ZoneScoped;
 	assert(section < Section::Count);
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 
@@ -446,6 +468,7 @@ CVFSHandler::FileData CVFSHandler::GetFileData(const std::string& normalizedFile
 
 int CVFSHandler::LoadFile(const std::string& filePath, std::vector<std::uint8_t>& buffer, Section section)
 {
+	//ZoneScoped;
 	LOG_L(L_DEBUG, "[%s::%s<this=%p>(filePath=\"%s\", section=%d)]", vfsName, __func__, this, filePath.c_str(), section);
 
 	const std::string& normalizedPath = GetNormalizedPath(filePath);
@@ -460,6 +483,7 @@ int CVFSHandler::LoadFile(const std::string& filePath, std::vector<std::uint8_t>
 
 int CVFSHandler::FileExists(const std::string& filePath, Section section)
 {
+	//ZoneScoped;
 	LOG_L(L_DEBUG, "[%s::%s<this=%p>(filePath=\"%s\", section=%d)]", vfsName, __func__, this, filePath.c_str(), section);
 
 	const std::string& normalizedPath = GetNormalizedPath(filePath);
@@ -474,6 +498,7 @@ int CVFSHandler::FileExists(const std::string& filePath, Section section)
 
 std::string CVFSHandler::GetFileAbsolutePath(const std::string& filePath, Section section)
 {
+	//ZoneScoped;
 	LOG_L(L_DEBUG, "[%s::%s<this=%p>(filePath=\"%s\", section=%d)]", vfsName, __func__, this, filePath.c_str(), section);
 
 	const std::string& normalizedPath = GetNormalizedPath(filePath);
@@ -491,6 +516,7 @@ std::string CVFSHandler::GetFileAbsolutePath(const std::string& filePath, Sectio
 
 std::string CVFSHandler::GetFileArchiveName(const std::string& filePath, Section section)
 {
+	//ZoneScoped;
 	LOG_L(L_DEBUG, "[%s::%s<this=%p>(filePath=\"%s\", section=%d)]", vfsName, __func__, this, filePath.c_str(), section);
 
 	const std::string& normalizedPath = GetNormalizedPath(filePath);
@@ -504,6 +530,7 @@ std::string CVFSHandler::GetFileArchiveName(const std::string& filePath, Section
 
 std::vector<std::string> CVFSHandler::GetAllArchiveNames() const
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 
 	std::vector<std::string> ret;
@@ -523,6 +550,7 @@ std::vector<std::string> CVFSHandler::GetAllArchiveNames() const
 
 std::vector<std::string> CVFSHandler::GetFilesInDir(const std::string& rawDir, bool recursive, Section section)
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 
 	assert(section < Section::Count);
@@ -575,6 +603,7 @@ std::vector<std::string> CVFSHandler::GetFilesInDir(const std::string& rawDir, b
 
 std::vector<std::string> CVFSHandler::GetDirsInDir(const std::string& rawDir, bool recursive, Section section)
 {
+	//ZoneScoped;
 	std::lock_guard<decltype(vfsMutex)> lck(vfsMutex);
 
 	assert(section < Section::Count);

@@ -5,6 +5,8 @@
 #include "System/StringUtil.h"
 #include <iostream>
 
+#include <tracy/Tracy.hpp>
+
 /**
  * @brief Log an error about a ConfigVariableMetaData
  */
@@ -14,17 +16,20 @@
 
 ConfigVariable::MetaDataMap& ConfigVariable::GetMutableMetaDataMap()
 {
+	//ZoneScoped;
 	static MetaDataMap vars;
 	return vars;
 }
 
 const ConfigVariable::MetaDataMap& ConfigVariable::GetMetaDataMap()
 {
+	//ZoneScoped;
 	return GetMutableMetaDataMap();
 }
 
 void ConfigVariable::AddMetaData(const ConfigVariableMetaData* data)
 {
+	//ZoneScoped;
 	MetaDataMap& vars = GetMutableMetaDataMap();
 	MetaDataMap::const_iterator pos = vars.find(data->GetKey());
 
@@ -39,6 +44,7 @@ void ConfigVariable::AddMetaData(const ConfigVariableMetaData* data)
 
 const ConfigVariableMetaData* ConfigVariable::GetMetaData(const std::string& key)
 {
+	//ZoneScoped;
 	const MetaDataMap& vars = GetMetaDataMap();
 	MetaDataMap::const_iterator pos = vars.find(key);
 
@@ -62,6 +68,7 @@ CONFIG(std::string, test)
  */
 static inline std::string Quote(const std::string& type, const std::string& value)
 {
+	//ZoneScoped;
 	if (type == "bool" || type == "float" || type == "int") {
 		return value;
 	}
@@ -75,6 +82,7 @@ static inline std::string Quote(const std::string& type, const std::string& valu
  */
 static std::ostream& operator<< (std::ostream& out, const ConfigVariableMetaData* d)
 {
+	//ZoneScoped;
 	const char* const OUTER_INDENT = "  ";
 	const char* const INDENT = "    ";
 
@@ -136,6 +144,7 @@ static std::ostream& operator<< (std::ostream& out, const ConfigVariableMetaData
  */
 void ConfigVariable::OutputMetaDataMap()
 {
+	//ZoneScoped;
 	std::cout << "{\n";
 
 	const MetaDataMap& mdm = GetMetaDataMap();
