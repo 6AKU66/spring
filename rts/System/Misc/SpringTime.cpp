@@ -20,6 +20,8 @@
 	))
 #endif
 
+#include <tracy/Tracy.hpp>
+
 
 #if (defined(_WIN32) && !defined(FORCE_CHRONO_TIMERS))
 	#define USE_NATIVE_WINDOWS_CLOCK 1
@@ -42,6 +44,7 @@ namespace this_thread { using namespace std::this_thread; }
 
 
 namespace spring_clock {
+	//ZoneScoped;
 	static bool highResMode = false;
 	static bool timerInited = false;
 
@@ -182,6 +185,7 @@ static std::atomic_int avgThreadSleepTimeMicroSecs = {0};
 
 static void thread_yield()
 {
+	//ZoneScoped;
 	const spring_time t0 = spring_time::gettime();
 	this_thread::yield();
 	const spring_time t1 = spring_time::gettime();
@@ -198,6 +202,7 @@ static void thread_yield()
 
 void spring_time::sleep(bool forceThreadSleep)
 {
+	//ZoneScoped;
 	if (forceThreadSleep) {
 		spring::this_thread::sleep_for(chrono::nanoseconds(toNanoSecsi()));
 		return;
@@ -232,6 +237,7 @@ void spring_time::sleep(bool forceThreadSleep)
 
 void spring_time::sleep_until()
 {
+	//ZoneScoped;
 	auto tp = chrono::time_point<chrono::high_resolution_clock, chrono::nanoseconds>(chrono::nanoseconds(toNanoSecsi()));
 	this_thread::sleep_until(tp);
 }
@@ -239,6 +245,7 @@ void spring_time::sleep_until()
 #if defined USING_CREG && !defined UNIT_TEST
 void spring_time::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	if (s->IsWriting()) {
 		int y = spring_tomsecs(*this - spring_gettime());
 		s->SerializeInt(&y, 4);

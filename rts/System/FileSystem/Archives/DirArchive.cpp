@@ -11,6 +11,8 @@
 #include "System/FileSystem/FileQueryFlags.h"
 #include "System/StringUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 
 
 CDirArchiveFactory::CDirArchiveFactory()
@@ -20,6 +22,7 @@ CDirArchiveFactory::CDirArchiveFactory()
 
 IArchive* CDirArchiveFactory::DoCreateArchive(const std::string& filePath) const
 {
+		//ZoneScoped;
 	return new CDirArchive(filePath);
 }
 
@@ -28,6 +31,7 @@ CDirArchive::CDirArchive(const std::string& archiveName)
 	: IArchive(archiveName)
 	, dirName(archiveName + '/')
 {
+		//ZoneScoped;
 	const std::vector<std::string>& found = dataDirsAccess.FindFiles(dirName, "*", FileQueryFlags::RECURSE);
 
 	for (const std::string& f: found) {
@@ -45,6 +49,7 @@ CDirArchive::CDirArchive(const std::string& archiveName)
 
 bool CDirArchive::GetFile(unsigned int fid, std::vector<std::uint8_t>& buffer)
 {
+		//ZoneScoped;
 	assert(IsFileId(fid));
 
 	const std::string rawpath = dataDirsAccess.LocateFile(dirName + searchFiles[fid]);
@@ -66,6 +71,7 @@ bool CDirArchive::GetFile(unsigned int fid, std::vector<std::uint8_t>& buffer)
 
 void CDirArchive::FileInfo(unsigned int fid, std::string& name, int& size) const
 {
+		//ZoneScoped;
 	assert(IsFileId(fid));
 
 	name = searchFiles[fid];
