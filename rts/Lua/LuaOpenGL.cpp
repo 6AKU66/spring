@@ -79,6 +79,8 @@
 #include "System/Log/ILog.h"
 #include "System/Matrix44f.h"
 
+#include <tracy/Tracy.hpp>
+
 CONFIG(bool, LuaShaders).defaultValue(true).headlessValue(false).safemodeValue(false);
 CONFIG(int, DeprecatedGLWarnLevel).defaultValue(0).headlessValue(0).safemodeValue(0);
 
@@ -179,6 +181,7 @@ std::vector<LuaOpenGL::OcclusionQuery*> LuaOpenGL::occlusionQueries;
 
 static inline CUnit* ParseUnit(lua_State* L, const char* caller, int index)
 {
+	//ZoneScoped;
 	if (!lua_isnumber(L, index)) {
 		luaL_error(L, "Bad unitID parameter in %s()\n", caller);
 		return nullptr;
@@ -202,6 +205,7 @@ static inline CUnit* ParseUnit(lua_State* L, const char* caller, int index)
 
 static inline CUnit* ParseDrawUnit(lua_State* L, const char* caller, int index)
 {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, caller, index);
 
 	if (unit == nullptr)
@@ -219,6 +223,7 @@ static inline CUnit* ParseDrawUnit(lua_State* L, const char* caller, int index)
 
 static inline bool IsFeatureVisible(const lua_State* L, const CFeature* feature)
 {
+	//ZoneScoped;
 	if (CLuaHandle::GetHandleFullRead(L))
 		return true;
 
@@ -232,6 +237,7 @@ static inline bool IsFeatureVisible(const lua_State* L, const CFeature* feature)
 
 static CFeature* ParseFeature(lua_State* L, const char* caller, int index)
 {
+	//ZoneScoped;
 	CFeature* feature = featureHandler.GetFeature(luaL_checkint(L, index));
 
 	if (feature == nullptr)
@@ -251,6 +257,7 @@ static CFeature* ParseFeature(lua_State* L, const char* caller, int index)
 
 void LuaOpenGL::Init()
 {
+	//ZoneScoped;
 	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 	canUseShaders = configHandler->GetBool("LuaShaders");
@@ -264,6 +271,7 @@ void LuaOpenGL::Init()
 
 void LuaOpenGL::Free()
 {
+	//ZoneScoped;
 	glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 	for (const OcclusionQuery* q: occlusionQueries) {
@@ -278,6 +286,7 @@ void LuaOpenGL::Free()
 
 bool LuaOpenGL::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 	LuaOpenGLUtils::ResetState();
 
 	REGISTER_LUA_CFUNC(HasExtension);
@@ -492,6 +501,7 @@ bool LuaOpenGL::PushEntries(lua_State* L)
 
 void LuaOpenGL::ResetGLState()
 {
+	//ZoneScoped;
 	glDisable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_FALSE);
@@ -594,6 +604,7 @@ const GLbitfield AttribBits =
 
 void LuaOpenGL::EnableCommon(DrawMode mode)
 {
+	//ZoneScoped;
 	assert(drawMode == DRAW_NONE);
 	drawMode = mode;
 	if (safeMode) {
@@ -608,6 +619,7 @@ void LuaOpenGL::EnableCommon(DrawMode mode)
 
 void LuaOpenGL::DisableCommon(DrawMode mode)
 {
+	//ZoneScoped;
 	assert(drawMode == mode);
 	// FIXME  --  not needed by shadow or minimap
 	glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
@@ -628,6 +640,7 @@ void LuaOpenGL::DisableCommon(DrawMode mode)
 
 void LuaOpenGL::EnableDrawGenesis()
 {
+	//ZoneScoped;
 	EnableCommon(DRAW_GENESIS);
 	resetMatrixFunc = ResetGenesisMatrices;
 	ResetGenesisMatrices();
@@ -637,6 +650,7 @@ void LuaOpenGL::EnableDrawGenesis()
 
 void LuaOpenGL::DisableDrawGenesis()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetGenesisMatrices();
 	}
@@ -647,6 +661,7 @@ void LuaOpenGL::DisableDrawGenesis()
 
 void LuaOpenGL::ResetDrawGenesis()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetGenesisMatrices();
 		ResetGLState();
@@ -661,6 +676,7 @@ void LuaOpenGL::ResetDrawGenesis()
 
 void LuaOpenGL::EnableDrawWorld()
 {
+	//ZoneScoped;
 	EnableCommon(DRAW_WORLD);
 	resetMatrixFunc = ResetWorldMatrices;
 	SetupWorldLighting();
@@ -668,6 +684,7 @@ void LuaOpenGL::EnableDrawWorld()
 
 void LuaOpenGL::DisableDrawWorld()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetWorldMatrices();
 	}
@@ -677,6 +694,7 @@ void LuaOpenGL::DisableDrawWorld()
 
 void LuaOpenGL::ResetDrawWorld()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetWorldMatrices();
 		ResetGLState();
@@ -691,6 +709,7 @@ void LuaOpenGL::ResetDrawWorld()
 
 void LuaOpenGL::EnableDrawWorldPreUnit()
 {
+	//ZoneScoped;
 	EnableCommon(DRAW_WORLD);
 	resetMatrixFunc = ResetWorldMatrices;
 	SetupWorldLighting();
@@ -698,6 +717,7 @@ void LuaOpenGL::EnableDrawWorldPreUnit()
 
 void LuaOpenGL::DisableDrawWorldPreUnit()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetWorldMatrices();
 	}
@@ -707,6 +727,7 @@ void LuaOpenGL::DisableDrawWorldPreUnit()
 
 void LuaOpenGL::ResetDrawWorldPreUnit()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetWorldMatrices();
 		ResetGLState();
@@ -721,6 +742,7 @@ void LuaOpenGL::ResetDrawWorldPreUnit()
 
 void LuaOpenGL::EnableDrawWorldShadow()
 {
+	//ZoneScoped;
 	EnableCommon(DRAW_WORLD_SHADOW);
 	resetMatrixFunc = ResetWorldShadowMatrices;
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -735,6 +757,7 @@ void LuaOpenGL::EnableDrawWorldShadow()
 
 void LuaOpenGL::DisableDrawWorldShadow()
 {
+	//ZoneScoped;
 	glDisable(GL_POLYGON_OFFSET_FILL);
 
 	Shader::IProgramObject* po = shadowHandler.GetShadowGenProg(CShadowHandler::SHADOWGEN_PROGRAM_MODEL);
@@ -746,6 +769,7 @@ void LuaOpenGL::DisableDrawWorldShadow()
 
 void LuaOpenGL::ResetDrawWorldShadow()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetWorldShadowMatrices();
 		ResetGLState();
@@ -763,6 +787,7 @@ void LuaOpenGL::ResetDrawWorldShadow()
 
 void LuaOpenGL::EnableDrawWorldReflection()
 {
+	//ZoneScoped;
 	EnableCommon(DRAW_WORLD_REFLECTION);
 	resetMatrixFunc = ResetWorldMatrices;
 	SetupWorldLighting();
@@ -770,6 +795,7 @@ void LuaOpenGL::EnableDrawWorldReflection()
 
 void LuaOpenGL::DisableDrawWorldReflection()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetWorldMatrices();
 	}
@@ -779,6 +805,7 @@ void LuaOpenGL::DisableDrawWorldReflection()
 
 void LuaOpenGL::ResetDrawWorldReflection()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetWorldMatrices();
 		ResetGLState();
@@ -793,6 +820,7 @@ void LuaOpenGL::ResetDrawWorldReflection()
 
 void LuaOpenGL::EnableDrawWorldRefraction()
 {
+	//ZoneScoped;
 	EnableCommon(DRAW_WORLD_REFRACTION);
 	resetMatrixFunc = ResetWorldMatrices;
 	SetupWorldLighting();
@@ -800,6 +828,7 @@ void LuaOpenGL::EnableDrawWorldRefraction()
 
 void LuaOpenGL::DisableDrawWorldRefraction()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetWorldMatrices();
 	}
@@ -809,6 +838,7 @@ void LuaOpenGL::DisableDrawWorldRefraction()
 
 void LuaOpenGL::ResetDrawWorldRefraction()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetWorldMatrices();
 		ResetGLState();
@@ -822,6 +852,7 @@ void LuaOpenGL::ResetDrawWorldRefraction()
 
 void LuaOpenGL::EnableDrawScreenCommon()
 {
+	//ZoneScoped;
 	EnableCommon(DRAW_SCREEN);
 	resetMatrixFunc = ResetScreenMatrices;
 
@@ -834,6 +865,7 @@ void LuaOpenGL::EnableDrawScreenCommon()
 
 void LuaOpenGL::DisableDrawScreenCommon()
 {
+	//ZoneScoped;
 	RevertScreenLighting();
 	RevertScreenMatrices();
 	DisableCommon(DRAW_SCREEN);
@@ -842,6 +874,7 @@ void LuaOpenGL::DisableDrawScreenCommon()
 
 void LuaOpenGL::ResetDrawScreenCommon()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetScreenMatrices();
 		ResetGLState();
@@ -855,6 +888,7 @@ void LuaOpenGL::ResetDrawScreenCommon()
 
 void LuaOpenGL::EnableDrawInMiniMap()
 {
+	//ZoneScoped;
 	glMatrixMode(GL_TEXTURE   ); glPushMatrix();
 	glMatrixMode(GL_PROJECTION); glPushMatrix();
 	glMatrixMode(GL_MODELVIEW ); glPushMatrix();
@@ -871,6 +905,7 @@ void LuaOpenGL::EnableDrawInMiniMap()
 
 void LuaOpenGL::DisableDrawInMiniMap()
 {
+	//ZoneScoped;
 	if (prevDrawMode != DRAW_SCREEN) {
 		DisableCommon(DRAW_MINIMAP);
 	} else {
@@ -893,6 +928,7 @@ void LuaOpenGL::DisableDrawInMiniMap()
 
 void LuaOpenGL::ResetDrawInMiniMap()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetMiniMapMatrices();
 		ResetGLState();
@@ -907,6 +943,7 @@ void LuaOpenGL::ResetDrawInMiniMap()
 
 void LuaOpenGL::EnableDrawInMiniMapBackground()
 {
+	//ZoneScoped;
 	glMatrixMode(GL_TEXTURE   ); glPushMatrix();
 	glMatrixMode(GL_PROJECTION); glPushMatrix();
 	glMatrixMode(GL_MODELVIEW ); glPushMatrix();
@@ -923,6 +960,7 @@ void LuaOpenGL::EnableDrawInMiniMapBackground()
 
 void LuaOpenGL::DisableDrawInMiniMapBackground()
 {
+	//ZoneScoped;
 	if (prevDrawMode != DRAW_SCREEN) {
 		DisableCommon(DRAW_MINIMAP_BACKGROUND);
 	} else {
@@ -945,6 +983,7 @@ void LuaOpenGL::DisableDrawInMiniMapBackground()
 
 void LuaOpenGL::ResetDrawInMiniMapBackground()
 {
+	//ZoneScoped;
 	if (safeMode) {
 		ResetMiniMapMatrices();
 		ResetGLState();
@@ -957,6 +996,7 @@ void LuaOpenGL::ResetDrawInMiniMapBackground()
 
 void LuaOpenGL::SetupWorldLighting()
 {
+	//ZoneScoped;
 	const auto& sky = ISky::GetSky();
 	if (sky == nullptr)
 		return;
@@ -968,6 +1008,7 @@ void LuaOpenGL::SetupWorldLighting()
 
 void LuaOpenGL::RevertWorldLighting()
 {
+	//ZoneScoped;
 	glDisable(GL_LIGHT1);
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);
 }
@@ -975,6 +1016,7 @@ void LuaOpenGL::RevertWorldLighting()
 
 void LuaOpenGL::SetupScreenMatrices()
 {
+	//ZoneScoped;
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 
 	glMatrixMode(GL_PROJECTION);
@@ -986,6 +1028,7 @@ void LuaOpenGL::SetupScreenMatrices()
 
 void LuaOpenGL::RevertScreenMatrices()
 {
+	//ZoneScoped;
 	glMatrixMode(GL_TEXTURE   ); glLoadIdentity();
 	glMatrixMode(GL_PROJECTION); glLoadIdentity(); gluOrtho2D(0.0f, 1.0f, 0.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW ); glLoadIdentity();
@@ -994,6 +1037,7 @@ void LuaOpenGL::RevertScreenMatrices()
 
 void LuaOpenGL::SetupScreenLighting()
 {
+	//ZoneScoped;
 	const auto& sky = ISky::GetSky();
 	if (sky == nullptr)
 		return;
@@ -1038,6 +1082,7 @@ void LuaOpenGL::SetupScreenLighting()
 
 void LuaOpenGL::RevertScreenLighting()
 {
+	//ZoneScoped;
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);
 	glDisable(GL_LIGHT1);
 	glDisable(GL_LIGHT0);
@@ -1049,6 +1094,7 @@ void LuaOpenGL::RevertScreenLighting()
 
 void LuaOpenGL::ResetGenesisMatrices()
 {
+	//ZoneScoped;
 	glMatrixMode(GL_TEXTURE   ); glLoadIdentity();
 	glMatrixMode(GL_PROJECTION); glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW ); glLoadIdentity();
@@ -1057,6 +1103,7 @@ void LuaOpenGL::ResetGenesisMatrices()
 
 void LuaOpenGL::ResetWorldMatrices()
 {
+	//ZoneScoped;
 	glMatrixMode(GL_TEXTURE   ); glLoadIdentity();
 	glMatrixMode(GL_PROJECTION); glLoadMatrixf(camera->GetProjectionMatrix());
 	glMatrixMode(GL_MODELVIEW ); glLoadMatrixf(camera->GetViewMatrix());
@@ -1064,6 +1111,7 @@ void LuaOpenGL::ResetWorldMatrices()
 
 void LuaOpenGL::ResetWorldShadowMatrices()
 {
+	//ZoneScoped;
 	glMatrixMode(GL_TEXTURE   ); glLoadIdentity();
 	glMatrixMode(GL_PROJECTION); glLoadIdentity(); glOrtho(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, -1.0f);
 	glMatrixMode(GL_MODELVIEW ); glLoadMatrixf(shadowHandler.GetShadowMatrixRaw());
@@ -1072,6 +1120,7 @@ void LuaOpenGL::ResetWorldShadowMatrices()
 
 void LuaOpenGL::ResetScreenMatrices()
 {
+	//ZoneScoped;
 	glMatrixMode(GL_TEXTURE   ); glLoadIdentity();
 	glMatrixMode(GL_PROJECTION); glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW ); glLoadIdentity();
@@ -1082,6 +1131,7 @@ void LuaOpenGL::ResetScreenMatrices()
 
 void LuaOpenGL::ResetMiniMapMatrices()
 {
+	//ZoneScoped;
 	assert(minimap != nullptr);
 
 	// engine draws minimap in 0..1 range, lua uses 0..minimapSize{X,Y}
@@ -1097,6 +1147,7 @@ void LuaOpenGL::ResetMiniMapMatrices()
 
 inline void LuaOpenGL::CheckDrawingEnabled(lua_State* L, const char* caller)
 {
+	//ZoneScoped;
 	if (!IsDrawingEnabled(L)) {
 		luaL_error(L, "%s(): OpenGL calls can only be used in Draw() "
 		              "call-ins, or while creating display lists", caller);
@@ -1105,6 +1156,7 @@ inline void LuaOpenGL::CheckDrawingEnabled(lua_State* L, const char* caller)
 
 inline void LuaOpenGL::CondWarnDeprecatedGL(lua_State* L, const char* caller)
 {
+	//ZoneScoped;
 	if (deprecatedGLWarnLevel <= 0)
 		return;
 
@@ -1144,6 +1196,7 @@ inline void LuaOpenGL::NotImplementedError(lua_State* L, const char* caller)
 
 int LuaOpenGL::HasExtension(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, glewIsSupported(luaL_checkstring(L, 1)));
 	return 1;
 }
@@ -1151,6 +1204,7 @@ int LuaOpenGL::HasExtension(lua_State* L)
 
 int LuaOpenGL::GetNumber(lua_State* L)
 {
+	//ZoneScoped;
 	const GLenum pname = (GLenum) luaL_checknumber(L, 1);
 	const GLuint count = (GLuint) luaL_optnumber(L, 2, 1);
 
@@ -1168,6 +1222,7 @@ int LuaOpenGL::GetNumber(lua_State* L)
 
 int LuaOpenGL::GetString(lua_State* L)
 {
+	//ZoneScoped;
 	const GLenum pname = (GLenum) luaL_checknumber(L, 1);
 	const char* pstring = (const char*) glGetString(pname);
 
@@ -1182,6 +1237,7 @@ int LuaOpenGL::GetString(lua_State* L)
 
 int LuaOpenGL::GetScreenViewTrans(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, screenViewTrans.x);
 	lua_pushnumber(L, screenViewTrans.y);
 	lua_pushnumber(L, screenViewTrans.z);
@@ -1191,6 +1247,7 @@ int LuaOpenGL::GetScreenViewTrans(lua_State* L)
 
 int LuaOpenGL::GetViewSizes(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, globalRendering->viewSizeX);
 	lua_pushnumber(L, globalRendering->viewSizeY);
 	return 2;
@@ -1198,6 +1255,7 @@ int LuaOpenGL::GetViewSizes(lua_State* L)
 
 int LuaOpenGL::GetViewRange(lua_State* L)
 {
+	//ZoneScoped;
 	constexpr int minCamType = CCamera::CAMTYPE_PLAYER;
 	constexpr int maxCamType = CCamera::CAMTYPE_ACTIVE;
 
@@ -1213,6 +1271,7 @@ int LuaOpenGL::GetViewRange(lua_State* L)
 
 int LuaOpenGL::SlaveMiniMap(lua_State* L)
 {
+	//ZoneScoped;
 	if (minimap == nullptr)
 		return 0;
 
@@ -1224,6 +1283,7 @@ int LuaOpenGL::SlaveMiniMap(lua_State* L)
 
 int LuaOpenGL::ConfigMiniMap(lua_State* L)
 {
+	//ZoneScoped;
 	if (minimap == nullptr)
 		return 0;
 
@@ -1239,6 +1299,7 @@ int LuaOpenGL::ConfigMiniMap(lua_State* L)
 
 int LuaOpenGL::DrawMiniMap(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	if (minimap == nullptr)
@@ -1275,6 +1336,7 @@ int LuaOpenGL::DrawMiniMap(lua_State* L)
 
 int LuaOpenGL::BeginText(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	font->Begin();
 	return 0;
@@ -1283,6 +1345,7 @@ int LuaOpenGL::BeginText(lua_State* L)
 
 int LuaOpenGL::EndText(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	font->End();
 	return 0;
@@ -1318,6 +1381,7 @@ int LuaOpenGL::EndText(lua_State* L)
  */
 int LuaOpenGL::Text(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -1373,6 +1437,7 @@ int LuaOpenGL::Text(lua_State* L)
 
 int LuaOpenGL::GetTextWidth(lua_State* L)
 {
+	//ZoneScoped;
 
 	const string text = luaL_checksstring(L, 1);
 	const float width = font->GetTextWidth(text);
@@ -1383,6 +1448,7 @@ int LuaOpenGL::GetTextWidth(lua_State* L)
 
 int LuaOpenGL::GetTextHeight(lua_State* L)
 {
+	//ZoneScoped;
 	const string text = luaL_checksstring(L, 1);
 	float descender;
 	int lines;
@@ -1399,6 +1465,7 @@ int LuaOpenGL::GetTextHeight(lua_State* L)
 
 static void GLObjectPiece(lua_State* L, const CSolidObject* obj)
 {
+	//ZoneScoped;
 	if (obj == nullptr)
 		return;
 
@@ -1415,6 +1482,7 @@ static void GLObjectPiece(lua_State* L, const CSolidObject* obj)
 
 static void GLObjectPieceMultMatrix(lua_State* L, const CSolidObject* obj)
 {
+	//ZoneScoped;
 	if (obj == nullptr)
 		return;
 
@@ -1428,6 +1496,7 @@ static void GLObjectPieceMultMatrix(lua_State* L, const CSolidObject* obj)
 
 static bool GLObjectDrawWithLuaMat(lua_State* L, CSolidObject* obj, LuaObjType objType)
 {
+	//ZoneScoped;
 	LuaObjectMaterialData* lmd = obj->GetLuaMaterialData();
 
 	if (!lmd->Enabled())
@@ -1451,6 +1520,7 @@ static bool GLObjectDrawWithLuaMat(lua_State* L, CSolidObject* obj, LuaObjType o
 
 static void GLObjectShape(lua_State* L, const SolidObjectDef* def)
 {
+	//ZoneScoped;
 	if (def == nullptr)
 		return;
 	if (def->LoadModel() == nullptr)
@@ -1472,6 +1542,7 @@ static void GLObjectShape(lua_State* L, const SolidObjectDef* def)
 
 static void GLObjectTextures(lua_State* L, const CSolidObject* obj)
 {
+	//ZoneScoped;
 	if (obj == nullptr)
 		return;
 	if (obj->model == nullptr)
@@ -1486,6 +1557,7 @@ static void GLObjectTextures(lua_State* L, const CSolidObject* obj)
 
 static void GLObjectShapeTextures(lua_State* L, const SolidObjectDef* def)
 {
+	//ZoneScoped;
 	if (def == nullptr)
 		return;
 	if (def->LoadModel() == nullptr)
@@ -1504,6 +1576,7 @@ static void GLObjectShapeTextures(lua_State* L, const SolidObjectDef* def)
 
 int LuaOpenGL::UnitCommon(lua_State* L, bool applyTransform, bool callDrawUnit)
 {
+	//ZoneScoped;
 	LuaOpenGL::CheckDrawingEnabled(L, __func__);
 
 	CUnit* unit = ParseUnit(L, __func__, 1);
@@ -1556,11 +1629,13 @@ int LuaOpenGL::UnitRaw(lua_State* L) { return (UnitCommon(L, false, false)); }
 
 int LuaOpenGL::UnitGL4(lua_State* L)
 {
+	//ZoneScoped;
 	return 0;
 }
 
 int LuaOpenGL::UnitTextures(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	GLObjectTextures(L, unitHandler.GetUnit(luaL_checkint(L, 1)));
 	return 0;
@@ -1568,6 +1643,7 @@ int LuaOpenGL::UnitTextures(lua_State* L)
 
 int LuaOpenGL::UnitShape(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	GLObjectShape(L, unitDefHandler->GetUnitDefByID(luaL_checkint(L, 1)));
 	return 0;
@@ -1575,11 +1651,13 @@ int LuaOpenGL::UnitShape(lua_State* L)
 
 int LuaOpenGL::UnitShapeGL4(lua_State* L)
 {
+	//ZoneScoped;
 	return 0;
 }
 
 int LuaOpenGL::UnitShapeTextures(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	GLObjectShapeTextures(L, unitDefHandler->GetUnitDefByID(luaL_checkint(L, 1)));
 	return 0;
@@ -1588,6 +1666,7 @@ int LuaOpenGL::UnitShapeTextures(lua_State* L)
 
 int LuaOpenGL::UnitMultMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -1602,6 +1681,7 @@ int LuaOpenGL::UnitMultMatrix(lua_State* L)
 
 int LuaOpenGL::UnitPiece(lua_State* L)
 {
+	//ZoneScoped;
 	GLObjectPiece(L, ParseUnit(L, __func__, 1));
 	return 0;
 }
@@ -1609,6 +1689,7 @@ int LuaOpenGL::UnitPiece(lua_State* L)
 int LuaOpenGL::UnitPieceMatrix(lua_State* L) { return (UnitPieceMultMatrix(L)); }
 int LuaOpenGL::UnitPieceMultMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	GLObjectPieceMultMatrix(L, ParseUnit(L, __func__, 1));
@@ -1620,6 +1701,7 @@ int LuaOpenGL::UnitPieceMultMatrix(lua_State* L)
 
 int LuaOpenGL::FeatureCommon(lua_State* L, bool applyTransform, bool callDrawFeature)
 {
+	//ZoneScoped;
 	LuaOpenGL::CheckDrawingEnabled(L, __func__);
 
 	CFeature* feature = ParseFeature(L, __func__, 1);
@@ -1672,11 +1754,13 @@ int LuaOpenGL::FeatureRaw(lua_State* L) { return (FeatureCommon(L, false, false)
 
 int LuaOpenGL::FeatureGL4(lua_State* L)
 {
+	//ZoneScoped;
 	return 0;
 }
 
 int LuaOpenGL::FeatureTextures(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	GLObjectTextures(L, featureHandler.GetFeature(luaL_checkint(L, 1)));
 	return 0;
@@ -1684,6 +1768,7 @@ int LuaOpenGL::FeatureTextures(lua_State* L)
 
 int LuaOpenGL::FeatureShape(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	GLObjectShape(L, featureDefHandler->GetFeatureDefByID(luaL_checkint(L, 1)));
 	return 0;
@@ -1691,11 +1776,13 @@ int LuaOpenGL::FeatureShape(lua_State* L)
 
 int LuaOpenGL::FeatureShapeGL4(lua_State* L)
 {
+	//ZoneScoped;
 	return 0;
 }
 
 int LuaOpenGL::FeatureShapeTextures(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	GLObjectShapeTextures(L, featureDefHandler->GetFeatureDefByID(luaL_checkint(L, 1)));
 	return 0;
@@ -1704,6 +1791,7 @@ int LuaOpenGL::FeatureShapeTextures(lua_State* L)
 
 int LuaOpenGL::FeatureMultMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -1718,6 +1806,7 @@ int LuaOpenGL::FeatureMultMatrix(lua_State* L)
 
 int LuaOpenGL::FeaturePiece(lua_State* L)
 {
+	//ZoneScoped;
 	GLObjectPiece(L, ParseFeature(L, __func__, 1));
 	return 0;
 }
@@ -1726,6 +1815,7 @@ int LuaOpenGL::FeaturePiece(lua_State* L)
 int LuaOpenGL::FeaturePieceMatrix(lua_State* L) { return (FeaturePieceMultMatrix(L)); }
 int LuaOpenGL::FeaturePieceMultMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	GLObjectPieceMultMatrix(L, ParseFeature(L, __func__, 1));
@@ -1738,6 +1828,7 @@ int LuaOpenGL::FeaturePieceMultMatrix(lua_State* L)
 
 int LuaOpenGL::DrawListAtUnit(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -1782,6 +1873,7 @@ int LuaOpenGL::DrawListAtUnit(lua_State* L)
 
 int LuaOpenGL::DrawFuncAtUnit(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	// is visible to current read team, is not an icon
@@ -1819,6 +1911,7 @@ int LuaOpenGL::DrawFuncAtUnit(lua_State* L)
 
 int LuaOpenGL::DrawGroundCircle(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const float3 pos(luaL_checkfloat(L, 1),
@@ -1859,6 +1952,7 @@ int LuaOpenGL::DrawGroundCircle(lua_State* L)
 
 int LuaOpenGL::DrawGroundQuad(lua_State* L)
 {
+	//ZoneScoped;
 	// FIXME: incomplete (esp. texcoord clamping)
 	CheckDrawingEnabled(L, __func__);
 	const float x0 = luaL_checknumber(L, 1);
@@ -1974,6 +2068,7 @@ struct VertexData {
 
 static bool ParseVertexData(lua_State* L, VertexData& vd)
 {
+	//ZoneScoped;
 	vd.hasVert = vd.hasNorm = vd.hasTxcd = vd.hasColor = false;
 
 	const int table = lua_gettop(L);
@@ -2035,6 +2130,7 @@ static bool ParseVertexData(lua_State* L, VertexData& vd)
 
 int LuaOpenGL::Shape(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2076,6 +2172,7 @@ int LuaOpenGL::Shape(lua_State* L)
 
 int LuaOpenGL::BeginEnd(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2107,6 +2204,7 @@ int LuaOpenGL::BeginEnd(lua_State* L)
 
 int LuaOpenGL::Vertex(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2170,6 +2268,7 @@ int LuaOpenGL::Vertex(lua_State* L)
 
 int LuaOpenGL::Normal(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2208,6 +2307,7 @@ int LuaOpenGL::Normal(lua_State* L)
 
 int LuaOpenGL::TexCoord(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2276,6 +2376,7 @@ int LuaOpenGL::TexCoord(lua_State* L)
 
 int LuaOpenGL::MultiTexCoord(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2350,6 +2451,7 @@ int LuaOpenGL::MultiTexCoord(lua_State* L)
 
 int LuaOpenGL::SecondaryColor(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2388,6 +2490,7 @@ int LuaOpenGL::SecondaryColor(lua_State* L)
 
 int LuaOpenGL::FogCoord(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2399,6 +2502,7 @@ int LuaOpenGL::FogCoord(lua_State* L)
 
 int LuaOpenGL::EdgeFlag(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2413,6 +2517,7 @@ int LuaOpenGL::EdgeFlag(lua_State* L)
 
 int LuaOpenGL::Rect(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const float x1 = luaL_checkfloat(L, 1);
 	const float y1 = luaL_checkfloat(L, 2);
@@ -2425,6 +2530,7 @@ int LuaOpenGL::Rect(lua_State* L)
 
 int LuaOpenGL::TexRect(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -2479,6 +2585,7 @@ int LuaOpenGL::TexRect(lua_State* L)
 
 int LuaOpenGL::DispatchCompute(lua_State* L)
 {
+	//ZoneScoped;
 	const GLuint numGroupX = (GLuint)luaL_checknumber(L, 1);
 	const GLuint numGroupY = (GLuint)luaL_checknumber(L, 2);
 	const GLuint numGroupZ = (GLuint)luaL_checknumber(L, 3);
@@ -2511,6 +2618,7 @@ int LuaOpenGL::DispatchCompute(lua_State* L)
 
 int LuaOpenGL::MemoryBarrier(lua_State* L)
 {
+	//ZoneScoped;
 	GLbitfield barriers = (GLbitfield)luaL_optint(L, 1, 0);
 	//skip checking the correctness of values :)
 
@@ -2538,6 +2646,7 @@ int LuaOpenGL::MemoryBarrier(lua_State* L)
  */
 int LuaOpenGL::Color(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2576,6 +2685,7 @@ int LuaOpenGL::Color(lua_State* L)
 
 int LuaOpenGL::Material(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2645,6 +2755,7 @@ int LuaOpenGL::Material(lua_State* L)
 
 int LuaOpenGL::ResetState(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	ResetGLState();
 	return 0;
@@ -2653,6 +2764,7 @@ int LuaOpenGL::ResetState(lua_State* L)
 
 int LuaOpenGL::ResetMatrices(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -2668,6 +2780,7 @@ int LuaOpenGL::ResetMatrices(lua_State* L)
 
 int LuaOpenGL::Lighting(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	if (luaL_checkboolean(L, 1)) {
@@ -2681,6 +2794,7 @@ int LuaOpenGL::Lighting(lua_State* L)
 
 int LuaOpenGL::ShadeModel(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	glShadeModel((GLenum)luaL_checkint(L, 1));
@@ -2690,6 +2804,7 @@ int LuaOpenGL::ShadeModel(lua_State* L)
 
 int LuaOpenGL::Scissor(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -2720,6 +2835,7 @@ int LuaOpenGL::Scissor(lua_State* L)
 
 int LuaOpenGL::Viewport(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int x = luaL_checkint(L, 1);
@@ -2736,6 +2852,7 @@ int LuaOpenGL::Viewport(lua_State* L)
 
 int LuaOpenGL::ColorMask(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -2759,6 +2876,7 @@ int LuaOpenGL::ColorMask(lua_State* L)
 
 int LuaOpenGL::DepthMask(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	if (luaL_checkboolean(L, 1)) {
 		glDepthMask(GL_TRUE);
@@ -2771,6 +2889,7 @@ int LuaOpenGL::DepthMask(lua_State* L)
 
 int LuaOpenGL::DepthTest(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -2798,6 +2917,7 @@ int LuaOpenGL::DepthTest(lua_State* L)
 
 int LuaOpenGL::DepthClamp(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	luaL_checktype(L, 1, LUA_TBOOLEAN);
 	if (lua_toboolean(L, 1)) {
@@ -2811,6 +2931,7 @@ int LuaOpenGL::DepthClamp(lua_State* L)
 
 int LuaOpenGL::Culling(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -2838,6 +2959,7 @@ int LuaOpenGL::Culling(lua_State* L)
 
 int LuaOpenGL::LogicOp(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -2865,6 +2987,7 @@ int LuaOpenGL::LogicOp(lua_State* L)
 
 int LuaOpenGL::Fog(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -2879,6 +3002,7 @@ int LuaOpenGL::Fog(lua_State* L)
 
 int LuaOpenGL::Blending(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -2941,6 +3065,7 @@ int LuaOpenGL::Blending(lua_State* L)
 
 int LuaOpenGL::BlendEquation(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLenum mode = (GLenum)luaL_checkint(L, 1);
 	glBlendEquation(mode);
@@ -2950,6 +3075,7 @@ int LuaOpenGL::BlendEquation(lua_State* L)
 
 int LuaOpenGL::BlendFunc(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLenum src = (GLenum)luaL_checkint(L, 1);
 	const GLenum dst = (GLenum)luaL_checkint(L, 2);
@@ -2960,6 +3086,7 @@ int LuaOpenGL::BlendFunc(lua_State* L)
 
 int LuaOpenGL::BlendEquationSeparate(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLenum modeRGB   = (GLenum)luaL_checkint(L, 1);
 	const GLenum modeAlpha = (GLenum)luaL_checkint(L, 2);
@@ -2970,6 +3097,7 @@ int LuaOpenGL::BlendEquationSeparate(lua_State* L)
 
 int LuaOpenGL::BlendFuncSeparate(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLenum srcRGB   = (GLenum)luaL_checkint(L, 1);
 	const GLenum dstRGB   = (GLenum)luaL_checkint(L, 2);
@@ -2983,6 +3111,7 @@ int LuaOpenGL::BlendFuncSeparate(lua_State* L)
 
 int LuaOpenGL::AlphaTest(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -3006,6 +3135,7 @@ int LuaOpenGL::AlphaTest(lua_State* L)
 
 int LuaOpenGL::AlphaToCoverage(lua_State* L)
 {
+	//ZoneScoped;
 	const bool force = luaL_optboolean(L, 2, false);
 	if (!force && globalRendering->msaaLevel < 4)
 		return 0;
@@ -3023,6 +3153,7 @@ int LuaOpenGL::AlphaToCoverage(lua_State* L)
 
 int LuaOpenGL::PolygonMode(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLenum face = (GLenum)luaL_checkint(L, 1);
 	const GLenum mode = (GLenum)luaL_checkint(L, 2);
@@ -3033,6 +3164,7 @@ int LuaOpenGL::PolygonMode(lua_State* L)
 
 int LuaOpenGL::PolygonOffset(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -3064,6 +3196,7 @@ int LuaOpenGL::PolygonOffset(lua_State* L)
 
 int LuaOpenGL::StencilTest(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	luaL_checktype(L, 1, LUA_TBOOLEAN);
 	if (lua_toboolean(L, 1)) {
@@ -3077,6 +3210,7 @@ int LuaOpenGL::StencilTest(lua_State* L)
 
 int LuaOpenGL::StencilMask(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLuint mask = luaL_checkint(L, 1);
 	glStencilMask(mask);
@@ -3086,6 +3220,7 @@ int LuaOpenGL::StencilMask(lua_State* L)
 
 int LuaOpenGL::StencilFunc(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLenum func = luaL_checkint(L, 1);
 	const GLint  ref  = luaL_checkint(L, 2);
@@ -3097,6 +3232,7 @@ int LuaOpenGL::StencilFunc(lua_State* L)
 
 int LuaOpenGL::StencilOp(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLenum fail  = luaL_checkint(L, 1);
 	const GLenum zfail = luaL_checkint(L, 2);
@@ -3108,6 +3244,7 @@ int LuaOpenGL::StencilOp(lua_State* L)
 
 int LuaOpenGL::StencilMaskSeparate(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLenum face = luaL_checkint(L, 1);
 	const GLuint mask = luaL_checkint(L, 2);
@@ -3118,6 +3255,7 @@ int LuaOpenGL::StencilMaskSeparate(lua_State* L)
 
 int LuaOpenGL::StencilFuncSeparate(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLenum face = luaL_checkint(L, 1);
 	const GLenum func = luaL_checkint(L, 2);
@@ -3130,6 +3268,7 @@ int LuaOpenGL::StencilFuncSeparate(lua_State* L)
 
 int LuaOpenGL::StencilOpSeparate(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLenum face  = luaL_checkint(L, 1);
 	const GLenum fail  = luaL_checkint(L, 2);
@@ -3144,6 +3283,7 @@ int LuaOpenGL::StencilOpSeparate(lua_State* L)
 
 int LuaOpenGL::LineStipple(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -3193,6 +3333,7 @@ int LuaOpenGL::LineStipple(lua_State* L)
 
 int LuaOpenGL::LineWidth(lua_State* L)
 {
+	//ZoneScoped;
 	CondWarnDeprecatedGL(L, __func__);
 	const float width = luaL_checkfloat(L, 1);
 	if (width <= 0.0f) luaL_argerror(L, 1, "Incorrect Width (must be greater zero)");
@@ -3203,6 +3344,7 @@ int LuaOpenGL::LineWidth(lua_State* L)
 
 int LuaOpenGL::PointSize(lua_State* L)
 {
+	//ZoneScoped;
 	CondWarnDeprecatedGL(L, __func__);
 	const float size = luaL_checkfloat(L, 1);
 	if (size <= 0.0f) luaL_argerror(L, 1, "Incorrect Size (must be greater zero)");
@@ -3213,6 +3355,7 @@ int LuaOpenGL::PointSize(lua_State* L)
 
 int LuaOpenGL::PointSprite(lua_State* L)
 {
+	//ZoneScoped;
 	CondWarnDeprecatedGL(L, __func__);
 	const int args = lua_gettop(L); // number of arguments
 
@@ -3241,6 +3384,7 @@ int LuaOpenGL::PointSprite(lua_State* L)
 
 int LuaOpenGL::PointParameter(lua_State* L)
 {
+	//ZoneScoped;
 	CondWarnDeprecatedGL(L, __func__);
 	GLfloat atten[3];
 	atten[0] = (GLfloat)luaL_checknumber(L, 1);
@@ -3268,6 +3412,7 @@ int LuaOpenGL::PointParameter(lua_State* L)
 
 int LuaOpenGL::Texture(lua_State* L)
 {
+	//ZoneScoped;
 	// NOTE: current formats:
 	//
 	// #12          --  unitDef 12 buildpic
@@ -3383,6 +3528,7 @@ namespace Impl {
 
 int LuaOpenGL::CreateTexture(lua_State* L)
 {
+	//ZoneScoped;
 	LuaTextures::Texture tex;
 	tex.xsize = (GLsizei)luaL_checknumber(L, 1);
 	tex.ysize = (GLsizei)luaL_checknumber(L, 2);
@@ -3450,6 +3596,7 @@ int LuaOpenGL::CreateTexture(lua_State* L)
 
 int LuaOpenGL::ChangeTextureParams(lua_State* L)
 {
+	//ZoneScoped;
 	if (!lua_isstring(L, 1))
 		return 0;
 	if (!lua_istable(L, 2))
@@ -3476,6 +3623,7 @@ int LuaOpenGL::ChangeTextureParams(lua_State* L)
 
 int LuaOpenGL::DeleteTexture(lua_State* L)
 {
+	//ZoneScoped;
 	if (lua_isnil(L, 1))
 		return 0;
 
@@ -3492,6 +3640,7 @@ int LuaOpenGL::DeleteTexture(lua_State* L)
 // FIXME: obsolete
 int LuaOpenGL::DeleteTextureFBO(lua_State* L)
 {
+	//ZoneScoped;
 	if (!lua_isstring(L, 1))
 		return 0;
 
@@ -3503,6 +3652,7 @@ int LuaOpenGL::DeleteTextureFBO(lua_State* L)
 
 int LuaOpenGL::TextureInfo(lua_State* L)
 {
+	//ZoneScoped;
 	LuaMatTexture tex;
 
 	if (!LuaOpenGLUtils::ParseTextureImage(L, tex, luaL_checkstring(L, 1)))
@@ -3524,6 +3674,7 @@ int LuaOpenGL::TextureInfo(lua_State* L)
 
 int LuaOpenGL::CopyToTexture(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const std::string& texture = luaL_checkstring(L, 1);
@@ -3560,6 +3711,7 @@ int LuaOpenGL::CopyToTexture(lua_State* L)
 // FIXME: obsolete
 int LuaOpenGL::RenderToTexture(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const std::string& texture = luaL_checkstring(L, 1);
@@ -3608,6 +3760,7 @@ int LuaOpenGL::RenderToTexture(lua_State* L)
 
 int LuaOpenGL::GenerateMipmap(lua_State* L)
 {
+	//ZoneScoped;
 	//CheckDrawingEnabled(L, __func__);
 	const std::string& texStr = luaL_checkstring(L, 1);
 
@@ -3629,6 +3782,7 @@ int LuaOpenGL::GenerateMipmap(lua_State* L)
 
 int LuaOpenGL::ActiveTexture(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -3657,6 +3811,7 @@ int LuaOpenGL::ActiveTexture(lua_State* L)
 
 int LuaOpenGL::TexEnv(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -3686,6 +3841,7 @@ int LuaOpenGL::TexEnv(lua_State* L)
 
 int LuaOpenGL::MultiTexEnv(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -3724,6 +3880,7 @@ int LuaOpenGL::MultiTexEnv(lua_State* L)
 
 static void SetTexGenState(GLenum target, bool state)
 {
+	//ZoneScoped;
 	if ((target >= GL_S) && (target <= GL_Q)) {
 		const GLenum pname = GL_TEXTURE_GEN_S + (target - GL_S);
 		if (state) {
@@ -3737,6 +3894,7 @@ static void SetTexGenState(GLenum target, bool state)
 
 int LuaOpenGL::TexGen(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -3775,6 +3933,7 @@ int LuaOpenGL::TexGen(lua_State* L)
 
 int LuaOpenGL::MultiTexGen(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -3823,6 +3982,7 @@ int LuaOpenGL::MultiTexGen(lua_State* L)
 
 int LuaOpenGL::BindImageTexture(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	int argNum = 1;
@@ -3935,6 +4095,7 @@ int LuaOpenGL::BindImageTexture(lua_State* L)
 //TODO DRY pass
 int LuaOpenGL::CreateTextureAtlas(lua_State* L)
 {
+	//ZoneScoped;
 	constexpr int minSize = 256; //atlas less than that doesn't make sense
 	const int maxSizeX = configHandler->GetInt("MaxTextureAtlasSizeX");
 	const int maxSizeY = configHandler->GetInt("MaxTextureAtlasSizeY");
@@ -3958,6 +4119,7 @@ int LuaOpenGL::CreateTextureAtlas(lua_State* L)
 
 int LuaOpenGL::FinalizeTextureAtlas(lua_State* L)
 {
+	//ZoneScoped;
 	const std::string idStr = luaL_checksstring(L, 1);
 	if (idStr[0] != LuaAtlasTextures::prefix)
 		luaL_error(L, "gl.%s() Invalid atlas id specified %s", __func__, idStr.c_str());
@@ -3973,6 +4135,7 @@ int LuaOpenGL::FinalizeTextureAtlas(lua_State* L)
 
 int LuaOpenGL::DeleteTextureAtlas(lua_State* L)
 {
+	//ZoneScoped;
 	const std::string idStr = luaL_checksstring(L, 1);
 	if (idStr[0] != LuaAtlasTextures::prefix)
 		luaL_error(L, "gl.%s() Call is only suitable for destroying Texture Atlases. Use gl.DeleteTexture/gl.DeleteTextureFBO for other texture types", __func__);
@@ -3984,6 +4147,7 @@ int LuaOpenGL::DeleteTextureAtlas(lua_State* L)
 
 int LuaOpenGL::AddAtlasTexture(lua_State* L)
 {
+	//ZoneScoped;
 	const std::string idStr = luaL_checksstring(L, 1);
 	if (idStr[0] != LuaAtlasTextures::prefix)
 		luaL_error(L, "gl.%s() Invalid atlas id specified %s", __func__, idStr.c_str());
@@ -4030,6 +4194,7 @@ int LuaOpenGL::AddAtlasTexture(lua_State* L)
 
 int LuaOpenGL::GetAtlasTexture(lua_State* L)
 {
+	//ZoneScoped;
 	const std::string idStr = luaL_checksstring(L, 1);
 	if (idStr[0] != LuaAtlasTextures::prefix)
 		luaL_error(L, "gl.%s() Invalid atlas id specified %s", __func__, idStr.c_str());
@@ -4053,6 +4218,7 @@ int LuaOpenGL::GetAtlasTexture(lua_State* L)
 }
 
 int LuaOpenGL::GetEngineAtlasTextures(lua_State* L) {
+	//ZoneScoped;
 	const auto pushFunc = [L](const auto& textures) -> int {
 		lua_createtable(L, 0, textures.size());
 
@@ -4103,6 +4269,7 @@ int LuaOpenGL::GetEngineAtlasTextures(lua_State* L) {
 
 int LuaOpenGL::Clear(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int args = lua_gettop(L); // number of arguments
@@ -4141,6 +4308,7 @@ int LuaOpenGL::Clear(lua_State* L)
 
 int LuaOpenGL::SwapBuffers(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	// only meant for frame-limited LuaMenu's that want identical content in both buffers
@@ -4155,6 +4323,7 @@ int LuaOpenGL::SwapBuffers(lua_State* L)
 
 int LuaOpenGL::Translate(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	const float x = luaL_checkfloat(L, 1);
@@ -4167,6 +4336,7 @@ int LuaOpenGL::Translate(lua_State* L)
 
 int LuaOpenGL::Scale(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	const float x = luaL_checkfloat(L, 1);
@@ -4179,6 +4349,7 @@ int LuaOpenGL::Scale(lua_State* L)
 
 int LuaOpenGL::Rotate(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	const float r = luaL_checkfloat(L, 1);
@@ -4192,6 +4363,7 @@ int LuaOpenGL::Rotate(lua_State* L)
 
 int LuaOpenGL::Ortho(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	const float left   = luaL_checknumber(L, 1);
@@ -4207,6 +4379,7 @@ int LuaOpenGL::Ortho(lua_State* L)
 
 int LuaOpenGL::Frustum(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	const float left   = luaL_checknumber(L, 1);
@@ -4222,6 +4395,7 @@ int LuaOpenGL::Frustum(lua_State* L)
 
 int LuaOpenGL::Billboard(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	glMultMatrixf(camera->GetBillBoardMatrix());
@@ -4233,6 +4407,7 @@ int LuaOpenGL::Billboard(lua_State* L)
 
 int LuaOpenGL::Light(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -4283,6 +4458,7 @@ int LuaOpenGL::Light(lua_State* L)
 
 int LuaOpenGL::ClipPlane(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -4311,6 +4487,7 @@ int LuaOpenGL::ClipPlane(lua_State* L)
 }
 
 int LuaOpenGL::ClipDistance(lua_State* L) {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int clipId = luaL_checkint(L, 1);
@@ -4340,6 +4517,7 @@ int LuaOpenGL::ClipDistance(lua_State* L) {
 
 int LuaOpenGL::MatrixMode(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	GLenum mode = (GLenum)luaL_checkint(L, 1);
@@ -4352,6 +4530,7 @@ int LuaOpenGL::MatrixMode(lua_State* L)
 
 int LuaOpenGL::LoadIdentity(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -4366,6 +4545,7 @@ int LuaOpenGL::LoadIdentity(lua_State* L)
 
 int LuaOpenGL::LoadMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -4398,6 +4578,7 @@ int LuaOpenGL::LoadMatrix(lua_State* L)
 
 int LuaOpenGL::MultMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -4430,6 +4611,7 @@ int LuaOpenGL::MultMatrix(lua_State* L)
 
 int LuaOpenGL::PushMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -4448,6 +4630,7 @@ int LuaOpenGL::PushMatrix(lua_State* L)
 
 int LuaOpenGL::PopMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -4466,6 +4649,7 @@ int LuaOpenGL::PopMatrix(lua_State* L)
 
 int LuaOpenGL::PushPopMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -4513,6 +4697,7 @@ int LuaOpenGL::PushPopMatrix(lua_State* L)
 
 int LuaOpenGL::GetMatrixData(lua_State* L)
 {
+	//ZoneScoped;
 	const int luaType = lua_type(L, 1);
 	CondWarnDeprecatedGL(L, __func__);
 
@@ -4575,6 +4760,7 @@ int LuaOpenGL::GetMatrixData(lua_State* L)
 
 int LuaOpenGL::PushAttrib(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	int mask = luaL_optnumber(L, 1, GL_ALL_ATTRIB_BITS);
 	if (mask < 0) {
@@ -4588,6 +4774,7 @@ int LuaOpenGL::PushAttrib(lua_State* L)
 
 int LuaOpenGL::PopAttrib(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	glPopAttrib();
 	return 0;
@@ -4596,6 +4783,7 @@ int LuaOpenGL::PopAttrib(lua_State* L)
 
 int LuaOpenGL::UnsafeState(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const GLenum state = (GLenum)luaL_checkint(L, 1);
 	int funcLoc = 2;
@@ -4622,6 +4810,7 @@ int LuaOpenGL::UnsafeState(lua_State* L)
 
 int LuaOpenGL::GetFixedState(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	const char* param = luaL_checkstring(L, 1);
 	const bool toStr = luaL_optboolean(L, 2, false);
@@ -4892,6 +5081,7 @@ int LuaOpenGL::GetFixedState(lua_State* L)
 
 int LuaOpenGL::CreateList(lua_State* L)
 {
+	//ZoneScoped;
 	CondWarnDeprecatedGL(L, __func__);
 	const int args = lua_gettop(L); // number of arguments
 	if ((args < 1) || !lua_isfunction(L, 1)) {
@@ -4939,6 +5129,7 @@ int LuaOpenGL::CreateList(lua_State* L)
 
 int LuaOpenGL::CallList(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	CondWarnDeprecatedGL(L, __func__);
 	const unsigned int listIndex = luaL_checkint(L, 1);
@@ -4959,6 +5150,7 @@ int LuaOpenGL::CallList(lua_State* L)
 
 int LuaOpenGL::DeleteList(lua_State* L)
 {
+	//ZoneScoped;
 	CondWarnDeprecatedGL(L, __func__);
 	if (lua_isnil(L, 1)) {
 		return 0;
@@ -4978,6 +5170,7 @@ int LuaOpenGL::DeleteList(lua_State* L)
 
 int LuaOpenGL::Flush(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	glFlush();
 	return 0;
@@ -4986,6 +5179,7 @@ int LuaOpenGL::Flush(lua_State* L)
 
 int LuaOpenGL::Finish(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 	glFinish();
 	return 0;
@@ -4996,6 +5190,7 @@ int LuaOpenGL::Finish(lua_State* L)
 
 static int PixelFormatSize(GLenum f)
 {
+	//ZoneScoped;
 	switch (f) {
 		case GL_COLOR_INDEX:
 		case GL_STENCIL_INDEX:
@@ -5025,6 +5220,7 @@ static int PixelFormatSize(GLenum f)
 
 static void PushPixelData(lua_State* L, int fSize, const float*& data)
 {
+	//ZoneScoped;
 	if (fSize == 1) {
 		lua_pushnumber(L, *data);
 		data++;
@@ -5041,6 +5237,7 @@ static void PushPixelData(lua_State* L, int fSize, const float*& data)
 
 int LuaOpenGL::ReadPixels(lua_State* L)
 {
+	//ZoneScoped;
 	const GLint x = luaL_checkint(L, 1);
 	const GLint y = luaL_checkint(L, 2);
 	const GLint w = luaL_checkint(L, 3);
@@ -5112,6 +5309,7 @@ int LuaOpenGL::ReadPixels(lua_State* L)
 
 int LuaOpenGL::SaveImage(lua_State* L)
 {
+	//ZoneScoped;
 	const GLint x = (GLint)luaL_checknumber(L, 1);
 	const GLint y = (GLint)luaL_checknumber(L, 2);
 	const GLsizei width  = (GLsizei)luaL_checknumber(L, 3);
@@ -5185,6 +5383,7 @@ int LuaOpenGL::SaveImage(lua_State* L)
 
 int LuaOpenGL::CreateQuery(lua_State* L)
 {
+	//ZoneScoped;
 	GLuint id;
 	glGenQueries(1, &id);
 
@@ -5205,6 +5404,7 @@ int LuaOpenGL::CreateQuery(lua_State* L)
 
 int LuaOpenGL::DeleteQuery(lua_State* L)
 {
+	//ZoneScoped;
 	if (lua_isnil(L, 1))
 		return 0;
 
@@ -5228,6 +5428,7 @@ int LuaOpenGL::DeleteQuery(lua_State* L)
 
 int LuaOpenGL::RunQuery(lua_State* L)
 {
+	//ZoneScoped;
 	static bool running = false;
 
 	if (running)
@@ -5264,6 +5465,7 @@ int LuaOpenGL::RunQuery(lua_State* L)
 
 int LuaOpenGL::GetQuery(lua_State* L)
 {
+	//ZoneScoped;
 	if (!lua_islightuserdata(L, 1))
 		luaL_error(L, "gl.GetQuery(q) expects a userdata query");
 
@@ -5286,6 +5488,7 @@ int LuaOpenGL::GetQuery(lua_State* L)
 
 int LuaOpenGL::GetGlobalTexNames(lua_State* L)
 {
+	//ZoneScoped;
 	CondWarnDeprecatedGL(L, __func__);
 	const auto& textures = textureHandler3DO.GetAtlasTextures();
 
@@ -5301,6 +5504,7 @@ int LuaOpenGL::GetGlobalTexNames(lua_State* L)
 
 int LuaOpenGL::GetGlobalTexCoords(lua_State* L)
 {
+	//ZoneScoped;
 	CondWarnDeprecatedGL(L, __func__);
 	const C3DOTextureHandler::UnitTexture* texCoords = textureHandler3DO.Get3DOTexture(luaL_checkstring(L, 1));
 
@@ -5317,6 +5521,7 @@ int LuaOpenGL::GetGlobalTexCoords(lua_State* L)
 
 int LuaOpenGL::GetShadowMapParams(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, shadowHandler.GetShadowParams().x);
 	lua_pushnumber(L, shadowHandler.GetShadowParams().y);
 	lua_pushnumber(L, shadowHandler.GetShadowParams().z);
@@ -5326,6 +5531,7 @@ int LuaOpenGL::GetShadowMapParams(lua_State* L)
 
 int LuaOpenGL::GetAtmosphere(lua_State* L)
 {
+	//ZoneScoped;
 	const auto& sky = ISky::GetSky();
 	if (lua_gettop(L) == 0) {
 		lua_pushnumber(L, sky->GetLight()->GetLightDir().x);
@@ -5382,6 +5588,7 @@ int LuaOpenGL::GetAtmosphere(lua_State* L)
 
 int LuaOpenGL::GetSun(lua_State* L)
 {
+	//ZoneScoped;
 	const auto& sky = ISky::GetSky();
 	if (lua_gettop(L) == 0) {
 		lua_pushnumber(L, sky->GetLight()->GetLightDir().x);
@@ -5447,6 +5654,7 @@ int LuaOpenGL::GetSun(lua_State* L)
 
 int LuaOpenGL::GetWaterRendering(lua_State* L)
 {
+	//ZoneScoped;
 	const char* key = luaL_checkstring(L, 1);
 
 	switch (hashString(key)) {
@@ -5624,6 +5832,7 @@ int LuaOpenGL::GetWaterRendering(lua_State* L)
 
 int LuaOpenGL::GetMapRendering(lua_State* L)
 {
+	//ZoneScoped;
 	const char* key = luaL_checkstring(L, 1);
 
 	switch (hashString(key)) {
