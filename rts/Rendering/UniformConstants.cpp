@@ -25,6 +25,8 @@
 #include "System/SafeUtil.h"
 #include "SDL2/SDL_mouse.h"
 
+#include <tracy/Tracy.hpp>
+
 CR_BIND(UniformMatricesBuffer, )
 
 CR_REG_METADATA(UniformMatricesBuffer, (
@@ -108,12 +110,14 @@ CR_REG_METADATA(UniformParamsBuffer, (
 
 bool UniformConstants::Supported()
 {
+	//ZoneScoped;
 	static bool supported = VBO::IsSupported(GL_UNIFORM_BUFFER) && GLEW_ARB_shading_language_420pack; //UBO && UBO layout(binding=x)
 	return supported;
 }
 
 void UniformConstants::Init()
 {
+	//ZoneScoped;
 	if (initialized) //don't need to reinit on resolution changes
 		return;
 
@@ -143,6 +147,7 @@ void UniformConstants::Init()
 
 void UniformConstants::Kill()
 {
+	//ZoneScoped;
 	if (!Supported() || !initialized)
 		return;
 
@@ -157,6 +162,7 @@ void UniformConstants::Kill()
 
 void UniformConstants::UpdateMatricesImpl(UniformMatricesBuffer* updateBuffer)
 {
+	//ZoneScoped;
 	updateBuffer->screenView = globalRendering->screenViewMatrix;
 	updateBuffer->screenProj = globalRendering->screenProjMatrix;
 	updateBuffer->screenViewProj = updateBuffer->screenProj * updateBuffer->screenView;
@@ -210,6 +216,7 @@ void UniformConstants::UpdateMatricesImpl(UniformMatricesBuffer* updateBuffer)
 
 void UniformConstants::UpdateParamsImpl(UniformParamsBuffer* updateBuffer)
 {
+	//ZoneScoped;
 	updateBuffer->rndVec3 = guRNG.NextVector();
 	//TODO add something else
 	updateBuffer->renderCaps =
@@ -300,6 +307,7 @@ void UniformConstants::UpdateParamsImpl(UniformParamsBuffer* updateBuffer)
 
 void UniformConstants::UpdateMatrices()
 {
+	//ZoneScoped;
 	if (!Supported())
 		return;
 
@@ -310,6 +318,7 @@ void UniformConstants::UpdateMatrices()
 
 void UniformConstants::UpdateParams()
 {
+	//ZoneScoped;
 	if (!Supported())
 		return;
 
@@ -320,6 +329,7 @@ void UniformConstants::UpdateParams()
 
 void UniformConstants::Bind()
 {
+	//ZoneScoped;
 	if (!Supported())
 		return;
 
