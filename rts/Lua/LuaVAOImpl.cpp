@@ -15,6 +15,8 @@
 
 #include "LuaUtils.h"
 
+#include <tracy/Tracy.hpp>
+
 
 /******************************************************************************
  * Vertex Array Object
@@ -43,6 +45,7 @@ LuaVAOImpl::LuaVAOImpl()
  */
 void LuaVAOImpl::Delete()
 {
+	//ZoneScoped;
 	vertLuaVBO = nullptr;
 	instLuaVBO = nullptr;
 	indxLuaVBO = nullptr;
@@ -52,11 +55,13 @@ void LuaVAOImpl::Delete()
 
 LuaVAOImpl::~LuaVAOImpl()
 {
+	//ZoneScoped;
 	Delete();
 }
 
 bool LuaVAOImpl::Supported()
 {
+	//ZoneScoped;
 	static bool supported = VBO::IsSupported(GL_ARRAY_BUFFER) && VAO::IsSupported() && GLEW_ARB_instanced_arrays && GLEW_ARB_draw_elements_base_vertex && GLEW_ARB_multi_draw_indirect;
 	return supported;
 }
@@ -64,6 +69,7 @@ bool LuaVAOImpl::Supported()
 
 void LuaVAOImpl::AttachBufferImpl(const std::shared_ptr<LuaVBOImpl>& luaVBO, std::shared_ptr<LuaVBOImpl>& thisLuaVBO, GLenum reqTarget)
 {
+	//ZoneScoped;
 	if (thisLuaVBO) {
 		LuaUtils::SolLuaError("[LuaVAOImpl::%s] LuaVBO already attached", __func__);
 	}
@@ -98,6 +104,7 @@ void LuaVAOImpl::AttachBufferImpl(const std::shared_ptr<LuaVBOImpl>& luaVBO, std
  */
 void LuaVAOImpl::AttachVertexBuffer(const LuaVBOImplSP& luaVBO)
 {
+	//ZoneScoped;
 	AttachBufferImpl(luaVBO, vertLuaVBO, GL_ARRAY_BUFFER);
 }
 
@@ -110,6 +117,7 @@ void LuaVAOImpl::AttachVertexBuffer(const LuaVBOImplSP& luaVBO)
  */
 void LuaVAOImpl::AttachInstanceBuffer(const LuaVBOImplSP& luaVBO)
 {
+	//ZoneScoped;
 	AttachBufferImpl(luaVBO, instLuaVBO, GL_ARRAY_BUFFER);
 }
 
@@ -122,12 +130,14 @@ void LuaVAOImpl::AttachInstanceBuffer(const LuaVBOImplSP& luaVBO)
  */
 void LuaVAOImpl::AttachIndexBuffer(const LuaVBOImplSP& luaVBO)
 {
+	//ZoneScoped;
 	AttachBufferImpl(luaVBO, indxLuaVBO, GL_ELEMENT_ARRAY_BUFFER);
 }
 
 template<typename TObj>
 const SIndexAndCount LuaVAOImpl::GetDrawIndicesImpl(int id)
 {
+	//ZoneScoped;
 	const TObj* obj = LuaUtils::SolIdToObject<TObj>(id, __func__); //wrong ids are handles in LuaUtils::SolIdToObject<>()
 	return GetDrawIndicesImpl<TObj>(obj);
 }
@@ -135,6 +145,7 @@ const SIndexAndCount LuaVAOImpl::GetDrawIndicesImpl(int id)
 template<typename TObj>
 const SIndexAndCount LuaVAOImpl::GetDrawIndicesImpl(const TObj* obj)
 {
+	//ZoneScoped;
 	static_assert(std::is_base_of_v<CSolidObject, TObj> || std::is_base_of_v<SolidObjectDef, TObj>);
 
 	S3DModel* model = obj->model;
@@ -145,6 +156,7 @@ const SIndexAndCount LuaVAOImpl::GetDrawIndicesImpl(const TObj* obj)
 template<typename TObj>
 int LuaVAOImpl::AddObjectsToSubmissionImpl(int id)
 {
+	//ZoneScoped;
 	DrawCheckInput inputs{
 		std::nullopt,
 		std::nullopt,
@@ -162,6 +174,7 @@ int LuaVAOImpl::AddObjectsToSubmissionImpl(int id)
 template<typename TObj>
 int LuaVAOImpl::AddObjectsToSubmissionImpl(const sol::stack_table& ids)
 {
+	//ZoneScoped;
 	const std::size_t idsSize = ids.size(); //size() is very costly to do in the loop
 
 	DrawCheckInput inputs{
@@ -188,6 +201,7 @@ int LuaVAOImpl::AddObjectsToSubmissionImpl(const sol::stack_table& ids)
 template<typename TObj>
 SDrawElementsIndirectCommand LuaVAOImpl::DrawObjectGetCmdImpl(int id)
 {
+	//ZoneScoped;
 	const auto& indexAndCount = LuaVAOImpl::GetDrawIndicesImpl<TObj>(id);
 
 	return SDrawElementsIndirectCommand {
@@ -201,6 +215,7 @@ SDrawElementsIndirectCommand LuaVAOImpl::DrawObjectGetCmdImpl(int id)
 
 void LuaVAOImpl::CheckDrawPrimitiveType(GLenum mode) const
 {
+	//ZoneScoped;
 	switch (mode) {
 	case GL_POINTS:
 	case GL_LINE_STRIP:
@@ -222,6 +237,7 @@ void LuaVAOImpl::CheckDrawPrimitiveType(GLenum mode) const
 
 void LuaVAOImpl::CondInitVAO()
 {
+	//ZoneScoped;
 	if (vao &&
 		(vertLuaVBO && vertLuaVBO->GetId() == oldVertVBOId) &&
 		(indxLuaVBO && indxLuaVBO->GetId() == oldIndxVBOId) &&
@@ -303,6 +319,7 @@ void LuaVAOImpl::CondInitVAO()
 
 LuaVAOImpl::DrawCheckResult LuaVAOImpl::DrawCheck(GLenum mode, const DrawCheckInput& inputs, bool indexed)
 {
+	//ZoneScoped;
 	LuaVAOImpl::DrawCheckResult result{};
 
 	if (vertLuaVBO)
@@ -376,6 +393,7 @@ LuaVAOImpl::DrawCheckResult LuaVAOImpl::DrawCheck(GLenum mode, const DrawCheckIn
  */
 void LuaVAOImpl::DrawArrays(GLenum mode, sol::optional<int> vertCountOpt, sol::optional<int> vertexFirstOpt, sol::optional<int> instanceCountOpt, sol::optional<int> instanceFirstOpt)
 {
+	//ZoneScoped;
 	DrawCheckInput inputs{
 		vertCountOpt,
 		std::nullopt,
@@ -414,6 +432,7 @@ void LuaVAOImpl::DrawArrays(GLenum mode, sol::optional<int> vertCountOpt, sol::o
  */
 void LuaVAOImpl::DrawElements(GLenum mode, sol::optional<int> indCountOpt, sol::optional<int> indElemOffsetOpt, sol::optional<int> instanceCountOpt, sol::optional<int> baseVertexOpt, sol::optional<int> instanceFirstOpt)
 {
+	//ZoneScoped;
 	DrawCheckInput inputs{
 		indCountOpt,
 		baseVertexOpt,
@@ -458,6 +477,7 @@ void LuaVAOImpl::DrawElements(GLenum mode, sol::optional<int> indCountOpt, sol::
 
 void LuaVAOImpl::ClearSubmission()
 {
+	//ZoneScoped;
 	baseInstance = 0u;
 	submitCmds.clear();
 }
@@ -533,6 +553,7 @@ void LuaVAOImpl::RemoveFromSubmission(int idx)
  */
 void LuaVAOImpl::Submit()
 {
+	//ZoneScoped;
 	glEnable(GL_PRIMITIVE_RESTART);
 	glPrimitiveRestartIndex(indxLuaVBO->primitiveRestartIndex);
 

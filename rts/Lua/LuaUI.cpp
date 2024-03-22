@@ -44,6 +44,8 @@
 #include <cstdio>
 #include <cctype>
 
+#include <tracy/Tracy.hpp>
+
 CONFIG(bool, LuaSocketEnabled)
 	.defaultValue(true)
 	.description("Enable LuaSocket support, allows Lua widgets to make TCP/UDP connections")
@@ -183,10 +185,12 @@ CLuaUI::CLuaUI()
 
 CLuaUI::~CLuaUI()
 {
+	//ZoneScoped;
 	luaUI = nullptr;
 }
 
 void CLuaUI::InitLuaSocket(lua_State* L) {
+	//ZoneScoped;
 	std::string code;
 	std::string filename = "socket.lua";
 	CFileHandler f(filename);
@@ -202,6 +206,7 @@ void CLuaUI::InitLuaSocket(lua_State* L) {
 
 string CLuaUI::LoadFile(const string& name, const std::string& mode) const
 {
+	//ZoneScoped;
 	CFileHandler f(name, mode);
 
 	string code;
@@ -214,6 +219,7 @@ string CLuaUI::LoadFile(const string& name, const std::string& mode) const
 
 static bool IsDisallowedCallIn(const string& name)
 {
+	//ZoneScoped;
 	switch (hashString(name.c_str())) {
 		case hashString("Explosion"     ): { return true; } break;
 		case hashString("DrawUnit"      ): { return true; } break;
@@ -229,6 +235,7 @@ static bool IsDisallowedCallIn(const string& name)
 
 bool CLuaUI::HasCallIn(lua_State* L, const string& name) const
 {
+	//ZoneScoped;
 	// never allow these calls
 	if (IsDisallowedCallIn(name))
 		return false;
@@ -239,6 +246,7 @@ bool CLuaUI::HasCallIn(lua_State* L, const string& name) const
 
 void CLuaUI::UpdateTeams()
 {
+	//ZoneScoped;
 	if (luaUI == nullptr)
 		return;
 
@@ -259,6 +267,7 @@ void CLuaUI::UpdateTeams()
 
 bool CLuaUI::LoadCFunctions(lua_State* L)
 {
+	//ZoneScoped;
 	lua_createtable(L, 0, 1);
 
 	REGISTER_LUA_CFUNC(SetShockFrontFactors);
@@ -276,6 +285,7 @@ bool CLuaUI::LoadCFunctions(lua_State* L)
  */
 bool CLuaUI::ConfigureLayout(const string& command)
 {
+	//ZoneScoped;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 2, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -292,12 +302,14 @@ bool CLuaUI::ConfigureLayout(const string& command)
 
 static inline float fuzzRand(float fuzz)
 {
+	//ZoneScoped;
 	return (1.0f + fuzz) - ((2.0f * fuzz) * guRNG.NextFloat());
 }
 
 
 void CLuaUI::ShockFront(const float3& pos, float power, float areaOfEffect, const float* distMod)
 {
+	//ZoneScoped;
 	if (!haveShockFront)
 		return;
 	if (power <= 0.0f)
@@ -357,6 +369,7 @@ bool CLuaUI::LayoutButtons(
 	spring::unordered_map<int, int>& buttonList,
 	string& menuName
 ) {
+	//ZoneScoped;
 	customCmds.clear();
 	removeCmds.clear();
 	reTextureCmds.clear();
@@ -474,6 +487,7 @@ bool CLuaUI::LayoutButtons(
 
 bool CLuaUI::BuildCmdDescTable(lua_State* L, const vector<SCommandDescription>& cmds)
 {
+	//ZoneScoped;
 	lua_createtable(L, cmds.size(), 0);
 
 	for (size_t i = 0; i < cmds.size(); i++) {
@@ -488,6 +502,7 @@ bool CLuaUI::BuildCmdDescTable(lua_State* L, const vector<SCommandDescription>& 
 
 bool CLuaUI::GetLuaIntMap(lua_State* L, int index, spring::unordered_map<int, int>& intMap)
 {
+	//ZoneScoped;
 	const int table = index;
 	if (!lua_istable(L, table))
 		return false;
@@ -508,6 +523,7 @@ bool CLuaUI::GetLuaIntMap(lua_State* L, int index, spring::unordered_map<int, in
 
 bool CLuaUI::GetLuaIntList(lua_State* L, int index, vector<int>& intList)
 {
+	//ZoneScoped;
 	const int table = index;
 	if (!lua_istable(L, table)) {
 		return false;
@@ -528,6 +544,7 @@ bool CLuaUI::GetLuaIntList(lua_State* L, int index, vector<int>& intList)
 bool CLuaUI::GetLuaReStringList(lua_State* L, int index,
                                 vector<ReStringPair>& reStringList)
 {
+	//ZoneScoped;
 	const int table = index;
 	if (!lua_istable(L, table)) {
 		return false;
@@ -551,6 +568,7 @@ bool CLuaUI::GetLuaReStringList(lua_State* L, int index,
 bool CLuaUI::GetLuaReParamsList(lua_State* L, int index,
                                 vector<ReParamsPair>& reParamsCmds)
 {
+	//ZoneScoped;
 	const int table = index;
 	if (!lua_istable(L, table)) {
 		return false;
@@ -582,6 +600,7 @@ bool CLuaUI::GetLuaReParamsList(lua_State* L, int index,
 
 bool CLuaUI::GetLuaCmdDescList(lua_State* L, int index, vector<SCommandDescription>& cmdDescs)
 {
+	//ZoneScoped;
 	const int table = index;
 	if (!lua_istable(L, table))
 		return false;
@@ -668,6 +687,7 @@ bool CLuaUI::GetLuaCmdDescList(lua_State* L, int index, vector<SCommandDescripti
 
 int CLuaUI::SetShockFrontFactors(lua_State* L)
 {
+	//ZoneScoped;
 	luaUI->haveShockFront = true;
 
 	if (lua_isnumber(L, 1))

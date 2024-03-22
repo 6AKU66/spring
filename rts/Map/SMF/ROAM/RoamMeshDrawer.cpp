@@ -49,6 +49,7 @@ CRoamMeshDrawer::CRoamMeshDrawer(CSMFGroundDrawer* gd)
 	: CEventClient("[CRoamMeshDrawer]", 271989, false)
 	, smfGroundDrawer(gd)
 {
+	//ZoneScoped;
 	eventHandler.AddClient(this);
 
 	for (unsigned int i = MESH_NORMAL; i <= MESH_SHADOW; i++) {

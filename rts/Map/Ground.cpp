@@ -17,6 +17,7 @@
 
 static inline float InterpolateCornerHeight(float x, float z, const float* cornerHeightMap)
 {
+	//ZoneScoped;
 	// NOTE:
 	// This isn't a bilinear interpolation. Instead it interpolates
 	// on the 2 triangles that form the ground quad:
