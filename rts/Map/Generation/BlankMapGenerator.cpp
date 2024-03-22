@@ -25,6 +25,7 @@ CBlankMapGenerator::CBlankMapGenerator(const CGameSetup* setup)
 	, mapHeight(50)
 	, mapColor(0x00, 0xFF, 0x00)
 {
+	//ZoneScoped;
 	const auto& mapOpts = setup->GetMapOptionsCont();
 
 	for (const auto& mapOpt: mapOpts) {
