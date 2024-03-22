@@ -11,6 +11,8 @@
 #include "Sim/Misc/Resource.h"
 #include "Sim/MoveTypes/Components/MoveTypesComponents.h"
 
+#include <tracy/Tracy.hpp>
+
 
 
 // Partial Specialization of Function Templates are not allowed so we can't do this
@@ -51,6 +53,7 @@ void ProcessComponents(T&& archive, S&& snapshot) {
 using namespace Sim;
 
 void SaveLoadUtils::LoadComponents(std::stringstream &iss) {
+    //ZoneScoped;
     systemUtils.NotifyPreLoad();
 
     auto archive = cereal::BinaryInputArchive{iss};
@@ -67,6 +70,7 @@ void SaveLoadUtils::LoadComponents(std::stringstream &iss) {
 }
 
 void SaveLoadUtils::SaveComponents(std::stringstream &oss) {
+    //ZoneScoped;
     auto archive = cereal::BinaryOutputArchive{oss};
     LOG_L(L_DEBUG, "%s: Entities before save is %d (%d)", __func__, (int)registry.alive(), (int)oss.tellp());
     {ProcessComponents<entt::snapshot>(archive, entt::snapshot{registry});}

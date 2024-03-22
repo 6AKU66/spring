@@ -6,14 +6,19 @@
 #include "Registry.h"
 #include "SaveLoadUtils.h"
 
+#include <tracy/Tracy.hpp>
+
 void Sim::ClearRegistry() {
+	//ZoneScoped;
     Sim::registry.clear();
 }
 
 void Sim::LoadComponents(std::stringstream &iss) {
+    //ZoneScoped;
     saveLoadUtils.LoadComponents(iss);
 }
 
 void Sim::SaveComponents(std::stringstream &oss) {
+    //ZoneScoped;
     saveLoadUtils.SaveComponents(oss);
 }

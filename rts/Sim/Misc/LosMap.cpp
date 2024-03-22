@@ -55,6 +55,7 @@ static void isqrtTableExpand(unsigned r, int threadNum)
 template<typename F>
 void MidpointCircleAlgo(int radius, const F& func)
 {
+	//ZoneScoped;
 	int x = radius;
 	int y = 0;
 	int decisionOver2 = 1 - x;
@@ -125,14 +126,17 @@ public:
 	void GenerateForLosSize(size_t losSize);
 
 	const int2 GetLosTableRaySquare(size_t losSize, size_t rayIndex, size_t squareIdx) {
+		//ZoneScoped;
 		return losTables[losSize][rayIndex][squareIdx];
 	}
 
 	size_t GetLosTableRaySize(size_t losSize, size_t rayIndex) {
+		//ZoneScoped;
 		return losTables[losSize][rayIndex].size();
 	}
 
 	size_t GetLosTableSize(size_t losSize) {
+		//ZoneScoped;
 		return losTables[losSize].size();
 	}
 
