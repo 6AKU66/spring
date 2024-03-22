@@ -25,7 +25,6 @@ void GeneralMoveSystem::Init() {
 }
 
 void GeneralMoveSystem::Update() {
-    //ZoneScoped;
     auto view = Sim::registry.view<GeneralMoveType>();
 	{
         SCOPED_TIMER("Sim::Unit::MoveType::5::UpdateST");
