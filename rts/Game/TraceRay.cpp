@@ -40,6 +40,7 @@ inline static bool TestConeHelper(
 	const float spread,
 	const CSolidObject* obj
 ) {
+	//ZoneScoped;
 	const CollisionVolume* cv = &obj->collisionVolume;
 
 	const float3 cvRelVec = cv->GetWorldSpacePos(obj) - tstPos;
@@ -92,6 +93,7 @@ inline static bool TestTrajectoryConeHelper(
 	float baseSize,
 	const CSolidObject* obj
 ) {
+	//ZoneScoped;
 	// trajectory is a parabola f(x)=a*x*x + b*x with
 	// parameters a = quadratic, b = linear, and c = 0
 	// (x = objDst1D, negative values represent objects
@@ -192,6 +194,7 @@ namespace TraceRay {
 // called by {CRifle, CBeamLaser, CLightningCannon}::Fire(), CWeapon::HaveFreeLineOfFire(), and Skirmish AIs
 float TraceRay(const float3& p, const float3& d, float l, int f, const CUnit* o, CUnit*& hu, CFeature*& hf, CollisionQuery* cq)
 {
+	//ZoneScoped;
 	assert(o != nullptr);
 	return (TraceRay(p, d, l, f, o->allyteam, o, hu, hf, cq));
 }

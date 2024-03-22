@@ -16,6 +16,8 @@
 #include "Sim/Misc/GlobalSynced.h"
 #include "System/Log/ILog.h"
 
+#include <tracy/Tracy.hpp>
+
 
 static ParamMap paramMap;
 
@@ -41,6 +43,7 @@ static int CustomParamsTable(lua_State* L, const void* data);
 
 bool LuaFeatureDefs::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 	InitParamMap();
 
 	typedef int (*IndxFuncType)(lua_State*);
@@ -118,6 +121,7 @@ bool LuaFeatureDefs::PushEntries(lua_State* L)
 
 static int FeatureDefIndex(lua_State* L)
 {
+	//ZoneScoped;
 	// not a default value
 	if (!lua_isstring(L, 2)) {
 		lua_rawget(L, 1);
@@ -174,6 +178,7 @@ static int FeatureDefIndex(lua_State* L)
 
 static int FeatureDefNewIndex(lua_State* L)
 {
+	//ZoneScoped;
 	// not a default value, set it
 	if (!lua_isstring(L, 2)) {
 		lua_rawset(L, 1);
@@ -237,6 +242,7 @@ static int FeatureDefNewIndex(lua_State* L)
 
 static int FeatureDefMetatable(lua_State* L)
 {
+	//ZoneScoped;
 	/*const void* userData =*/ lua_touserdata(L, lua_upvalueindex(1));
 	//const FeatureDef* fd = (const FeatureDef*)userData;
 	return 0;
@@ -247,12 +253,14 @@ static int FeatureDefMetatable(lua_State* L)
 
 static int Next(lua_State* L)
 {
+	//ZoneScoped;
 	return LuaUtils::Next(paramMap, L);
 }
 
 
 static int Pairs(lua_State* L)
 {
+	//ZoneScoped;
 	luaL_checktype(L, 1, LUA_TTABLE);
 	lua_pushcfunction(L, Next);	// iterator
 	lua_pushvalue(L, 1);        // state (table)
@@ -268,6 +276,7 @@ static int Pairs(lua_State* L)
 
 static int CustomParamsTable(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const spring::unordered_map<std::string, std::string>& params = *((const spring::unordered_map<std::string, std::string>*)data);
 	lua_createtable(L, 0, params.size());
 
@@ -321,6 +330,7 @@ static int ColVolTable(lua_State* L, const void* data) {
 
 static bool InitParamMap()
 {
+	//ZoneScoped;
 	spring::clear_unordered_map(paramMap);
 
 	paramMap["next"]  = DataElement(READONLY_TYPE);

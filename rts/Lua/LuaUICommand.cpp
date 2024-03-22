@@ -12,12 +12,15 @@
 #include "Game/UnsyncedGameCommands.h"
 #include "Game/SyncedGameCommands.h"
 
+#include <tracy/Tracy.hpp>
+
 /******************************************************************************/
 /******************************************************************************/
 
 
 bool LuaUICommand::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 	REGISTER_LUA_CFUNC(GetUICommands);
 // 	REGISTER_LUA_CFUNC(RegisterUICommand);
 // 	REGISTER_LUA_CFUNC(DeregisterUICommand);
@@ -31,6 +34,7 @@ bool LuaUICommand::PushEntries(lua_State* L)
 
 int LuaUICommand::GetUICommands(lua_State* L)
 {
+	//ZoneScoped;
 	const auto& syncedExecutors = syncedGameCommands->GetSortedActionExecutors();
 	const auto& unsyncedExecutors = unsyncedGameCommands->GetSortedActionExecutors();
 	
