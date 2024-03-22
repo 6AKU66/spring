@@ -29,6 +29,7 @@ struct ActiveUniform {
 
 struct LuaMatBinPtrLessThan {
 	bool operator()(const LuaMatBin* a, const LuaMatBin* b) const {
+		//ZoneScoped;
 		const LuaMaterial* ma = static_cast<const LuaMaterial*>(a);
 		const LuaMaterial* mb = static_cast<const LuaMaterial*>(b);
 		return (*ma < *mb);

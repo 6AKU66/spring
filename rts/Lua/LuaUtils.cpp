@@ -32,6 +32,8 @@
 	#define SCOPED_TIMER(x)
 #endif
 
+#include <tracy/Tracy.hpp>
+
 
 static const int maxDepth = 16;
 
@@ -47,6 +49,7 @@ static bool CopyPushTable(lua_State* dst, lua_State* src, int index, int depth, 
 
 static inline int PosAbsLuaIndex(lua_State* src, int index)
 {
+	//ZoneScoped;
 	if (index > 0)
 		return index;
 
@@ -56,6 +59,7 @@ static inline int PosAbsLuaIndex(lua_State* src, int index)
 
 static bool CopyPushData(lua_State* dst, lua_State* src, int index, int depth, spring::unsynced_map<const void*, int>& alreadyCopied)
 {
+	//ZoneScoped;
 	switch (lua_type(src, index)) {
 		case LUA_TBOOLEAN: {
 			lua_pushboolean(dst, lua_toboolean(src, index));
@@ -102,6 +106,7 @@ static bool CopyPushData(lua_State* dst, lua_State* src, int index, int depth, s
 
 static bool CopyPushTable(lua_State* dst, lua_State* src, int index, int depth, spring::unsynced_map<const void*, int>& alreadyCopied)
 {
+	//ZoneScoped;
 	const int table = PosAbsLuaIndex(src, index);
 
 	// check cache
@@ -191,6 +196,7 @@ static bool RestoreTable(const LuaUtils::DataDump& d, lua_State* dst, int depth)
 
 
 static bool BackupData(LuaUtils::DataDump& d, lua_State* src, int index, int depth) {
+	//ZoneScoped;
 	++LuaUtils::exportedDataSize;
 	const int type = lua_type(src, index);
 	d.type = type;
@@ -226,6 +232,7 @@ static bool BackupData(LuaUtils::DataDump& d, lua_State* src, int index, int dep
 }
 
 static bool RestoreData(const LuaUtils::DataDump& d, lua_State* dst, int depth) {
+	//ZoneScoped;
 	--LuaUtils::exportedDataSize;
 
 	switch (d.type) {
@@ -254,6 +261,7 @@ static bool RestoreData(const LuaUtils::DataDump& d, lua_State* dst, int depth) 
 }
 
 static bool BackupTable(LuaUtils::DataDump& d, lua_State* src, int index, int depth) {
+	//ZoneScoped;
 	if (depth++ > maxDepth)
 		return false;
 
@@ -269,6 +277,7 @@ static bool BackupTable(LuaUtils::DataDump& d, lua_State* src, int index, int de
 }
 
 static bool RestoreTable(const LuaUtils::DataDump& d, lua_State* dst, int depth) {
+	//ZoneScoped;
 	if (depth++ > maxDepth) {
 		lua_pushnil(dst);
 		return false;
@@ -286,6 +295,7 @@ static bool RestoreTable(const LuaUtils::DataDump& d, lua_State* dst, int depth)
 
 
 int LuaUtils::Backup(std::vector<LuaUtils::DataDump>& backup, lua_State* src, int count) {
+	//ZoneScoped;
 	const int srcTop = lua_gettop(src);
 	if (srcTop < count)
 		return 0;
@@ -302,6 +312,7 @@ int LuaUtils::Backup(std::vector<LuaUtils::DataDump>& backup, lua_State* src, in
 
 
 int LuaUtils::Restore(const std::vector<LuaUtils::DataDump>& backup, lua_State* dst) {
+	//ZoneScoped;
 	const int dstTop = lua_gettop(dst);
 	int count = backup.size();
 	lua_checkstack(dst, count + 3);
@@ -321,6 +332,7 @@ int LuaUtils::Restore(const std::vector<LuaUtils::DataDump>& backup, lua_State* 
 
 static void PushCurrentFunc(lua_State* L, const char* caller)
 {
+	//ZoneScoped;
 	// get the current function
 	lua_Debug ar;
 	if (lua_getstack(L, 1, &ar) == 0)
@@ -336,6 +348,7 @@ static void PushCurrentFunc(lua_State* L, const char* caller)
 
 static void PushFunctionEnv(lua_State* L, const char* caller, int funcIndex)
 {
+	//ZoneScoped;
 	lua_getfenv(L, funcIndex);
 	lua_pushliteral(L, "__fenv");
 	lua_rawget(L, -2);
@@ -353,6 +366,7 @@ static void PushFunctionEnv(lua_State* L, const char* caller, int funcIndex)
 
 void LuaUtils::PushCurrentFuncEnv(lua_State* L, const char* caller)
 {
+	//ZoneScoped;
 	PushCurrentFunc(L, caller);
 	PushFunctionEnv(L, caller, -1);
 	lua_remove(L, -2); // remove the function
@@ -363,6 +377,7 @@ void LuaUtils::PushCurrentFuncEnv(lua_State* L, const char* caller)
 
 static void LowerKeysReal(lua_State* L, spring::unsynced_set<const void*>& checkedSet)
 {
+	//ZoneScoped;
 	luaL_checkstack(L, 8, __func__);
 
 	const int  sourceTableIdx = lua_gettop(L);
@@ -423,6 +438,7 @@ static void LowerKeysReal(lua_State* L, spring::unsynced_set<const void*>& check
 
 bool LuaUtils::LowerKeys(lua_State* L, int table)
 {
+	//ZoneScoped;
 	if (!lua_istable(L, table))
 		return false;
 
@@ -440,6 +456,7 @@ bool LuaUtils::LowerKeys(lua_State* L, int table)
 
 static bool CheckForNaNsReal(lua_State* L, const std::string& path)
 {
+	//ZoneScoped;
 	luaL_checkstack(L, 3, __func__);
 	const int table = lua_gettop(L);
 	bool foundNaNs = false;
@@ -481,6 +498,7 @@ static bool CheckForNaNsReal(lua_State* L, const std::string& path)
 
 bool LuaUtils::CheckTableForNaNs(lua_State* L, int table, const std::string& name)
 {
+	//ZoneScoped;
 	if (!lua_istable(L, table))
 		return false;
 
@@ -505,6 +523,7 @@ bool LuaUtils::CheckTableForNaNs(lua_State* L, int table, const std::string& nam
 // copied from lua/src/lauxlib.cpp:luaL_checkudata()
 void* LuaUtils::GetUserData(lua_State* L, int index, const string& type)
 {
+	//ZoneScoped;
 	const char* tname = type.c_str();
 	void *p = lua_touserdata(L, index);
 	if (p != nullptr) {                               // value is a userdata?
@@ -525,6 +544,7 @@ void* LuaUtils::GetUserData(lua_State* L, int index, const string& type)
 
 int LuaUtils::IsEngineMinVersion(lua_State* L)
 {
+	//ZoneScoped;
 	const int minMajorVer = luaL_checkint(L, 1);
 	const int minMinorVer = luaL_optint(L, 2, 0);
 	const int minCommits  = luaL_optint(L, 3, 0);
@@ -556,6 +576,7 @@ int LuaUtils::IsEngineMinVersion(lua_State* L)
 
 int LuaUtils::ParseIntArray(lua_State* L, int index, int* array, int size)
 {
+	//ZoneScoped;
 	if (!lua_istable(L, index))
 		return -1;
 
@@ -576,6 +597,7 @@ int LuaUtils::ParseIntArray(lua_State* L, int index, int* array, int size)
 
 int LuaUtils::ParseFloatArray(lua_State* L, int index, float* array, int size)
 {
+	//ZoneScoped;
 	if (!lua_istable(L, index))
 		return -1;
 
@@ -596,6 +618,7 @@ int LuaUtils::ParseFloatArray(lua_State* L, int index, float* array, int size)
 
 int LuaUtils::ParseStringArray(lua_State* L, int index, string* array, int size)
 {
+	//ZoneScoped;
 	if (!lua_istable(L, index))
 		return -1;
 
@@ -616,6 +639,7 @@ int LuaUtils::ParseStringArray(lua_State* L, int index, string* array, int size)
 
 int LuaUtils::ParseIntVector(lua_State* L, int index, vector<int>& vec)
 {
+	//ZoneScoped;
 	if (!lua_istable(L, index))
 		return -1;
 
@@ -637,6 +661,7 @@ int LuaUtils::ParseIntVector(lua_State* L, int index, vector<int>& vec)
 
 int LuaUtils::ParseFloatVector(lua_State* L, int index, vector<float>& vec)
 {
+	//ZoneScoped;
 	if (!lua_istable(L, index))
 		return -1;
 
@@ -658,6 +683,7 @@ int LuaUtils::ParseFloatVector(lua_State* L, int index, vector<float>& vec)
 
 int LuaUtils::ParseStringVector(lua_State* L, int index, vector<string>& vec)
 {
+	//ZoneScoped;
 	if (!lua_istable(L, index))
 		return -1;
 
@@ -683,6 +709,7 @@ int LuaUtils::ParseStringVector(lua_State* L, int index, vector<string>& vec)
 
 int LuaUtils::PushModelHeight(lua_State* L, const SolidObjectDef* def, bool isUnitDef)
 {
+	//ZoneScoped;
 	const S3DModel* model = nullptr;
 	float height = 0.0f;
 
@@ -713,6 +740,7 @@ int LuaUtils::PushModelHeight(lua_State* L, const SolidObjectDef* def, bool isUn
 
 int LuaUtils::PushModelRadius(lua_State* L, const SolidObjectDef* def, bool isUnitDef)
 {
+	//ZoneScoped;
 	const S3DModel* model = nullptr;
 	float radius = 0.0f;
 
@@ -743,6 +771,7 @@ int LuaUtils::PushModelRadius(lua_State* L, const SolidObjectDef* def, bool isUn
 
 int LuaUtils::PushFeatureModelDrawType(lua_State* L, const FeatureDef* def)
 {
+	//ZoneScoped;
 	switch (def->drawType) {
 		case DRAWTYPE_NONE:  { HSTR_PUSH(L,  "none"); } break;
 		case DRAWTYPE_MODEL: { HSTR_PUSH(L, "model"); } break;
@@ -754,12 +783,14 @@ int LuaUtils::PushFeatureModelDrawType(lua_State* L, const FeatureDef* def)
 
 int LuaUtils::PushModelName(lua_State* L, const SolidObjectDef* def)
 {
+	//ZoneScoped;
 	lua_pushsstring(L, def->modelName);
 	return 1;
 }
 
 int LuaUtils::PushModelType(lua_State* L, const SolidObjectDef* def)
 {
+	//ZoneScoped;
 	const std::string& modelPath = modelLoader.FindModelPath(def->modelName);
 	const std::string& modelType = StringToLower(FileSystem::GetExtension(modelPath));
 	lua_pushsstring(L, modelType);
@@ -768,6 +799,7 @@ int LuaUtils::PushModelType(lua_State* L, const SolidObjectDef* def)
 
 int LuaUtils::PushModelPath(lua_State* L, const SolidObjectDef* def)
 {
+	//ZoneScoped;
 	const std::string& modelPath = modelLoader.FindModelPath(def->modelName);
 	lua_pushsstring(L, modelPath);
 	return 1;
@@ -775,6 +807,7 @@ int LuaUtils::PushModelPath(lua_State* L, const SolidObjectDef* def)
 
 
 int LuaUtils::PushModelTable(lua_State* L, const SolidObjectDef* def) {
+	//ZoneScoped;
 
 	/* Note, the line below loads the model if it isn't already
 	 * preloaded, which can be slow. This is also why this subtable
@@ -827,6 +860,7 @@ int LuaUtils::PushModelTable(lua_State* L, const SolidObjectDef* def) {
 }
 
 int LuaUtils::PushColVolTable(lua_State* L, const CollisionVolume* vol) {
+	//ZoneScoped;
 	assert(vol != nullptr);
 
 	lua_createtable(L, 0, 11);
@@ -859,6 +893,7 @@ int LuaUtils::PushColVolTable(lua_State* L, const CollisionVolume* vol) {
 }
 
 int LuaUtils::PushColVolData(lua_State* L, const CollisionVolume* vol) {
+	//ZoneScoped;
 	lua_pushnumber(L, vol->GetScales().x);
 	lua_pushnumber(L, vol->GetScales().y);
 	lua_pushnumber(L, vol->GetScales().z);
@@ -875,6 +910,7 @@ int LuaUtils::PushColVolData(lua_State* L, const CollisionVolume* vol) {
 
 int LuaUtils::ParseColVolData(lua_State* L, int idx, CollisionVolume* vol)
 {
+	//ZoneScoped;
 	const float xs = luaL_checkfloat(L, idx++);
 	const float ys = luaL_checkfloat(L, idx++);
 	const float zs = luaL_checkfloat(L, idx++);
@@ -898,6 +934,7 @@ int LuaUtils::ParseColVolData(lua_State* L, int idx, CollisionVolume* vol)
 
 void LuaUtils::PushCommandParamsTable(lua_State* L, const Command& cmd, bool subtable)
 {
+	//ZoneScoped;
 	if (subtable)
 		HSTR_PUSH(L, "params");
 
@@ -914,6 +951,7 @@ void LuaUtils::PushCommandParamsTable(lua_State* L, const Command& cmd, bool sub
 
 void LuaUtils::PushCommandOptionsTable(lua_State* L, const Command& cmd, bool subtable)
 {
+	//ZoneScoped;
 	if (subtable)
 		HSTR_PUSH(L, "options");
 
@@ -932,6 +970,7 @@ void LuaUtils::PushCommandOptionsTable(lua_State* L, const Command& cmd, bool su
 
 int LuaUtils::PushUnitAndCommand(lua_State* L, const CUnit* unit, const Command& cmd)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, unit->id);
 	lua_pushnumber(L, unit->unitDef->id);
 	lua_pushnumber(L, unit->team);
@@ -952,6 +991,7 @@ static bool ParseCommandOptions(
 	const char* caller,
 	const int idx
 ) {
+	//ZoneScoped;
 	if (lua_isnumber(L, idx)) {
 		cmd.SetOpts(lua_tonumber(L, idx));
 		return true;
@@ -1026,6 +1066,7 @@ static bool ParseCommandTimeOut(
 	const char* caller,
 	const int idx
 ) {
+	//ZoneScoped;
 	if (!lua_isnumber(L, idx))
 		return false;
 
@@ -1035,6 +1076,7 @@ static bool ParseCommandTimeOut(
 
 Command LuaUtils::ParseCommand(lua_State* L, const char* caller, int idIndex)
 {
+	//ZoneScoped;
 	// cmdID
 	if (!lua_isnumber(L, idIndex))
 		luaL_error(L, "%s(): bad command ID", caller);
@@ -1074,6 +1116,7 @@ Command LuaUtils::ParseCommand(lua_State* L, const char* caller, int idIndex)
 
 Command LuaUtils::ParseCommandTable(lua_State* L, const char* caller, int tableIdx)
 {
+	//ZoneScoped;
 	// cmdID
 	lua_rawgeti(L, tableIdx, 1);
 
@@ -1132,6 +1175,7 @@ void LuaUtils::ParseCommandArray(
 	int tableIdx,
 	std::vector<Command>& commands
 ) {
+	//ZoneScoped;
 	if (!lua_istable(L, tableIdx))
 		luaL_error(L, "%s(): error parsing command array", caller);
 
@@ -1146,6 +1190,7 @@ void LuaUtils::ParseCommandArray(
 
 int LuaUtils::ParseFacing(lua_State* L, const char* caller, int index)
 {
+	//ZoneScoped;
 	if (lua_israwnumber(L, index))
 		return std::max(0, std::min(3, lua_toint(L, index)));
 
@@ -1174,6 +1219,7 @@ int LuaUtils::ParseFacing(lua_State* L, const char* caller, int index)
 
 int LuaUtils::Next(const ParamMap& paramMap, lua_State* L)
 {
+	//ZoneScoped;
 	luaL_checktype(L, 1, LUA_TTABLE);
 	lua_settop(L, 2); // create a 2nd argument if there isn't one
 
@@ -1226,6 +1272,7 @@ int LuaUtils::Next(const ParamMap& paramMap, lua_State* L)
 
 static void LogMsg(lua_State* L, const char* logSection, int logLevel, int argIndex)
 {
+	//ZoneScoped;
 	// mostly copied from lua/src/lbaselib.cpp
 	std::string msg;
 
@@ -1283,6 +1330,7 @@ static void LogMsg(lua_State* L, const char* logSection, int logLevel, int argIn
 
 int LuaUtils::Echo(lua_State* L)
 {
+	//ZoneScoped;
 	LogMsg(L, nullptr, -1, 1);
 	return 0;
 }
@@ -1290,6 +1338,7 @@ int LuaUtils::Echo(lua_State* L)
 
 bool LuaUtils::PushLogEntries(lua_State* L)
 {
+	//ZoneScoped;
 #define PUSH_LOG_LEVEL(cmd) LuaPushNamedNumber(L, #cmd, LOG_LEVEL_ ## cmd)
 	PUSH_LOG_LEVEL(DEBUG);
 	PUSH_LOG_LEVEL(INFO);
@@ -1329,6 +1378,7 @@ int LuaUtils::ParseLogLevel(lua_State* L, int index)
 */
 int LuaUtils::Log(lua_State* L)
 {
+	//ZoneScoped;
 	const int args = lua_gettop(L); // number of arguments
 	if (args < 3)
 		return luaL_error(L, "Incorrect arguments to Spring.Log(logsection, loglevel, ...)");
@@ -1354,6 +1404,7 @@ LuaUtils::ScopedStackChecker::ScopedStackChecker(lua_State* L, int _returnVars)
 }
 
 LuaUtils::ScopedStackChecker::~ScopedStackChecker() {
+	//ZoneScoped;
 	const int curTop = lua_gettop(luaState); // use var so you can print it in gdb
 	assert(curTop == prevTop + returnVars);
 }
@@ -1368,6 +1419,7 @@ LuaUtils::ScopedStackChecker::~ScopedStackChecker() {
 /// and returns its index if valid and zero otherwise
 int LuaUtils::PushDebugTraceback(lua_State* L)
 {
+	//ZoneScoped;
 	lua_getglobal(L, DEBUG_TABLE);
 
 	if (lua_istable(L, -1)) {
@@ -1395,10 +1447,12 @@ LuaUtils::ScopedDebugTraceBack::ScopedDebugTraceBack(lua_State* _L)
 	: L(_L)
 	, errFuncIdx(PushDebugTraceback(_L))
 {
+	//ZoneScoped;
 	assert(errFuncIdx >= 0);
 }
 
 LuaUtils::ScopedDebugTraceBack::~ScopedDebugTraceBack() {
+	//ZoneScoped;
 	// make sure we are at same position on the stack
 	const int curTop = lua_gettop(L);
 	assert(errFuncIdx == 0 || curTop == errFuncIdx);
@@ -1411,6 +1465,7 @@ LuaUtils::ScopedDebugTraceBack::~ScopedDebugTraceBack() {
 
 void LuaUtils::PushStringVector(lua_State* L, const vector<string>& vec)
 {
+	//ZoneScoped;
 	lua_createtable(L, vec.size(), 0);
 	for (size_t i = 0; i < vec.size(); i++) {
 		lua_pushsstring(L, vec[i]);
@@ -1423,6 +1478,7 @@ void LuaUtils::PushStringVector(lua_State* L, const vector<string>& vec)
 
 void LuaUtils::PushCommandDesc(lua_State* L, const SCommandDescription& cd)
 {
+	//ZoneScoped;
 	const int numParams = cd.params.size();
 	const int numTblKeys = 12;
 
@@ -1457,6 +1513,7 @@ void LuaUtils::PushCommandDesc(lua_State* L, const SCommandDescription& cd)
 
 void LuaUtils::LuaStackDumper::PrintStack(lua_State* L, int parseDepth)
 {
+	//ZoneScoped;
 	currPtr = &root;
 
 	int n = lua_gettop(L);
@@ -1476,6 +1533,7 @@ void LuaUtils::LuaStackDumper::PrintStack(lua_State* L, int parseDepth)
 
 void LuaUtils::LuaStackDumper::ParseTable(lua_State* L, int i, int parseDepth)
 {
+	//ZoneScoped;
 	static const auto isSeq = [](lua_State* L, int i) {
 		// stack = [..]
 		lua_pushnil(L);
@@ -1552,6 +1610,7 @@ void LuaUtils::LuaStackDumper::ParseTable(lua_State* L, int i, int parseDepth)
 
 void LuaUtils::LuaStackDumper::ParseLuaItem(lua_State* L, int i, bool asKey, int parseDepth)
 {
+	//ZoneScoped;
 	static const auto GetFnName = [](lua_State* L, int i) -> std::string {
 		std::string fnName;
 
@@ -1658,6 +1717,7 @@ void LuaUtils::LuaStackDumper::ParseLuaItem(lua_State* L, int i, bool asKey, int
 
 void LuaUtils::LuaStackDumper::PrintBuffer()
 {
+	//ZoneScoped;
 	Json::StyledWriter writer;
 	LOG("[%s()]\n%s", __FUNCTION__, writer.write(root).c_str());
 }
@@ -1666,6 +1726,7 @@ void LuaUtils::LuaStackDumper::PrintBuffer()
 #if !defined UNITSYNC && !defined DEDICATED && !defined BUILDING_AI
 int LuaUtils::ParseAllegiance(lua_State* L, const char* caller, int index)
 {
+	//ZoneScoped;
 	if (!lua_isnumber(L, index))
 		return AllUnits;
 
@@ -1687,6 +1748,7 @@ int LuaUtils::ParseAllegiance(lua_State* L, const char* caller, int index)
 
 bool LuaUtils::IsAlliedTeam(lua_State* L, int team)
 {
+	//ZoneScoped;
 	if (CLuaHandle::GetHandleReadAllyTeam(L) < 0)
 		return CLuaHandle::GetHandleFullRead(L);
 
@@ -1695,6 +1757,7 @@ bool LuaUtils::IsAlliedTeam(lua_State* L, int team)
 
 bool LuaUtils::IsAlliedAllyTeam(lua_State* L, int allyTeam)
 {
+	//ZoneScoped;
 	if (CLuaHandle::GetHandleReadAllyTeam(L) < 0)
 		return CLuaHandle::GetHandleFullRead(L);
 
@@ -1706,6 +1769,7 @@ bool LuaUtils::IsEnemyUnit(lua_State* L, const CUnit* unit) { return (!IsAllyUni
 
 bool LuaUtils::IsUnitVisible(lua_State* L, const CUnit* unit)
 {
+	//ZoneScoped;
 	if (IsAllyUnit(L, unit))
 		return true;
 
@@ -1714,6 +1778,7 @@ bool LuaUtils::IsUnitVisible(lua_State* L, const CUnit* unit)
 
 bool LuaUtils::IsUnitInLos(lua_State* L, const CUnit* unit)
 {
+	//ZoneScoped;
 	if (IsAllyUnit(L, unit))
 		return true;
 
@@ -1722,6 +1787,7 @@ bool LuaUtils::IsUnitInLos(lua_State* L, const CUnit* unit)
 
 bool LuaUtils::IsUnitTyped(lua_State* L, const CUnit* unit)
 {
+	//ZoneScoped;
 	if (IsAllyUnit(L, unit))
 		return true;
 
@@ -1734,6 +1800,7 @@ bool LuaUtils::IsUnitTyped(lua_State* L, const CUnit* unit)
 
 const UnitDef* LuaUtils::EffectiveUnitDef(lua_State* L, const CUnit* unit)
 {
+	//ZoneScoped;
 	const UnitDef* ud = unit->unitDef;
 
 	if (IsAllyUnit(L, unit))
@@ -1747,6 +1814,7 @@ const UnitDef* LuaUtils::EffectiveUnitDef(lua_State* L, const CUnit* unit)
 
 bool LuaUtils::IsFeatureVisible(lua_State* L, const CFeature* feature)
 {
+	//ZoneScoped;
 	if (CLuaHandle::GetHandleFullRead(L))
 		return true;
 	if (CLuaHandle::GetHandleReadAllyTeam(L) < 0)
@@ -1757,6 +1825,7 @@ bool LuaUtils::IsFeatureVisible(lua_State* L, const CFeature* feature)
 
 bool LuaUtils::IsProjectileVisible(lua_State* L, const CProjectile* pro)
 {
+	//ZoneScoped;
 	if (CLuaHandle::GetHandleReadAllyTeam(L) < 0)
 		return CLuaHandle::GetHandleFullRead(L);
 
@@ -1766,6 +1835,7 @@ bool LuaUtils::IsProjectileVisible(lua_State* L, const CProjectile* pro)
 
 void LuaUtils::PushAttackerDef(lua_State* L, const CUnit* const attacker)
 {
+	//ZoneScoped;
 	if (attacker == nullptr) {
 		lua_pushnil(L);
 		return;
@@ -1776,6 +1846,7 @@ void LuaUtils::PushAttackerDef(lua_State* L, const CUnit* const attacker)
 
 void LuaUtils::PushAttackerDef(lua_State* L, const CUnit& attacker)
 {
+	//ZoneScoped;
 	if (LuaUtils::IsUnitTyped(L, &attacker)) {
 		lua_pushnumber(L, LuaUtils::EffectiveUnitDef(L, &attacker)->id);
 		return;
@@ -1786,6 +1857,7 @@ void LuaUtils::PushAttackerDef(lua_State* L, const CUnit& attacker)
 
 void LuaUtils::PushAttackerInfo(lua_State* L, const CUnit* const attacker)
 {
+	//ZoneScoped;
 	if (attacker && IsUnitVisible(L, attacker)) {
 		lua_pushnumber(L, attacker->id);
 		PushAttackerDef(L, *attacker);

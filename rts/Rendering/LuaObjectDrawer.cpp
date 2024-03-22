@@ -764,4 +764,3 @@ void LuaObjectDrawer::DrawShadowMaterialObjects(LuaObjType objType, bool)
 	// pass for custom- or default-shader models!
 	DrawMaterialBins(objType, GetDrawPassShadowMat(), false);
 }
-

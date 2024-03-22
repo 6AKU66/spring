@@ -812,4 +812,3 @@ void CommandDrawer::DrawQuedBuildingSquares(const CBuilderCAI* cai) const
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 }
-

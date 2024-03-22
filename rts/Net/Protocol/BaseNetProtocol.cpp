@@ -739,4 +739,3 @@ CBaseNetProtocol::CBaseNetProtocol()
 
 	proto->AddType(NETMSG_GAMESTATE_DUMP, 1);
 }
-

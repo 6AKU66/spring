@@ -8,6 +8,8 @@
 #include "Sim/Units/Scripts/CobDefines.h"
 #include "Sim/Projectiles/PieceProjectile.h"
 
+#include <tracy/Tracy.hpp>
+
 
 /******************************************************************************
  * COB constants
@@ -18,6 +20,7 @@
 
 bool LuaConstCOB::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 #define PUSH_COB(cmd) LuaPushNamedNumber(L, #cmd, cmd)
 
 	/*** @table COB
@@ -201,6 +204,7 @@ bool LuaConstCOB::PushEntries(lua_State* L)
 
 bool LuaConstSFX::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 	/*** Piece Flags for Spring.UnitScript.Explode
 	 *
 	 * @table SFX

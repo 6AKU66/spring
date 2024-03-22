@@ -120,4 +120,3 @@ void CTeamHighlight::Update(int frameNum) {
 
 	highlight = hl;
 }
-

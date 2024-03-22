@@ -442,6 +442,7 @@ bool LuaFBOs::ApplyDrawBuffers(lua_State* L, int index)
  */
 int LuaFBOs::CreateFBO(lua_State* L)
 {
+	//ZoneScoped;
 	FBO fbo;
 	fbo.Init(L);
 
@@ -536,6 +537,7 @@ int LuaFBOs::DeleteFBO(lua_State* L)
  */
 int LuaFBOs::IsValidFBO(lua_State* L)
 {
+	//ZoneScoped;
 	if (lua_isnil(L, 1) || !lua_isuserdata(L, 1)) {
 		lua_pushboolean(L, false);
 		return 1;

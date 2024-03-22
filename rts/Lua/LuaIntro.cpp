@@ -49,6 +49,7 @@ DECL_FREE_HANDLER(CLuaIntro, luaIntro)
 CLuaIntro::CLuaIntro()
 : CLuaHandle("LuaIntro", LUA_HANDLE_ORDER_INTRO, true, false)
 {
+	//ZoneScoped;
 	luaIntro = this;
 
 	if (!IsValid())

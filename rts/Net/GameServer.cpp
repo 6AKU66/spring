@@ -3139,4 +3139,3 @@ uint8_t CGameServer::ReserveSkirmishAIId()
 	freeSkirmishAIs.pop_back();
 	return id;
 }
-

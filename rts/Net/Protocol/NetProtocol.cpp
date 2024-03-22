@@ -202,4 +202,3 @@ void CNetProtocol::ResetDemoRecorder() { SetDemoRecorder({}); }
 
 unsigned int CNetProtocol::GetNumWaitingServerPackets() const { return (serverConnPtr->GetPacketQueueSize()); }
 unsigned int CNetProtocol::GetNumWaitingPingPackets() const { return (serverConnPtr->GetNumQueuedPings()); }
-

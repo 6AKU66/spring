@@ -72,6 +72,7 @@ CUnsyncedLuaHandle::CUnsyncedLuaHandle(CSplitLuaHandle* _base, const std::string
 	: CLuaHandle(_name, _order, false, false)
 	, base(*_base)
 {
+	//ZoneScoped;
 	D.allowChanges = false;
 }
 
@@ -81,6 +82,7 @@ CUnsyncedLuaHandle::~CUnsyncedLuaHandle() = default;
 
 bool CUnsyncedLuaHandle::Init(std::string code, const std::string& file)
 {
+	//ZoneScoped;
 	if (!IsValid())
 		return false;
 
@@ -185,6 +187,7 @@ bool CUnsyncedLuaHandle::Init(std::string code, const std::string& file)
  */
 void CUnsyncedLuaHandle::RecvFromSynced(lua_State* srcState, int args)
 {
+	//ZoneScoped;
 	if (!IsValid())
 		return;
 
@@ -411,12 +414,14 @@ CSyncedLuaHandle::CSyncedLuaHandle(CSplitLuaHandle* _base, const std::string& _n
 	, base(*_base)
 	, origNextRef(-1)
 {
+	//ZoneScoped;
 	D.allowChanges = true;
 }
 
 
 CSyncedLuaHandle::~CSyncedLuaHandle()
 {
+	//ZoneScoped;
 	// kill all unitscripts running in this handle
 	CLuaUnitScript::HandleFreed(this);
 }
