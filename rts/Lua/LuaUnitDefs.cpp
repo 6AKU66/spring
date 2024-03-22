@@ -25,6 +25,8 @@
 #include "System/Log/ILog.h"
 #include "System/StringUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 
 static ParamMap paramMap;
 
@@ -55,6 +57,7 @@ static int CategorySetFromString(lua_State* L, const void* data);
 
 bool LuaUnitDefs::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 	InitParamMap();
 
 	typedef int (*IndxFuncType)(lua_State*);
@@ -94,6 +97,7 @@ bool LuaUnitDefs::PushEntries(lua_State* L)
 
 static int UnitDefIndex(lua_State* L)
 {
+	//ZoneScoped;
 	// not a default value
 	if (!lua_isstring(L, 2)) {
 		lua_rawget(L, 1);
@@ -150,6 +154,7 @@ static int UnitDefIndex(lua_State* L)
 
 static int UnitDefNewIndex(lua_State* L)
 {
+	//ZoneScoped;
 	// not a default value, set it
 	if (!lua_isstring(L, 2)) {
 		lua_rawset(L, 1);
@@ -213,6 +218,7 @@ static int UnitDefNewIndex(lua_State* L)
 
 static int UnitDefMetatable(lua_State* L)
 {
+	//ZoneScoped;
 	lua_touserdata(L, lua_upvalueindex(1));
 	// const void* userData = lua_touserdata(L, lua_upvalueindex(1));
 	// const UnitDef* ud = (const UnitDef*)userData;
@@ -224,12 +230,14 @@ static int UnitDefMetatable(lua_State* L)
 
 static int Next(lua_State* L)
 {
+	//ZoneScoped;
 	return LuaUtils::Next(paramMap, L);
 }
 
 
 static int Pairs(lua_State* L)
 {
+	//ZoneScoped;
 	luaL_checktype(L, 1, LUA_TTABLE);
 	lua_pushcfunction(L, Next);	// iterator
 	lua_pushvalue(L, 1);        // state (table)
@@ -243,6 +251,7 @@ static int Pairs(lua_State* L)
 
 static int UnitDefToID(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const UnitDef* ud = *((const UnitDef**)data);
 	if (ud == nullptr) {
 		return 0;
@@ -254,6 +263,7 @@ static int UnitDefToID(lua_State* L, const void* data)
 
 static int WeaponDefToID(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const WeaponDef* wd = *((const WeaponDef**)data);
 	if (wd == nullptr) {
 		return 0;
@@ -265,6 +275,7 @@ static int WeaponDefToID(lua_State* L, const void* data)
 
 static int WeaponDefToName(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const WeaponDef* wd = *((const WeaponDef**)data);
 	if (wd == nullptr) {
 		return 0;
@@ -276,6 +287,7 @@ static int WeaponDefToName(lua_State* L, const void* data)
 
 static int SafeIconType(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	// the iconType is unsynced because LuaUI has SetUnitDefIcon()
 	if (!CLuaHandle::GetHandleSynced(L)) {
 		const icon::CIcon& iconType = *((const icon::CIcon*)data);
@@ -288,6 +300,7 @@ static int SafeIconType(lua_State* L, const void* data)
 
 static int CustomParamsTable(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const spring::unordered_map<std::string, std::string>& params = *((const spring::unordered_map<std::string, std::string>*)data);
 	lua_createtable(L, 0, params.size());
 
@@ -302,6 +315,7 @@ static int CustomParamsTable(lua_State* L, const void* data)
 
 static int BuildOptions(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const spring::unordered_map<int, std::string>& buildOptions = *((const spring::unordered_map<int, std::string>*)data);
 	const spring::unordered_map<std::string, int>& unitDefIDsMap = unitDefHandler->GetUnitDefIDs();
 
@@ -324,6 +338,7 @@ static int BuildOptions(lua_State* L, const void* data)
 
 static inline int BuildCategorySet(lua_State* L, const vector<string>& cats)
 {
+	//ZoneScoped;
 	const int count = (int)cats.size();
 	lua_createtable(L, 0, count);
 	for (int i = 0; i < count; i++) {
@@ -337,6 +352,7 @@ static inline int BuildCategorySet(lua_State* L, const vector<string>& cats)
 
 static int CategorySetFromBits(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const int bits = *((const int*)data);
 	const vector<string> &cats =
 		CCategoryHandler::Instance()->GetCategoryNames(bits);
@@ -346,6 +362,7 @@ static int CategorySetFromBits(lua_State* L, const void* data)
 
 static int CategorySetFromString(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const string& str = *((const string*)data);
 	const string& lower = StringToLower(str);
 
@@ -355,6 +372,7 @@ static int CategorySetFromString(lua_State* L, const void* data)
 
 static int WeaponsTable(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const auto& udWeapons = *reinterpret_cast<const decltype(UnitDef::weapons)*>(data);
 
 	// When LUA_WEAPON_BASE_INDEX is not 1, lua will resort to using the hash
@@ -395,6 +413,7 @@ static int WeaponsTable(lua_State* L, const void* data)
 static void PushGuiSoundSet(lua_State* L, const string& name,
                             const GuiSoundSet& soundSet)
 {
+	//ZoneScoped;
 	const int soundCount = (int)soundSet.NumSounds();
 
 	lua_pushsstring(L, name);
@@ -416,6 +435,7 @@ static void PushGuiSoundSet(lua_State* L, const string& name,
 
 
 static int SoundsTable(lua_State* L, const void* data) {
+	//ZoneScoped;
 	const UnitDef::SoundStruct& sounds = *((const UnitDef::SoundStruct*) data);
 
 	lua_createtable(L, 0, 10);
@@ -438,6 +458,7 @@ static int SoundsTable(lua_State* L, const void* data) {
 
 static int MoveDefTable(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const unsigned int mdPathType = *static_cast<const unsigned int*>(data);
 
 	if (mdPathType == -1u) {
@@ -483,30 +504,37 @@ static int MoveDefTable(lua_State* L, const void* data)
 
 
 static int ModelTable(lua_State* L, const void* data) {
+	//ZoneScoped;
 	return (LuaUtils::PushModelTable(L, static_cast<const SolidObjectDef*>(data)));
 }
 
 static int ModelName(lua_State* L, const void* data) {
+	//ZoneScoped;
 	return (LuaUtils::PushModelName(L, static_cast<const SolidObjectDef*>(data)));
 }
 
 static int ModelType(lua_State* L, const void* data) {
+	//ZoneScoped;
 	return (LuaUtils::PushModelType(L, static_cast<const SolidObjectDef*>(data)));
 }
 
 static int ModelPath(lua_State* L, const void* data) {
+	//ZoneScoped;
 	return (LuaUtils::PushModelPath(L, static_cast<const SolidObjectDef*>(data)));
 }
 
 static int ModelHeight(lua_State* L, const void* data) {
+	//ZoneScoped;
 	return (LuaUtils::PushModelHeight(L, static_cast<const SolidObjectDef*>(data), true));
 }
 
 static int ModelRadius(lua_State* L, const void* data) {
+	//ZoneScoped;
 	return (LuaUtils::PushModelRadius(L, static_cast<const SolidObjectDef*>(data), true));
 }
 
 static int ColVolTable(lua_State* L, const void* data) {
+	//ZoneScoped;
 	return (LuaUtils::PushColVolTable(L, static_cast<const CollisionVolume*>(data)));
 }
 
@@ -529,24 +557,28 @@ TYPE_FUNC(IsBomberAirUnit, boolean)
 
 
 static int ReturnEmptyString(lua_State* L, const void* data) {
+	//ZoneScoped;
 	LOG_L(L_WARNING, "%s - deprecated field!", lua_tostring(L, 2));
 	lua_pushstring(L, "");
 	return 1;
 }
 
 static int ReturnFalse(lua_State* L, const void* data) {
+	//ZoneScoped;
 	LOG_L(L_WARNING, "%s - deprecated field!", lua_tostring(L, 2));
 	lua_pushboolean(L, false);
 	return 1;
 }
 
 static int ReturnMinusOne(lua_State* L, const void* data) {
+	//ZoneScoped;
 	LOG_L(L_WARNING, "%s - deprecated field!", lua_tostring(L, 2));
 	lua_pushnumber(L, -1);
 	return 1;
 }
 
 static int ReturnNil(lua_State* L, const void* data) {
+	//ZoneScoped;
 	LOG_L(L_WARNING, "%s - deprecated field!", lua_tostring(L, 2));
 	lua_pushnil(L);
 	return 1;
@@ -557,6 +589,7 @@ static int ReturnNil(lua_State* L, const void* data) {
 
 static bool InitParamMap()
 {
+	//ZoneScoped;
 	spring::clear_unordered_map(paramMap);
 
 	paramMap["next"]  = DataElement(READONLY_TYPE);
