@@ -146,7 +146,6 @@ void CProjectileHandler::ConfigNotify(const std::string& key, const std::string&
 
 static void MAPPOS_SANITY_CHECK(const float3 v)
 {
-	//ZoneScoped;
 	v.AssertNaNs();
 	assert(v.x >= -(float3::maxxpos * 16.0f));
 	assert(v.x <=  (float3::maxxpos * 16.0f));

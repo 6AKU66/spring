@@ -895,7 +895,6 @@ float3 CWeapon::GetTargetBorderPos(
 
 bool CWeapon::TryTarget(const float3 tgtPos, const SWeaponTarget& trg, bool preFire) const
 {
-	//ZoneScoped;
 	assert(GetLeadTargetPos(trg).SqDistance(tgtPos) < Square(250.0f));
 
 	if (!TestTarget(tgtPos, trg))
@@ -1050,7 +1049,6 @@ bool CWeapon::HaveFreeLineOfFire(const float3 srcPos, const float3 tgtPos, const
 
 
 bool CWeapon::TryTarget(const SWeaponTarget& trg) const {
-	//ZoneScoped;
 	return TryTarget(GetLeadTargetPos(trg), trg);
 }
 
