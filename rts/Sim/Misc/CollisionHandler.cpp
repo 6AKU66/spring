@@ -32,7 +32,6 @@ bool CCollisionHandler::DetectHit(
 	CollisionQuery* cq,
 	bool forceTrace)
 {
-	//ZoneScoped;
 	// use the object's own collision volume
 	return (DetectHit(o, &o->collisionVolume, m, p0, p1, cq, forceTrace));
 }
@@ -208,7 +207,6 @@ bool CCollisionHandler::MouseHit(
 	const CollisionVolume* v,
 	CollisionQuery* cq
 ) {
-	//ZoneScoped;
 	if (cq != nullptr)
 		cq->Reset();
 

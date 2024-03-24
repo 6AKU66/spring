@@ -172,7 +172,6 @@ void CUnit::InitStatic()
 
 void CUnit::SanityCheck() const
 {
-	//ZoneScoped;
 	pos.AssertNaNs();
 	midPos.AssertNaNs();
 	relMidPos.AssertNaNs();
