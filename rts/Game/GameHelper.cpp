@@ -377,6 +377,7 @@ void CGameHelper::Explosion(const CExplosionParams& params) {
 template<typename TFilter, typename TQuery>
 static inline void QueryUnits(TFilter filter, TQuery& query)
 {
+	//ZoneScoped;
 	QuadFieldQuery qfQuery;
 	quadField.GetQuads(qfQuery, query.pos, query.radius);
 	const int tempNum = gs->GetTempNum();
@@ -534,6 +535,7 @@ namespace {
 				Base(pos, searchRadius), closeSqDist(sqRadius), closeUnit(nullptr) {}
 
 			void AddUnit(CUnit* u) {
+				//ZoneScoped;
 				const float sqDist = (pos - u->midPos).SqLength2D();
 				if (sqDist <= closeSqDist) {
 					closeSqDist = sqDist;
@@ -556,6 +558,7 @@ namespace {
 				ClosestUnit(pos, searchRadius) {}
 
 			void AddUnit(CUnit* u) {
+				//ZoneScoped;
 				float3 unitPos;
 				if (gu->spectatingFullView) {
 					unitPos = u->midPos;
@@ -593,6 +596,7 @@ namespace {
 				closeDist(searchRadius), closeUnit(nullptr), checkSightDist(checkSightDistance) {}
 
 			void AddUnit(CUnit* u) {
+				//ZoneScoped;
 				// FIXME: use volumeBoundingRadius?
 				// (more for consistency than need)
 				const float dist = pos.distance(u->midPos) - u->radius;
@@ -642,6 +646,7 @@ namespace {
 				Base(pos, searchRadius), found(found) {}
 
 			void AddUnit(CUnit* u) {
+				//ZoneScoped;
 				if ((pos - u->midPos).SqLength2D() <= sqRadius) {
 					found.push_back(u->id);
 				}
@@ -655,6 +660,7 @@ namespace {
 
 size_t CGameHelper::GenerateWeaponTargets(const CWeapon* weapon, const CUnit* avoidUnit, std::vector<std::pair<float, CUnit*>>& targets)
 {
+	//ZoneScoped;
 	const CUnit*  weaponOwner = weapon->owner;
 	const CUnit* lastAttacker = ((weaponOwner->lastAttackFrame + 200) <= gs->frameNum) ? weaponOwner->lastAttacker : nullptr;
 
@@ -885,6 +891,7 @@ namespace {
 	template <typename ExcludeCallable>
 	void BuggerOffImpl(const float3& pos, float radius, bool spherical, bool forced, int teamId, ExcludeCallable test)
 	{
+	//ZoneScoped;		
 		// copy on purpose since BuggerOff can call risky stuff
 		QuadFieldQuery qfQuery;
 		quadField.GetUnitsExact(qfQuery, pos, radius + SQUARE_SIZE, spherical);

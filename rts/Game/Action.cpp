@@ -8,8 +8,11 @@
 #include "Action.h"
 #include "System/FileSystem/SimpleParser.h"
 
+#include <tracy/Tracy.hpp>
+
 
 static inline void rtrim(std::string &s) {
+	//ZoneScoped;
 	s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
 		return !std::isspace(ch);
 	}).base(), s.end());
@@ -19,6 +22,7 @@ static inline void rtrim(std::string &s) {
 Action::Action(const std::string& l)
 	: rawline(l)
 {
+	//ZoneScoped;
 	const std::vector<std::string> &words = CSimpleParser::Tokenize(l, 1);
 	if (!words.empty()) {
 		command.resize(words[0].length());
