@@ -10,8 +10,11 @@
 #include "SoundBuffer.h"
 #include "System/GlobalRNG.h"
 
+#include <tracy/Tracy.hpp>
+
 namespace
 {
+	//ZoneScoped;
 	CGlobalUnsyncedRNG randnum; // no need for strong randomness here, so default seed is ok
 
 	template <typename T>
@@ -59,6 +62,7 @@ SoundItem::SoundItem(size_t itemID, size_t bufferID, const spring::unordered_map
 
 bool SoundItem::PlayNow()
 {
+	//ZoneScoped;
 	if (maxConcurrent >= currentlyPlaying) {
 		currentlyPlaying++;
 		return true;
@@ -69,12 +73,14 @@ bool SoundItem::PlayNow()
 
 void SoundItem::StopPlay()
 {
+	//ZoneScoped;
 	assert(currentlyPlaying > 0);
 	--currentlyPlaying;
 }
 
 float SoundItem::GetGain() const
 {
+	//ZoneScoped;
 	float tgain = 0.0f;
 
 	if (gainMod > 0.0f)
@@ -85,6 +91,7 @@ float SoundItem::GetGain() const
 
 float SoundItem::GetPitch() const
 {
+	//ZoneScoped;
 	float tpitch = 0.0f;
 
 	if (pitchMod > 0.0f)
