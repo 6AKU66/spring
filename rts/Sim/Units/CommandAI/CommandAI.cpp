@@ -1663,7 +1663,6 @@ void CCommandAI::DependentDied(CObject* o)
 
 void CCommandAI::FinishCommand()
 {
-	//ZoneScoped;
 	assert(!commandQue.empty());
 
 	const Command cmd = commandQue.front(); // copy is needed here

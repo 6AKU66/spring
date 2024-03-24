@@ -891,6 +891,7 @@ namespace {
 	template <typename ExcludeCallable>
 	void BuggerOffImpl(const float3& pos, float radius, bool spherical, bool forced, int teamId, ExcludeCallable test)
 	{
+	//ZoneScoped;		
 		// copy on purpose since BuggerOff can call risky stuff
 		QuadFieldQuery qfQuery;
 		quadField.GetUnitsExact(qfQuery, pos, radius + SQUARE_SIZE, spherical);

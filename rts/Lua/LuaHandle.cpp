@@ -317,7 +317,6 @@ int CLuaHandle::RunCallInTraceback(
 	int errFuncIndex,
 	bool popErrorFunc
 ) {
-	//ZoneScoped;
 	// do not signal floating point exceptions in user Lua code
 	ScopedDisableFpuExceptions fe;
 
