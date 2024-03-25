@@ -121,7 +121,6 @@ void CGlobalUnsynced::SetMyPlayer(const int myNumber)
 }
 
 CPlayer* CGlobalUnsynced::GetMyPlayer() {
-	//ZoneScoped;
 	return (playerHandler.Player(myPlayerNum));
 }
 
