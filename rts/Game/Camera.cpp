@@ -95,7 +95,6 @@ void CCamera::ConfigNotify(const std::string & key, const std::string & value)
 
 CCamera* CCamera::GetActive()
 {
-	//ZoneScoped;
 	return (CCameraHandler::GetActiveCamera());
 }
 

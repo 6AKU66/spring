@@ -13,6 +13,8 @@
 #include <xmmintrin.h>
 #include <emmintrin.h>
 
+#include <tracy/Tracy.hpp>
+
 CR_BIND(CMatrix44f, )
 
 CR_REG_METADATA(CMatrix44f, CR_MEMBER(m))
@@ -228,6 +230,7 @@ CMatrix44f& CMatrix44f::Rotate(float angle, const float3 axis)
 
 CMatrix44f& CMatrix44f::RotateEulerXYZ(const float3 angles)
 {
+	//ZoneScoped;
 	// rotate around X first, Y second, Z third (R=R(Z)*R(Y)*R(X))
 	if (angles[ANGLE_P] != 0.0f) { RotateX(angles[ANGLE_P]); }
 	if (angles[ANGLE_Y] != 0.0f) { RotateY(angles[ANGLE_Y]); }
@@ -237,6 +240,7 @@ CMatrix44f& CMatrix44f::RotateEulerXYZ(const float3 angles)
 
 CMatrix44f& CMatrix44f::RotateEulerYXZ(const float3 angles)
 {
+	//ZoneScoped;
 	// rotate around Y first, X second, Z third (R=R(Z)*R(X)*R(Y))
 	if (angles[ANGLE_Y] != 0.0f) { RotateY(angles[ANGLE_Y]); }
 	if (angles[ANGLE_P] != 0.0f) { RotateX(angles[ANGLE_P]); }
@@ -246,6 +250,7 @@ CMatrix44f& CMatrix44f::RotateEulerYXZ(const float3 angles)
 
 CMatrix44f& CMatrix44f::RotateEulerZXY(const float3 angles)
 {
+	//ZoneScoped;
 	// rotate around Z first, X second, Y third (R=R(Y)*R(X)*R(Z))
 	if (angles[ANGLE_R] != 0.0f) { RotateZ(angles[ANGLE_R]); }
 	if (angles[ANGLE_P] != 0.0f) { RotateX(angles[ANGLE_P]); }
@@ -255,6 +260,7 @@ CMatrix44f& CMatrix44f::RotateEulerZXY(const float3 angles)
 
 CMatrix44f& CMatrix44f::RotateEulerZYX(const float3 angles)
 {
+	//ZoneScoped;
 	// rotate around Z first, Y second, X third (R=R(X)*R(Y)*R(Z))
 	if (angles[ANGLE_R] != 0.0f) { RotateZ(angles[ANGLE_R]); }
 	if (angles[ANGLE_Y] != 0.0f) { RotateY(angles[ANGLE_Y]); }

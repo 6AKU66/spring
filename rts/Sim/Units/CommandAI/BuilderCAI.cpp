@@ -572,7 +572,6 @@ void CBuilderCAI::ReclaimFeature(CFeature* f)
 
 void CBuilderCAI::FinishCommand()
 {
-	//ZoneScoped;
 	buildRetries = 0;
 	CMobileCAI::FinishCommand();
 }

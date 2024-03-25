@@ -1092,7 +1092,6 @@ void CMobileCAI::NonMoving()
 
 void CMobileCAI::FinishCommand()
 {
-	//ZoneScoped;
 	SetTransportee(nullptr);
 
 	if (!commandQue[0].IsInternalOrder())

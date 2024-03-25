@@ -6007,7 +6007,6 @@ int LuaSyncedRead::GetUnitCurrentCommand(lua_State* L)
  */
 int LuaSyncedRead::GetUnitCommands(lua_State* L)
 {
-	//ZoneScoped;
 	const CUnit* unit = ParseAllyUnit(L, __func__, 1);
 
 	if (unit == nullptr)
