@@ -21,6 +21,8 @@
 #include "System/TimeProfiler.h"
 #include "System/SafeUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 CONFIG(bool, Sound).defaultValue(true).description("Enables (OpenAL) or disables sound.");
 
 CONFIG(bool, UseEFX     ).defaultValue( true).safemodeValue(false);
@@ -54,6 +56,7 @@ ISound* ISound::singleton = nullptr;
 
 void ISound::Initialize(bool reload, bool forceNullSound)
 {
+	//ZoneScoped;
 #ifndef NO_SOUND
 	if (!IsNullAudio() && !forceNullSound) {
 		Channels::BGMusic       = new (audioChannelMem[0]) AudioChannel();
@@ -104,6 +107,7 @@ void ISound::Initialize(bool reload, bool forceNullSound)
 
 void ISound::Shutdown(bool reload)
 {
+	//ZoneScoped;
 	// kill thread before setting singleton pointer to null
 	if (singleton != nullptr)
 		singleton->Kill();
@@ -127,12 +131,14 @@ void ISound::Shutdown(bool reload)
 
 bool ISound::IsNullAudio()
 {
+	//ZoneScoped;
 	return !configHandler->GetBool("Sound");
 }
 
 
 bool ISound::ChangeOutput(bool forceNullSound)
 {
+	//ZoneScoped;
 	// FIXME: on reload, sound-ids change (depends on order when they are requested, see GetSoundId()/GetSoundItem()
 	if (IsNullAudio()) {
 		LOG_L(L_ERROR, "[ISound::%s] re-enabling sound isn't supported yet!", __func__);
@@ -148,6 +154,7 @@ bool ISound::ChangeOutput(bool forceNullSound)
 
 bool ISound::LoadSoundDefs(LuaParser* defsParser)
 {
+	//ZoneScoped;
 	return (singleton->LoadSoundDefsImpl(defsParser));
 }
 

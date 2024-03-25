@@ -8,6 +8,8 @@
 #include "LuaHashString.h"
 #include "LuaUtils.h"
 
+#include <tracy/Tracy.hpp>
+
 
 static int SyncTableIndex(lua_State* L);
 static int SyncTableNewIndex(lua_State* L);
@@ -17,6 +19,7 @@ static int SyncTableMetatable(lua_State* L);
 
 static int SyncTableIndex(lua_State* dstL)
 {
+	//ZoneScoped;
 	if (lua_isnoneornil(dstL, -1))
 		return 0;
 
@@ -72,6 +75,7 @@ static int SyncTableMetatable(lua_State* L)
 
 bool LuaSyncedTable::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 	HSTR_PUSH(L, "SYNCED");
 	lua_newtable(L); { // the proxy table
 

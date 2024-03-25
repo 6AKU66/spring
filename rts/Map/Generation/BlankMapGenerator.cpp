@@ -17,12 +17,15 @@
 #include <cstring> // strcpy,memset
 #include <sstream>
 
+#include <tracy/Tracy.hpp>
+
 CBlankMapGenerator::CBlankMapGenerator(const CGameSetup* setup)
 	: setup(setup)
 	, mapSize(1, 1)
 	, mapHeight(50)
 	, mapColor(0x00, 0xFF, 0x00)
 {
+	//ZoneScoped;
 	const auto& mapOpts = setup->GetMapOptionsCont();
 
 	for (const auto& mapOpt: mapOpts) {
@@ -77,6 +80,7 @@ CBlankMapGenerator::CBlankMapGenerator(const CGameSetup* setup)
 
 void CBlankMapGenerator::Generate()
 {
+	//ZoneScoped;
 	// create archive for map
 	CVirtualArchive* archive = virtualArchiveFactory->AddArchive(setup->mapName);
 
@@ -95,6 +99,7 @@ void CBlankMapGenerator::Generate()
 
 void CBlankMapGenerator::GenerateMap()
 {
+	//ZoneScoped;
 	mapDescription = "Blank Map";
 
 	startPositions.emplace_back(20, 20);
@@ -103,6 +108,7 @@ void CBlankMapGenerator::GenerateMap()
 
 void CBlankMapGenerator::GenerateSMF(CVirtualFile* fileSMF)
 {
+	//ZoneScoped;
 	SMFHeader smfHeader;
 	MapTileHeader smfTile;
 	MapFeatureHeader smfFeature;
@@ -202,6 +208,7 @@ void CBlankMapGenerator::GenerateSMF(CVirtualFile* fileSMF)
 
 void CBlankMapGenerator::GenerateMapInfo(CVirtualFile* fileMapInfo)
 {
+	//ZoneScoped;
 	//Open template mapinfo.lua
 	const std::string luaTemplate = "mapgenerator/mapinfo_template.lua";
 	CFileHandler fh(luaTemplate, SPRING_VFS_PWD_ALL);
@@ -230,6 +237,7 @@ void CBlankMapGenerator::GenerateMapInfo(CVirtualFile* fileMapInfo)
 
 void CBlankMapGenerator::GenerateSMT(CVirtualFile* fileSMT)
 {
+	//ZoneScoped;
 	constexpr int32_t TILE_SIZE = 32;
 	constexpr int32_t TILE_BPP = 3;
 
@@ -288,10 +296,12 @@ void CBlankMapGenerator::GenerateSMT(CVirtualFile* fileSMT)
 
 void CBlankMapGenerator::AppendToBuffer(CVirtualFile* file, const void* data, int size)
 {
+	//ZoneScoped;
 	file->buffer.insert(file->buffer.end(), (std::uint8_t*)data, (std::uint8_t*)data + size);
 }
 
 void CBlankMapGenerator::SetToBuffer(CVirtualFile* file, const void* data, int size, int position)
 {
+	//ZoneScoped;
 	std::copy((std::uint8_t*)data, (std::uint8_t*)data + size, file->buffer.begin() + position);
 }

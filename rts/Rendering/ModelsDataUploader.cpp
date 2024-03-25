@@ -29,12 +29,15 @@
 #include "Sim/Misc/GlobalSynced.h"
 #include "Game/GlobalUnsynced.h"
 
+#include <tracy/Tracy.hpp>
+
 
 ////////////////////////////////////////////////////////////////////
 
 template<typename T, typename Derived>
 void TypedStorageBufferUploader<T, Derived>::InitImpl(uint32_t bindingIdx_, uint32_t elemCount0_, uint32_t elemCountIncr_, uint8_t type, bool coherent, uint32_t numBuffers)
 {
+	//ZoneScoped;
 	if (!globalRendering->haveGL4)
 		return;
 
@@ -61,6 +64,7 @@ void TypedStorageBufferUploader<T, Derived>::InitImpl(uint32_t bindingIdx_, uint
 template<typename T, typename Derived>
 void TypedStorageBufferUploader<T, Derived>::KillImpl()
 {
+	//ZoneScoped;
 	if (!globalRendering->haveGL4)
 		return;
 
@@ -71,41 +75,48 @@ void TypedStorageBufferUploader<T, Derived>::KillImpl()
 template<typename T, typename Derived>
 inline uint32_t TypedStorageBufferUploader<T, Derived>::GetElemsCount() const
 {
+	//ZoneScoped;
 	return ssbo->GetByteSize() / sizeof(T);
 }
 
 template<typename T, typename Derived>
 std::size_t TypedStorageBufferUploader<T, Derived>::GetUnitDefElemOffset(int32_t unitDefID) const
 {
+	//ZoneScoped;
 	return GetDefElemOffsetImpl(unitDefHandler->GetUnitDefByID(unitDefID));
 }
 
 template<typename T, typename Derived>
 std::size_t TypedStorageBufferUploader<T, Derived>::GetFeatureDefElemOffset(int32_t featureDefID) const
 {
+	//ZoneScoped;
 	return GetDefElemOffsetImpl(featureDefHandler->GetFeatureDefByID(featureDefID));
 }
 
 template<typename T, typename Derived>
 std::size_t TypedStorageBufferUploader<T, Derived>::GetUnitElemOffset(int32_t unitID) const
 {
+	//ZoneScoped;
 	return GetElemOffsetImpl(unitHandler.GetUnit(unitID));
 }
 
 template<typename T, typename Derived>
 std::size_t TypedStorageBufferUploader<T, Derived>::GetFeatureElemOffset(int32_t featureID) const
 {
+	//ZoneScoped;
 	return GetElemOffsetImpl(featureHandler.GetFeature(featureID));
 }
 
 template<typename T, typename Derived>
 std::size_t TypedStorageBufferUploader<T, Derived>::GetProjectileElemOffset(int32_t syncedProjectileID) const
 {
+	//ZoneScoped;
 	return GetElemOffsetImpl(projectileHandler.GetProjectileBySyncedID(syncedProjectileID));
 }
 
 void MatrixUploader::InitDerived()
 {
+	//ZoneScoped;
 	if (!globalRendering->haveGL4)
 		return;
 
@@ -125,6 +136,7 @@ void MatrixUploader::InitDerived()
 
 void MatrixUploader::KillDerived()
 {
+	//ZoneScoped;
 	if (!globalRendering->haveGL4)
 		return;
 
@@ -203,6 +215,7 @@ void MatrixUploader::UpdateDerived()
 
 std::size_t MatrixUploader::GetDefElemOffsetImpl(const S3DModel* model) const
 {
+	//ZoneScoped;
 	if (model == nullptr) {
 		LOG_L(L_ERROR, "[%s::%s] Supplied nullptr S3DModel", className, __func__);
 		return MatricesMemStorage::INVALID_INDEX;
@@ -213,6 +226,7 @@ std::size_t MatrixUploader::GetDefElemOffsetImpl(const S3DModel* model) const
 
 std::size_t MatrixUploader::GetDefElemOffsetImpl(const UnitDef* def) const
 {
+	//ZoneScoped;
 	if (def == nullptr) {
 		LOG_L(L_ERROR, "[%s::%s] Supplied nullptr UnitDef", className, __func__);
 		return MatricesMemStorage::INVALID_INDEX;
@@ -223,6 +237,7 @@ std::size_t MatrixUploader::GetDefElemOffsetImpl(const UnitDef* def) const
 
 std::size_t MatrixUploader::GetDefElemOffsetImpl(const FeatureDef* def) const
 {
+	//ZoneScoped;
 	if (def == nullptr) {
 		LOG_L(L_ERROR, "[%s::%s] Supplied nullptr FeatureDef", className, __func__);
 		return MatricesMemStorage::INVALID_INDEX;
@@ -233,6 +248,7 @@ std::size_t MatrixUploader::GetDefElemOffsetImpl(const FeatureDef* def) const
 
 std::size_t MatrixUploader::GetElemOffsetImpl(const CUnit* unit) const
 {
+	//ZoneScoped;
 	if (unit == nullptr) {
 		LOG_L(L_ERROR, "[%s::%s] Supplied nullptr CUnit", className, __func__);
 		return MatricesMemStorage::INVALID_INDEX;
@@ -248,6 +264,7 @@ std::size_t MatrixUploader::GetElemOffsetImpl(const CUnit* unit) const
 
 std::size_t MatrixUploader::GetElemOffsetImpl(const CFeature* feature) const
 {
+	//ZoneScoped;
 	if (feature == nullptr) {
 		LOG_L(L_ERROR, "[%s::%s] Supplied nullptr CFeature", className, __func__);
 		return MatricesMemStorage::INVALID_INDEX;
@@ -263,6 +280,7 @@ std::size_t MatrixUploader::GetElemOffsetImpl(const CFeature* feature) const
 
 std::size_t MatrixUploader::GetElemOffsetImpl(const CProjectile* p) const
 {
+	//ZoneScoped;
 	if (p == nullptr) {
 		LOG_L(L_ERROR, "[%s::%s] Supplied nullptr CProjectile", className, __func__);
 		return MatricesMemStorage::INVALID_INDEX;
@@ -289,6 +307,7 @@ std::size_t MatrixUploader::GetElemOffsetImpl(const CProjectile* p) const
 
 void ModelsUniformsUploader::InitDerived()
 {
+	//ZoneScoped;
 	if (!globalRendering->haveGL4)
 		return;
 
@@ -297,6 +316,7 @@ void ModelsUniformsUploader::InitDerived()
 
 void ModelsUniformsUploader::KillDerived()
 {
+	//ZoneScoped;
 	if (!globalRendering->haveGL4)
 		return;
 
@@ -334,6 +354,7 @@ void ModelsUniformsUploader::UpdateDerived()
 
 std::size_t ModelsUniformsUploader::GetDefElemOffsetImpl(const S3DModel* model) const
 {
+	//ZoneScoped;
 	assert(false);
 	LOG_L(L_ERROR, "[%s::%s] Invalid call", className, __func__);
 	return ModelsUniformsStorage::INVALID_INDEX;
@@ -341,6 +362,7 @@ std::size_t ModelsUniformsUploader::GetDefElemOffsetImpl(const S3DModel* model) 
 
 std::size_t ModelsUniformsUploader::GetDefElemOffsetImpl(const UnitDef* def) const
 {
+	//ZoneScoped;
 	assert(false);
 	LOG_L(L_ERROR, "[%s::%s] Invalid call", className, __func__);
 	return ModelsUniformsStorage::INVALID_INDEX;
@@ -348,6 +370,7 @@ std::size_t ModelsUniformsUploader::GetDefElemOffsetImpl(const UnitDef* def) con
 
 std::size_t ModelsUniformsUploader::GetDefElemOffsetImpl(const FeatureDef* def) const
 {
+	//ZoneScoped;
 	assert(false);
 	LOG_L(L_ERROR, "[%s::%s] Invalid call", className, __func__);
 	return ModelsUniformsStorage::INVALID_INDEX;
@@ -356,6 +379,7 @@ std::size_t ModelsUniformsUploader::GetDefElemOffsetImpl(const FeatureDef* def) 
 
 std::size_t ModelsUniformsUploader::GetElemOffsetImpl(const CUnit* unit) const
 {
+	//ZoneScoped;
 	if (unit == nullptr) {
 		LOG_L(L_ERROR, "[%s::%s] Supplied nullptr CUnit", className, __func__);
 		return ModelsUniformsStorage::INVALID_INDEX;
@@ -371,6 +395,7 @@ std::size_t ModelsUniformsUploader::GetElemOffsetImpl(const CUnit* unit) const
 
 std::size_t ModelsUniformsUploader::GetElemOffsetImpl(const CFeature* feature) const
 {
+	//ZoneScoped;
 	if (feature == nullptr) {
 		LOG_L(L_ERROR, "[%s::%s] Supplied nullptr CFeature", className, __func__);
 		return ModelsUniformsStorage::INVALID_INDEX;
@@ -386,6 +411,7 @@ std::size_t ModelsUniformsUploader::GetElemOffsetImpl(const CFeature* feature) c
 
 std::size_t ModelsUniformsUploader::GetElemOffsetImpl(const CProjectile* p) const
 {
+	//ZoneScoped;
 	if (p == nullptr) {
 		LOG_L(L_ERROR, "[%s::%s] Supplied nullptr CProjectile", className, __func__);
 		return ModelsUniformsStorage::INVALID_INDEX;

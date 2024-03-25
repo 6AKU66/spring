@@ -15,6 +15,8 @@
 #include "System/Threading/ThreadPool.h"
 #include "System/TimeUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 #undef CreateDirectory
 
 CONFIG(int, ScreenshotCounter).description("Deprecated, does nothing, but not marked as such to keep compatibility with older engine versions").defaultValue(0);
@@ -30,6 +32,7 @@ struct FunctionArgs
 
 void TakeScreenshot(std::string type, unsigned quality)
 {
+	//ZoneScoped;
 	if (type.empty())
 		type = "png";
 

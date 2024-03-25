@@ -25,6 +25,8 @@
 #include <vector>
 #include <algorithm>
 
+#include <tracy/Tracy.hpp>
+
 int   intUniformArrayBuf[1024] = {0   };
 float fltUniformArrayBuf[1024] = {0.0f};
 
@@ -41,6 +43,7 @@ float fltUniformArrayBuf[1024] = {0.0f};
 
 bool LuaShaders::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 	REGISTER_LUA_CFUNC(CreateShader);
 	REGISTER_LUA_CFUNC(DeleteShader);
 	REGISTER_LUA_CFUNC(UseShader);
@@ -76,12 +79,14 @@ bool LuaShaders::PushEntries(lua_State* L)
 
 LuaShaders::LuaShaders()
 {
+	//ZoneScoped;
 	programs.emplace_back(0);
 }
 
 
 LuaShaders::~LuaShaders()
 {
+	//ZoneScoped;
 	for (auto& program: programs) {
 		DeleteProgram(program);
 	}
@@ -95,6 +100,7 @@ LuaShaders::~LuaShaders()
 
 inline void CheckDrawingEnabled(lua_State* L, const char* caller)
 {
+	//ZoneScoped;
 	if (LuaOpenGL::IsDrawingEnabled(L))
 		return;
 
@@ -107,6 +113,7 @@ inline void CheckDrawingEnabled(lua_State* L, const char* caller)
 
 GLuint LuaShaders::GetProgramName(uint32_t progIdx) const
 {
+	//ZoneScoped;
 	if (progIdx < programs.size())
 		return programs[progIdx].id;
 
@@ -115,6 +122,7 @@ GLuint LuaShaders::GetProgramName(uint32_t progIdx) const
 
 const LuaShaders::Program* LuaShaders::GetProgram(uint32_t progIdx) const
 {
+	//ZoneScoped;
 	if (progIdx < programs.size() && progIdx > 0)
 		return &programs[progIdx];
 
@@ -123,6 +131,7 @@ const LuaShaders::Program* LuaShaders::GetProgram(uint32_t progIdx) const
 
 LuaShaders::Program* LuaShaders::GetProgram(uint32_t progIdx)
 {
+	//ZoneScoped;
 	if (progIdx < programs.size() && progIdx > 0)
 		return &programs[progIdx];
 
@@ -132,6 +141,7 @@ LuaShaders::Program* LuaShaders::GetProgram(uint32_t progIdx)
 
 GLuint LuaShaders::GetProgramName(lua_State* L, int index) const
 {
+	//ZoneScoped;
 	if (luaL_checkint(L, index) <= 0)
 		return 0;
 
@@ -140,16 +150,19 @@ GLuint LuaShaders::GetProgramName(lua_State* L, int index) const
 
 const LuaShaders::Program* LuaShaders::GetProgram(lua_State* L, int index) const
 {
+	//ZoneScoped;
 	return (GetProgram(luaL_checkint(L, index)));
 }
 LuaShaders::Program* LuaShaders::GetProgram(lua_State* L, int index)
 {
+	//ZoneScoped;
 	return (GetProgram(luaL_checkint(L, index)));
 }
 
 
 uint32_t LuaShaders::AddProgram(const Program& p)
 {
+	//ZoneScoped;
 	if (!unused.empty()) {
 		const uint32_t index = unused.back();
 		programs[index] = p;
@@ -164,6 +177,7 @@ uint32_t LuaShaders::AddProgram(const Program& p)
 
 bool LuaShaders::RemoveProgram(uint32_t progIdx)
 {
+	//ZoneScoped;
 	if (progIdx >= programs.size())
 		return false;
 	if (!DeleteProgram(programs[progIdx]))
@@ -176,6 +190,7 @@ bool LuaShaders::RemoveProgram(uint32_t progIdx)
 
 bool LuaShaders::DeleteProgram(Program& p)
 {
+	//ZoneScoped;
 	if (p.id == 0)
 		return false;
 
@@ -203,6 +218,7 @@ bool LuaShaders::DeleteProgram(Program& p)
  */
 int LuaShaders::GetShaderLog(lua_State* L)
 {
+	//ZoneScoped;
 	const LuaShaders& shaders = CLuaHandle::GetActiveShaders(L);
 	lua_pushsstring(L, shaders.errorLog);
 	return 1;
@@ -223,6 +239,7 @@ namespace {
 
 	static void ParseUniformType(lua_State* L, int loc, int type)
 	{
+	//ZoneScoped;
 		switch (type) {
 		case UNIFORM_TYPE_FLOAT: {
 			if (lua_israwnumber(L, -1)) {
@@ -289,6 +306,7 @@ namespace {
 		int type,
 		const LuaShaders::Program& p
 	) {
+	//ZoneScoped;
 		constexpr const char* fieldNames[] = { "uniform", "uniformInt", "uniformFloat", "uniformMatrix" };
 		const char* fieldName = fieldNames[type];
 
@@ -355,6 +373,7 @@ namespace {
 
 	static GLint FillActiveUniforms(LuaShaders::Program& prog)
 	{
+	//ZoneScoped;
 		GLint currentProgram = 0;
 		GLint numUniforms = 0;
 		GLsizei uniformLen = 0;
@@ -393,6 +412,7 @@ namespace {
 
 	static bool ParseUniformSetupTables(lua_State* L, int index, const LuaShaders::Program& p)
 	{
+	//ZoneScoped;
 		bool ret = true;
 
 		ret = ret && ParseUniformsTable(L, index, UNIFORM_TYPE_MIXED       , p);
@@ -413,6 +433,7 @@ namespace {
 		const GLenum type,
 		bool& success
 	) {
+	//ZoneScoped;
 		if (sources.empty()) {
 			success = true;
 			return 0;
@@ -465,6 +486,7 @@ namespace {
 		const char* key,
 		std::vector<std::string>& data
 	) {
+	//ZoneScoped;
 		lua_getfield(L, table, key);
 
 		if (lua_isnil(L, -1)) {
@@ -511,6 +533,7 @@ namespace {
 
 	static void ApplyGeometryParameters(lua_State* L, int table, GLuint prog)
 	{
+	//ZoneScoped;
 		if (!IS_GL_FUNCTION_AVAILABLE(glProgramParameteriEXT))
 			return;
 
@@ -535,6 +558,7 @@ namespace {
 
 GLint LuaShaders::GetUniformLocation(LuaShaders::Program* p, const char* name)
 {
+	//ZoneScoped;
 	if (!p)
 		return -1;
 
@@ -585,6 +609,7 @@ GLint LuaShaders::GetUniformLocation(LuaShaders::Program* p, const char* name)
  */
 int LuaShaders::CreateShader(lua_State* L)
 {
+	//ZoneScoped;
 	const int args = lua_gettop(L);
 
 	if ((args != 1) || !lua_istable(L, 1))
@@ -768,6 +793,7 @@ int LuaShaders::DeleteShader(lua_State* L)
  */
 int LuaShaders::UseShader(lua_State* L)
 {
+	//ZoneScoped;
 	CheckDrawingEnabled(L, __func__);
 
 	const int progIdx = luaL_checkint(L, 1);
@@ -807,6 +833,7 @@ int LuaShaders::UseShader(lua_State* L)
  */
 int LuaShaders::ActiveShader(lua_State* L)
 {
+	//ZoneScoped;
 	const int progIdx = luaL_checkint(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 
@@ -886,6 +913,7 @@ static const char* UniformTypeString(GLenum type)
  */
 int LuaShaders::GetActiveUniforms(lua_State* L)
 {
+	//ZoneScoped;
 	const LuaShaders& shaders = CLuaHandle::GetActiveShaders(L);
 	const auto* prog = shaders.GetProgram(L, 1);
 
@@ -920,6 +948,7 @@ int LuaShaders::GetActiveUniforms(lua_State* L)
  */
 int LuaShaders::GetUniformLocation(lua_State* L)
 {
+	//ZoneScoped;
 	LuaShaders& shaders = CLuaHandle::GetActiveShaders(L);
 	Program* prog = shaders.GetProgram(L, 1);
 
@@ -934,6 +963,7 @@ int LuaShaders::GetUniformLocation(lua_State* L)
 
 int LuaShaders::GetSubroutineIndex(lua_State* L)
 {
+	//ZoneScoped;
 	if (!IS_GL_FUNCTION_AVAILABLE(glGetSubroutineIndex))
 		return 0;
 
@@ -955,6 +985,7 @@ int LuaShaders::GetSubroutineIndex(lua_State* L)
 namespace {
 	template<typename T> int SetObjectBufferUniforms(lua_State* L, const char* func)
 	{
+	//ZoneScoped;
 		const int id = luaL_checkint(L, 1);
 		const T* o = LuaUtils::IdToObject<T>(id, func);
 		if (o == nullptr)
@@ -991,7 +1022,7 @@ int LuaShaders::SetFeatureBufferUniforms(lua_State* L) { return SetObjectBufferU
 /*** Sets the uniform float value at the locationID for the currently active shader. Shader must be activated before setting uniforms.
  *
  * @function gl.Uniform
- * @number locationID
+ * @number locationID|string uniformName
  * @number f1
  * @number[opt] f2
  * @number[opt] f3
@@ -1000,6 +1031,7 @@ int LuaShaders::SetFeatureBufferUniforms(lua_State* L) { return SetObjectBufferU
  */
 int LuaShaders::Uniform(lua_State* L)
 {
+	//ZoneScoped;
 	if (activeShaderDepth <= 0)
 		CheckDrawingEnabled(L, __func__);
 
@@ -1031,7 +1063,7 @@ int LuaShaders::Uniform(lua_State* L)
 /*** Sets the uniform int value at the locationID for the currently active shader. Shader must be activated before setting uniforms.
  *
  * @function gl.UniformInt
- * @number locationID
+ * @number locationID|string uniformName
  * @number int1
  * @number[opt] int2
  * @number[opt] int3
@@ -1040,6 +1072,7 @@ int LuaShaders::Uniform(lua_State* L)
  */
 int LuaShaders::UniformInt(lua_State* L)
 {
+	//ZoneScoped;
 	if (activeShaderDepth <= 0)
 		CheckDrawingEnabled(L, __func__);
 
@@ -1072,6 +1105,7 @@ int LuaShaders::UniformInt(lua_State* L)
 template<typename type, typename glUniformFunc, typename ParseArrayFunc>
 static bool GLUniformArray(lua_State* L, UniformFunc uf, ParseArrayFunc pf)
 {
+	//ZoneScoped;
 	const GLuint loc = luaL_checkint(L, 1);
 
 	switch (next_power_of_2(luaL_optint(L, 4, 32))) {
@@ -1094,13 +1128,14 @@ static bool GLUniformArray(lua_State* L, UniformFunc uf, ParseArrayFunc pf)
 /*** Sets the an array of uniform values at the locationID for the currently active shader. Shader must be activated before setting uniforms. Type can be one of {1 = int, 2 = float, 3 = float matrix}.
  *
  * @function gl.UniformArray
- * @number locationID
+ * @number locationID|string uniformName
  * @number type
  * @tparam table uniforms Array up to 1024 elements
  * @treturn nil
  */
 int LuaShaders::UniformArray(lua_State* L)
 {
+	//ZoneScoped;
 	if (activeShaderDepth <= 0)
 		CheckDrawingEnabled(L, __func__);
 
@@ -1140,7 +1175,7 @@ int LuaShaders::UniformArray(lua_State* L)
 /*** Sets the a uniform mat4 locationID for the currently active shader. Shader must be activated before setting uniforms. Can set one one common matrix like shadow, or by passing 16 additional numbers for the matrix.
  *
  * @function gl.UniformMatrix
- * @number locationID
+ * @number locationID|string uniformName
  * @tparam ?string|number m1 "shadows" | "camera" | "caminv" | "camprj"
  * @number[opt] m2
  * @number[opt] mn
@@ -1149,6 +1184,7 @@ int LuaShaders::UniformArray(lua_State* L)
  */
 int LuaShaders::UniformMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	if (activeShaderDepth <= 0)
 		CheckDrawingEnabled(L, __func__);
 
@@ -1210,6 +1246,7 @@ int LuaShaders::UniformMatrix(lua_State* L)
 
 int LuaShaders::UniformSubroutine(lua_State* L)
 {
+	//ZoneScoped;
 	if (!IS_GL_FUNCTION_AVAILABLE(glUniformSubroutinesuiv))
 		return 0;
 	if (activeShaderDepth <= 0)
@@ -1223,8 +1260,18 @@ int LuaShaders::UniformSubroutine(lua_State* L)
 	return 0;
 }
 
+/***
+ *
+ * @function gl.GetEngineUniformBufferDef
+ *
+ * Return the GLSL compliant definition of UniformMatricesBuffer(idx=0) or UniformParamsBuffer(idx=1) structure.
+ *
+ * @number index
+ * @treturn string glslDefinition
+ */
 int LuaShaders::GetEngineUniformBufferDef(lua_State* L)
 {
+	//ZoneScoped;
 	if (!globalRendering->haveGL4)
 		return 0;
 
@@ -1236,8 +1283,18 @@ int LuaShaders::GetEngineUniformBufferDef(lua_State* L)
 	return 1;
 }
 
+/***
+ *
+ * @function gl.GetEngineModelUniformDataDef
+ *
+ * Return the GLSL compliant definition of ModelUniformData structure (per Unit/Feature buffer available on GPU)
+ *
+ * @number index
+ * @treturn string glslDefinition
+ */
 int LuaShaders::GetEngineModelUniformDataDef(lua_State* L)
 {
+	//ZoneScoped;
 	if (!globalRendering->haveGL4)
 		return 0;
 
@@ -1255,6 +1312,7 @@ int LuaShaders::GetEngineModelUniformDataDef(lua_State* L)
  */
 int LuaShaders::SetGeometryShaderParameter(lua_State* L)
 {
+	//ZoneScoped;
 	if (!IS_GL_FUNCTION_AVAILABLE(glProgramParameteriEXT))
 		return 0;
 
@@ -1284,6 +1342,7 @@ int LuaShaders::SetGeometryShaderParameter(lua_State* L)
  */
 int LuaShaders::SetTesselationShaderParameter(lua_State* L)
 {
+	//ZoneScoped;
 	if (!IS_GL_FUNCTION_AVAILABLE(glPatchParameteri))
 		return 0;
 

@@ -41,6 +41,8 @@
 #include "System/Sound/ISoundChannels.h"
 #include "System/SpringHash.h"
 
+#include <tracy/Tracy.hpp>
+
 // #define PATHING_DEBUG
 
 #ifdef PATHING_DEBUG
@@ -268,6 +270,7 @@ static void HandleUnitCollisionsAux(
 	CGroundMoveType* gmtCollider,
 	CGroundMoveType* gmtCollidee
 ) {
+	//ZoneScoped;
 	if (!collider->IsMoving() || gmtCollider->progressState != AMoveType::Active)
 		return;
 
@@ -360,6 +363,7 @@ static void HandleUnitCollisionsAux(
 
 
 static float3 CalcSpeedVectorInclGravity(const CUnit* owner, const CGroundMoveType* mt, float hAcc, float vAcc) {
+	//ZoneScoped;
 	float3 newSpeedVector;
 
 	// NOTE:
@@ -412,6 +416,7 @@ static float3 CalcSpeedVectorInclGravity(const CUnit* owner, const CGroundMoveTy
 }
 
 static float3 CalcSpeedVectorExclGravity(const CUnit* owner, const CGroundMoveType* mt, float hAcc, float vAcc) {
+	//ZoneScoped;
 	// LuaSyncedCtrl::SetUnitVelocity directly assigns
 	// to owner->speed which gets overridden below, so
 	// need to calculate hSpeedScale from it (not from
@@ -525,6 +530,7 @@ CGroundMoveType::~CGroundMoveType()
 
 void CGroundMoveType::PostLoad()
 {
+	//ZoneScoped;
 	pathController = GMTDefaultPathController(owner);
 
 	Connect();
@@ -540,6 +546,7 @@ void CGroundMoveType::PostLoad()
 }
 
 bool CGroundMoveType::OwnerMoved(const short oldHeading, const float3& posDif, const float3& cmpEps) {
+	//ZoneScoped;
 	if (posDif.equals(ZeroVector, cmpEps)) {
 		// note: the float3::== test is not exact, so even if this
 		// evaluates to true the unit might still have an epsilon
@@ -590,6 +597,7 @@ bool CGroundMoveType::OwnerMoved(const short oldHeading, const float3& posDif, c
 
 void CGroundMoveType::UpdatePreCollisions()
 {
+	//ZoneScoped;
  	ASSERT_SYNCED(owner->pos);
 	ASSERT_SYNCED(owner->heading);
  	ASSERT_SYNCED(currWayPoint);
@@ -664,6 +672,7 @@ void CGroundMoveType::UpdateUnitPositionAndHeading() {
 }
 
 void CGroundMoveType::UpdateCollisionDetections() {
+	//ZoneScoped;
 	if (owner->GetTransporter() != nullptr) return;
 	if (owner->IsSkidding()) return;
 	if (owner->IsFalling()) return;
@@ -673,6 +682,7 @@ void CGroundMoveType::UpdateCollisionDetections() {
 
 bool CGroundMoveType::Update()
 {
+	//ZoneScoped;
 	if (owner->requestRemoveUnloadTransportId) {
 		owner->unloadingTransportId = -1;
 		owner->requestRemoveUnloadTransportId = false;
@@ -698,6 +708,7 @@ bool CGroundMoveType::Update()
 
 void CGroundMoveType::UpdateOwnerAccelAndHeading()
 {
+	//ZoneScoped;
 	if (owner->IsStunned() || owner->beingBuilt) {
 		// ChangeSpeed(0.0f, false);
 		setHeading = 3;
@@ -717,6 +728,7 @@ void CGroundMoveType::UpdateOwnerAccelAndHeading()
 
 void CGroundMoveType::SlowUpdate()
 {
+	//ZoneScoped;
 
 	// bool printMoveInfo = (selectedUnitsHandler.selectedUnits.size() == 1)
 	// 	&& (selectedUnitsHandler.selectedUnits.find(owner->id) != selectedUnitsHandler.selectedUnits.end());
@@ -837,6 +849,7 @@ void CGroundMoveType::SlowUpdate()
 
 
 void CGroundMoveType::StartMovingRaw(const float3 moveGoalPos, float moveGoalRadius) {
+	//ZoneScoped;
 	const float deltaRadius = std::max(0.0f, ownerRadius - moveGoalRadius);
 
 	#ifdef PATHING_DEBUG
@@ -877,6 +890,7 @@ void CGroundMoveType::StartMovingRaw(const float3 moveGoalPos, float moveGoalRad
 }
 
 void CGroundMoveType::StartMoving(float3 moveGoalPos, float moveGoalRadius) {
+	//ZoneScoped;
 	// add the footprint radius if moving onto goalPos would cause it to overlap impassable squares
 	// (otherwise repeated coldet push-jittering can ensue if allowTerrainCollision is not disabled)
 	// not needed if goalRadius actually exceeds ownerRadius, e.g. for builders
@@ -945,6 +959,7 @@ void CGroundMoveType::StartMoving(float3 moveGoalPos, float moveGoalRadius) {
 }
 
 void CGroundMoveType::StopMoving(bool callScript, bool hardStop, bool cancelRaw) {
+	//ZoneScoped;
 	LOG_L(L_DEBUG, "[%s] stopping engine for unit %i", __func__, owner->id);
 
 	if (!atGoal)
@@ -969,6 +984,7 @@ void CGroundMoveType::StopMoving(bool callScript, bool hardStop, bool cancelRaw)
 }
 
 void CGroundMoveType::UpdateTraversalPlan() {
+	//ZoneScoped;
 	earlyCurrWayPoint = currWayPoint;
 	earlyNextWayPoint = nextWayPoint;
 
@@ -1019,6 +1035,7 @@ void CGroundMoveType::UpdateObstacleAvoidance() {
 
 bool CGroundMoveType::FollowPath(int thread)
 {
+	//ZoneScoped;
 	bool wantReverse = false;
 
 	if (WantToStop()) {
@@ -1196,6 +1213,7 @@ bool CGroundMoveType::FollowPath(int thread)
 }
 
 void CGroundMoveType::SetWaypointDir(const float3& cwp, const float3 &opos) {
+	//ZoneScoped;
 	if (!epscmp(cwp.x, opos.x, float3::cmp_eps()) || !epscmp(cwp.z, opos.z, float3::cmp_eps())) {
 		float3 waypointVec = (cwp - opos) * XZVector;
 		waypointDir = waypointVec / waypointVec.Length();
@@ -1205,6 +1223,7 @@ void CGroundMoveType::SetWaypointDir(const float3& cwp, const float3 &opos) {
 
 void CGroundMoveType::ChangeSpeed(float newWantedSpeed, bool wantReverse, bool fpsMode)
 {
+	//ZoneScoped;
 	// round low speeds to zero
 	if ((wantedSpeed = newWantedSpeed) <= 0.0f && currentSpeed < 0.01f) {
 		currentSpeed = 0.0f;
@@ -1348,6 +1367,7 @@ void CGroundMoveType::ChangeSpeed(float newWantedSpeed, bool wantReverse, bool f
  * FIXME near-duplicate of HoverAirMoveType::UpdateHeading
  */
 void CGroundMoveType::ChangeHeading(short newHeading) {
+	//ZoneScoped;
 	if (owner->IsFlying())
 		return;
 	if (owner->GetTransporter() != nullptr)
@@ -1372,6 +1392,7 @@ void CGroundMoveType::ChangeHeading(short newHeading) {
 
 bool CGroundMoveType::CanApplyImpulse(const float3& impulse)
 {
+	//ZoneScoped;
 	// NOTE: ships must be able to receive impulse too (for collision handling)
 	if (owner->beingBuilt)
 		return false;
@@ -1421,6 +1442,7 @@ bool CGroundMoveType::CanApplyImpulse(const float3& impulse)
 
 void CGroundMoveType::UpdateSkid()
 {
+	//ZoneScoped;
 	ASSERT_SYNCED(owner->midPos);
 
 	const float3& pos = owner->pos;
@@ -1563,6 +1585,7 @@ void CGroundMoveType::UpdateSkid()
 
 void CGroundMoveType::UpdateControlledDrop()
 {
+	//ZoneScoped;
 	const float3& pos = owner->pos;
 	const float4& spd = owner->speed;
 	const float3  acc = UpVector * std::min(mapInfo->map.gravity * owner->fallSpeed, 0.0f);
@@ -1592,6 +1615,7 @@ void CGroundMoveType::UpdateControlledDrop()
 
 void CGroundMoveType::CheckCollisionSkid()
 {
+	//ZoneScoped;
 	CUnit* collider = owner;
 
 	// NOTE:
@@ -1713,6 +1737,7 @@ void CGroundMoveType::CheckCollisionSkid()
 
 void CGroundMoveType::CalcSkidRot()
 {
+	//ZoneScoped;
 	skidRotSpeed += skidRotAccel;
 	skidRotSpeed *= 0.999f;
 	skidRotAccel *= 0.95f;
@@ -1965,6 +1990,7 @@ float CGroundMoveType::Distance2D(CSolidObject* object1, CSolidObject* object2, 
 // Creates a path to the goal.
 unsigned int CGroundMoveType::GetNewPath()
 {
+	//ZoneScoped;
 	assert(!ThreadPool::inMultiThreadedSection);
 	unsigned int newPathID = 0;
 
@@ -2016,6 +2042,7 @@ unsigned int CGroundMoveType::GetNewPath()
 }
 
 void CGroundMoveType::ReRequestPath(bool forceRequest) {
+	//ZoneScoped;
 	if (forceRequest) {
 		assert(!ThreadPool::inMultiThreadedSection);
 		// StopEngine(false);
@@ -2224,6 +2251,7 @@ bool CGroundMoveType::CanSetNextWayPoint(int thread) {
 
 void CGroundMoveType::SetNextWayPoint(int thread)
 {
+	//ZoneScoped;
 	assert(!useRawMovement);
 
 	if (CanSetNextWayPoint(thread)) {
@@ -2306,6 +2334,7 @@ from current velocity.
 */
 float3 CGroundMoveType::Here() const
 {
+	//ZoneScoped;
 	const float dist = BrakingDistance(currentSpeed, decRate);
 	const int   sign = Sign(int(!reversing));
 
@@ -2316,6 +2345,7 @@ float3 CGroundMoveType::Here() const
 }
 
 void CGroundMoveType::StartEngine(bool callScript) {
+	//ZoneScoped;
 	if (pathID == 0)
 		pathID = GetNewPath();
 	else {
@@ -2348,6 +2378,7 @@ void CGroundMoveType::StartEngine(bool callScript) {
 }
 
 void CGroundMoveType::StopEngine(bool callScript, bool hardStop) {
+	//ZoneScoped;
 	assert(!ThreadPool::inMultiThreadedSection);
 	if (pathID != 0 || nextPathId != 0) {
 		if (pathID != 0) {
@@ -2374,6 +2405,7 @@ void CGroundMoveType::StopEngine(bool callScript, bool hardStop) {
 /* Called when the unit arrives at its goal. */
 void CGroundMoveType::Arrived(bool callScript)
 {
+	//ZoneScoped;
 	// can only "arrive" if the engine is active
 	if (progressState == Active) {
 		StopEngine(callScript);
@@ -2402,6 +2434,7 @@ No more trials will be done before a new goal is given.
 */
 void CGroundMoveType::Fail(bool callScript)
 {
+	//ZoneScoped;
 	assert(!ThreadPool::inMultiThreadedSection);
 	LOG_L(L_DEBUG, "[%s] unit %i failed", __func__, owner->id);
 
@@ -2420,6 +2453,7 @@ void CGroundMoveType::Fail(bool callScript)
 
 void CGroundMoveType::HandleObjectCollisions()
 {
+	//ZoneScoped;
 	CUnit* collider = owner;
 	auto curThread = ThreadPool::GetThreadNum();
 
@@ -2502,6 +2536,7 @@ bool CGroundMoveType::HandleStaticObjectCollision(
 	bool checkTerrain,
 	int curThread
 ) {
+	//ZoneScoped;
 	// while being built, units that overlap their factory yardmap should not be moved at all
 	assert(!collider->beingBuilt);
 
@@ -2735,6 +2770,7 @@ void CGroundMoveType::HandleUnitCollisions(
 	const MoveDef* colliderMD,
 	int curThread
 ) {
+	//ZoneScoped;
 	// NOTE: probably too large for most units (eg. causes tree falling animations to be skipped)
 	// const float3 crushImpulse = collider->speed * collider->mass * Sign(int(!reversing));
 
@@ -2920,6 +2956,7 @@ void CGroundMoveType::HandleFeatureCollisions(
 	const MoveDef* colliderMD,
 	int curThread
 ) {
+	//ZoneScoped;
 	const bool allowSAT = modInfo.allowSepAxisCollisionTest;
 	const bool forceSAT = (colliderParams.z > 0.1f);
 
@@ -3005,10 +3042,12 @@ void CGroundMoveType::HandleFeatureCollisions(
 
 void CGroundMoveType::LeaveTransport()
 {
+	//ZoneScoped;
 	oldPos = owner->pos + UpVector * 0.001f;
 }
 
 void CGroundMoveType::Connect() {
+	//ZoneScoped;
 	Sim::registry.emplace_or_replace<GroundMoveType>(owner->entityReference, owner->id);
 	Sim::registry.emplace_or_replace<FeatureCollisionEvents>(owner->entityReference);
 	Sim::registry.emplace_or_replace<UnitCollisionEvents>(owner->entityReference);
@@ -3020,6 +3059,7 @@ void CGroundMoveType::Connect() {
 }
 
 void CGroundMoveType::Disconnect() {
+	//ZoneScoped;
 	Sim::registry.remove<GroundMoveType>(owner->entityReference);
 	Sim::registry.remove<FeatureCollisionEvents>(owner->entityReference);
 	Sim::registry.remove<UnitCollisionEvents>(owner->entityReference);
@@ -3126,6 +3166,7 @@ void CGroundMoveType::SetMainHeading() {
 }
 
 bool CGroundMoveType::OnSlope(float minSlideTolerance) {
+	//ZoneScoped;
 	const UnitDef* ud = owner->unitDef;
 	const MoveDef* md = owner->moveDef;
 	const float3& pos = owner->pos;
@@ -3151,6 +3192,7 @@ bool CGroundMoveType::OnSlope(float minSlideTolerance) {
 
 const float3& CGroundMoveType::GetGroundNormal(const float3& p) const
 {
+	//ZoneScoped;
 	// ship or hovercraft; return (CGround::GetNormalAboveWater(p));
 	if (owner->IsInWater() && !owner->IsOnGround())
 		return UpVector;
@@ -3160,6 +3202,7 @@ const float3& CGroundMoveType::GetGroundNormal(const float3& p) const
 
 float CGroundMoveType::GetGroundHeight(const float3& p) const
 {
+	//ZoneScoped;
 	MoveDef *md = owner->moveDef;
 
 	// in [minHeight, maxHeight]
@@ -3176,6 +3219,7 @@ float CGroundMoveType::GetGroundHeight(const float3& p) const
 
 void CGroundMoveType::AdjustPosToWaterLine()
 {
+	//ZoneScoped;
 	if (owner->IsFalling())
 		return;
 	if (owner->IsFlying())
@@ -3195,6 +3239,7 @@ void CGroundMoveType::AdjustPosToWaterLine()
 
 bool CGroundMoveType::UpdateDirectControl()
 {
+	//ZoneScoped;
 	const CPlayer* myPlayer = gu->GetMyPlayer();
 	const FPSUnitController& selfCon = myPlayer->fpsController;
 	const FPSUnitController& unitCon = owner->fpsControlPlayer->fpsController;
@@ -3224,6 +3269,7 @@ bool CGroundMoveType::UpdateDirectControl()
 
 
 void CGroundMoveType::UpdatePos(const CUnit* unit, const float3& moveDir, float3& resultantMove, int thread) const {
+	//ZoneScoped;
 	const float3 prevPos = unit->pos;
 	const float3 newPos = unit->pos + moveDir;
 	resultantMove = moveDir;
@@ -3400,6 +3446,7 @@ void CGroundMoveType::UpdatePos(const CUnit* unit, const float3& moveDir, float3
 
 
 void CGroundMoveType::UpdateOwnerPos(const float3& oldSpeedVector, const float3& newSpeedVector) {
+	//ZoneScoped;
 	/*const float*/ oldSpeed = oldSpeedVector.dot(flatFrontDir);
 	/*const float*/ newSpeed = newSpeedVector.dot(flatFrontDir);
 	const float3 moveRequest = newSpeedVector;
@@ -3455,6 +3502,7 @@ void CGroundMoveType::UpdateOwnerPos(const float3& oldSpeedVector, const float3&
 
 bool CGroundMoveType::UpdateOwnerSpeed(float oldSpeedAbs, float newSpeedAbs, float newSpeedRaw)
 {
+	//ZoneScoped;
 	const bool oldSpeedAbsGTZ = (oldSpeedAbs > 0.01f);
 	const bool newSpeedAbsGTZ = (newSpeedAbs > 0.01f);
 	const bool newSpeedRawLTZ = (newSpeedRaw < 0.0f );
@@ -3494,6 +3542,7 @@ bool CGroundMoveType::UpdateOwnerSpeed(float oldSpeedAbs, float newSpeedAbs, flo
 
 bool CGroundMoveType::WantReverse(const float3& wpDir, const float3& ffDir) const
 {
+	//ZoneScoped;
 	if (!canReverse)
 		return false;
 
@@ -3550,6 +3599,7 @@ bool CGroundMoveType::WantReverse(const float3& wpDir, const float3& ffDir) cons
 
 void CGroundMoveType::InitMemberPtrs(MemberData* memberData)
 {
+	//ZoneScoped;
 	memberData->bools[0].second = &atGoal;
 	memberData->bools[1].second = &atEndOfPath;
 	memberData->bools[2].second = &pushResistant;
@@ -3569,6 +3619,7 @@ void CGroundMoveType::InitMemberPtrs(MemberData* memberData)
 
 bool CGroundMoveType::SetMemberValue(unsigned int memberHash, void* memberValue)
 {
+	//ZoneScoped;
 	// try the generic members first
 	if (AMoveType::SetMemberValue(memberHash, memberValue))
 		return true;

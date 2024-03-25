@@ -6,6 +6,8 @@
 #include "Game/GameVersion.h"
 #include "System/Platform/Misc.h"
 
+#include <tracy/Tracy.hpp>
+
 /******************************************************************************
  * Engine constants
  * @module Engine
@@ -24,6 +26,7 @@
 
 bool LuaConstEngine::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 	LuaPushNamedString(L, "version"        ,                                    SpringVersion::GetSync()          );
 	LuaPushNamedString(L, "versionFull"    , (!CLuaHandle::GetHandleSynced(L))? SpringVersion::GetFull()      : "");
 	LuaPushNamedString(L, "versionPatchSet", (!CLuaHandle::GetHandleSynced(L))? SpringVersion::GetPatchSet()  : "");

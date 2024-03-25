@@ -3,6 +3,8 @@
 #include "Sim/Units/Unit.h"
 #include "System/SpringMath.h"
 
+#include <tracy/Tracy.hpp>
+
 float GMTDefaultPathController::GetDeltaSpeed(
 	unsigned int pathID,
 	float targetSpeed, // unsigned
@@ -12,6 +14,7 @@ float GMTDefaultPathController::GetDeltaSpeed(
 	bool wantReverse,
 	bool isReversing
 ) const {
+	//ZoneScoped;
 	// Sign(0) is negative which we do not want
 	const int  targetSpeedSign = Sign(int(!wantReverse) * 2 - 1);
 	const int currentSpeedSign = Sign(int(!isReversing) * 2 - 1);
@@ -51,6 +54,7 @@ short GMTDefaultPathController::GetDeltaHeading(
 	short oldHeading,
 	float maxTurnRate
 ) const {
+	//ZoneScoped;
 	short deltaHeading = newHeading - oldHeading;
 
 	if (deltaHeading > 0) {
@@ -72,6 +76,7 @@ short GMTDefaultPathController::GetDeltaHeading(
 	float turnBrakeDist,
 	float* curTurnSpeedPtr
 ) const {
+	//ZoneScoped;
 	float curTurnSpeed = *curTurnSpeedPtr;
 	float absTurnSpeed = math::fabs(curTurnSpeed);
 

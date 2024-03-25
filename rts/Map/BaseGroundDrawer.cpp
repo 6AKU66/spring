@@ -3,6 +3,8 @@
 #include "BaseGroundDrawer.h"
 #include "System/Config/ConfigHandler.h"
 
+#include <tracy/Tracy.hpp>
+
 
 CONFIG(float, GroundLODScaleReflection).defaultValue(1.0f).headlessValue(0.0f);
 CONFIG(float, GroundLODScaleRefraction).defaultValue(1.0f).headlessValue(0.0f);
@@ -11,6 +13,7 @@ CONFIG(float, GroundLODScaleTerrainReflection).defaultValue(1.0f);
 
 CBaseGroundDrawer::CBaseGroundDrawer()
 {
+	//ZoneScoped;
 	LODScaleReflection = configHandler->GetFloat("GroundLODScaleReflection");
 	LODScaleRefraction = configHandler->GetFloat("GroundLODScaleRefraction");
 	LODScaleTerrainReflection = configHandler->GetFloat("GroundLODScaleTerrainReflection");

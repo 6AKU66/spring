@@ -15,6 +15,8 @@
 #include "System/creg/DefTypes.h"
 #include "System/SpringMath.h"
 
+#include <tracy/Tracy.hpp>
+
 CR_BIND_DERIVED(CGroundFlash, CExpGenSpawnable, )
 CR_REG_METADATA(CGroundFlash, (
  	CR_MEMBER_BEGINFLAG(CM_Config),
@@ -77,6 +79,7 @@ CR_REG_METADATA(CSimpleGroundFlash, (
 // CREG-only
 CGroundFlash::CGroundFlash()
 {
+	//ZoneScoped;
 	size = 0.0f;
 	depthTest = true;
 	depthMask = false;
@@ -85,11 +88,13 @@ CGroundFlash::CGroundFlash()
 
 CGroundFlash::CGroundFlash(const float3& _pos) : CGroundFlash()
 {
+	//ZoneScoped;
 	pos = _pos;
 }
 
 float3 CGroundFlash::CalcNormal(const float3 midPos, const float3 camDir, float quadSize) const
 {
+	//ZoneScoped;
 	// no degenerate quads, otherwise ANormalize() fails
 	// assert(quadSize > 1.0f);
 	quadSize = std::max(quadSize, 1.0f);
@@ -113,6 +118,7 @@ float3 CGroundFlash::CalcNormal(const float3 midPos, const float3 camDir, float 
 
 bool CGroundFlash::GetMemberInfo(SExpGenSpawnableMemberInfo& memberInfo)
 {
+	//ZoneScoped;
 	if (CExpGenSpawnable::GetMemberInfo(memberInfo))
 		return true;
 
@@ -157,6 +163,7 @@ CStandardGroundFlash::CStandardGroundFlash(
 	, flashAgeSpeed(ttl ? 1.0f / ttl : 0.0f)
 	, circleAlphaDec(ttl ? circleAlpha / ttl : 0.0f)
 {
+	//ZoneScoped;
 	InitCommon(_pos, info.color);
 	projectileHandler.AddGroundFlash(this);
 }
@@ -181,12 +188,14 @@ CStandardGroundFlash::CStandardGroundFlash(
 	, flashAgeSpeed(ttl ? 1.0f / ttl : 0)
 	, circleAlphaDec(ttl ? circleAlpha / ttl : 0)
 {
+	//ZoneScoped;
 	InitCommon(_pos, _color);
 	projectileHandler.AddGroundFlash(this);
 }
 
 void CStandardGroundFlash::InitCommon(const float3& _pos, const float3& _color)
 {
+	//ZoneScoped;
 	pos.y = CGround::GetHeightReal(_pos.x, _pos.z, false) + 1.0f;
 	// A is set in Draw
 	color.r = _color.x * 255.0f;
@@ -204,6 +213,7 @@ void CStandardGroundFlash::InitCommon(const float3& _pos, const float3& _color)
 
 bool CStandardGroundFlash::Update()
 {
+	//ZoneScoped;
 	circleSize += circleGrowth;
 	circleAlpha -= circleAlphaDec;
 	flashAge += flashAgeSpeed;
@@ -213,6 +223,7 @@ bool CStandardGroundFlash::Update()
 
 void CStandardGroundFlash::Draw()
 {
+	//ZoneScoped;
 	float iAlpha = std::clamp(circleAlpha - (circleAlphaDec * globalRendering->timeOffset), 0.0f, 1.0f);
 
 	const float iSize = circleSize + circleGrowth * globalRendering->timeOffset;
@@ -259,6 +270,7 @@ void CStandardGroundFlash::Draw()
 
 bool CStandardGroundFlash::GetMemberInfo(SExpGenSpawnableMemberInfo& memberInfo)
 {
+	//ZoneScoped;
 	if (CGroundFlash::GetMemberInfo(memberInfo))
 		return true;
 
@@ -284,6 +296,7 @@ CSimpleGroundFlash::CSimpleGroundFlash()
 
 void CSimpleGroundFlash::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	std::string name;
 	if (s->IsWriting())
 		name = projectileDrawer->groundFXAtlas->GetTextureName(texture);
@@ -294,6 +307,7 @@ void CSimpleGroundFlash::Serialize(creg::ISerializer* s)
 
 void CSimpleGroundFlash::Init(const CUnit* owner, const float3& offset)
 {
+	//ZoneScoped;
 	pos += offset;
 	pos.y = CGround::GetHeightReal(pos.x, pos.z, false) + 1.0f;
 
@@ -312,6 +326,7 @@ void CSimpleGroundFlash::Init(const CUnit* owner, const float3& offset)
 
 void CSimpleGroundFlash::Draw()
 {
+	//ZoneScoped;
 	UpdateRotation();
 	UpdateAnimParams();
 
@@ -339,6 +354,7 @@ void CSimpleGroundFlash::Draw()
 
 bool CSimpleGroundFlash::Update()
 {
+	//ZoneScoped;
 	age += agerate;
 	size += sizeGrowth;
 
@@ -348,6 +364,7 @@ bool CSimpleGroundFlash::Update()
 
 bool CSimpleGroundFlash::GetMemberInfo(SExpGenSpawnableMemberInfo& memberInfo)
 {
+	//ZoneScoped;
 	if (CGroundFlash::GetMemberInfo(memberInfo))
 		return true;
 
@@ -377,6 +394,7 @@ CSeismicGroundFlash::CSeismicGroundFlash(
 	, fade(_fade)
 	, ttl(_ttl)
 {
+	//ZoneScoped;
 	pos.y = CGround::GetHeightReal(_pos.x, _pos.z, false) + 1.0f;
 	// A is set in Draw
 	color.r = _color.x * 255.0f;
@@ -396,12 +414,14 @@ CSeismicGroundFlash::CSeismicGroundFlash(
 
 void CSeismicGroundFlash::Serialize(creg::ISerializer* s)
 {
+	//ZoneScoped;
 	if (!s->IsWriting())
 		texture = projectileDrawer->seismictex;
 }
 
 void CSeismicGroundFlash::Draw()
 {
+	//ZoneScoped;
 	color.a = mix(255, int(255 * (ttl / (1.0f * fade))), (ttl < fade));
 
 	const float3 p1 = pos + (-side1 - side2) * size;
@@ -419,6 +439,7 @@ void CSeismicGroundFlash::Draw()
 
 bool CSeismicGroundFlash::Update()
 {
+	//ZoneScoped;
 	size += sizeGrowth;
 	return (--ttl > 0);
 }
