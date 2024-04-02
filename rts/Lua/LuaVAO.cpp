@@ -5,6 +5,8 @@
 #include "LuaVAOImpl.h"
 #include "LuaUtils.h"
 
+#include <tracy/Tracy.hpp>
+
 
 /******************************************************************************
  * @module LuaVAO
@@ -15,6 +17,7 @@
 
 bool LuaVAOs::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 #if defined(__GNUG__) && defined(_DEBUG)
 	const int top = lua_gettop(L);
 #endif
@@ -64,6 +67,7 @@ bool LuaVAOs::PushEntries(lua_State* L)
 
 LuaVAOs::~LuaVAOs()
 {
+	//ZoneScoped;
 	for (auto& lva : luaVAOs) {
 		if (lva.expired())
 			continue; //destroyed already
@@ -84,6 +88,7 @@ LuaVAOs::~LuaVAOs()
  */
 int LuaVAOs::GetVAO(lua_State* L)
 {
+	//ZoneScoped;
 	if (!LuaVAOImpl::Supported()) {
 		#ifndef HEADLESS
 		LOG_L(L_ERROR, "[LuaVAOs::%s] Important OpenGL extensions are not supported by the system\n  \tGL_ARB_vertex_buffer_object = %d; GL_ARB_vertex_array_object = %d; GL_ARB_instanced_arrays = %d; GL_ARB_draw_elements_base_vertex = %d; GL_ARB_multi_draw_indirect = %d",

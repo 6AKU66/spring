@@ -20,6 +20,8 @@
 #include "System/StringUtil.h"
 #include "System/SpringMath.h"
 
+#include <tracy/Tracy.hpp>
+
 
 static constexpr float ROLLOFF_FACTOR = 5.0f;
 static constexpr float REFERENCE_DIST = 200.0f;
@@ -56,6 +58,7 @@ CSoundSource::CSoundSource()
 
 void CSoundSource::Update()
 {
+	//ZoneScoped;
 	if (asyncPlayItem.id != 0) {
 		// Sound::Update() holds mutex, soundItems can not be accessed concurrently
 		Play(asyncPlayItem.channel, sound->GetSoundItem(asyncPlayItem.id), asyncPlayItem.position, asyncPlayItem.velocity, asyncPlayItem.volume, asyncPlayItem.relative);
@@ -99,6 +102,7 @@ void CSoundSource::Update()
 
 void CSoundSource::Delete()
 {
+	//ZoneScoped;
 	if (efxEnabled) {
 		alSource3i(id, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
 		alSourcei(id, AL_DIRECT_FILTER, AL_FILTER_NULL);
@@ -112,6 +116,7 @@ void CSoundSource::Delete()
 
 int CSoundSource::GetCurrentPriority() const
 {
+	//ZoneScoped;
 	if (asyncPlayItem.id != 0)
 		return asyncPlayItem.priority;
 
@@ -126,6 +131,7 @@ int CSoundSource::GetCurrentPriority() const
 
 bool CSoundSource::IsPlaying(const bool checkOpenAl) const
 {
+	//ZoneScoped;
 	if (curStream.Valid())
 		return true;
 
@@ -149,6 +155,7 @@ bool CSoundSource::IsPlaying(const bool checkOpenAl) const
 
 void CSoundSource::Stop()
 {
+	//ZoneScoped;
 	alSourceStop(id);
 
 	{
@@ -181,6 +188,7 @@ void CSoundSource::Stop()
 
 void CSoundSource::Play(IAudioChannel* channel, SoundItem* item, float3 pos, float3 velocity, float volume, bool relative)
 {
+	//ZoneScoped;
 	assert(!curStream.Valid());
 	assert(channel);
 
@@ -270,6 +278,7 @@ void CSoundSource::Play(IAudioChannel* channel, SoundItem* item, float3 pos, flo
 
 void CSoundSource::PlayAsync(IAudioChannel* channel, size_t id, float3 pos, float3 velocity, float volume, float priority, bool relative)
 {
+	//ZoneScoped;
 	asyncPlayItem.channel  = channel;
 	asyncPlayItem.id       = id;
 
@@ -285,6 +294,7 @@ void CSoundSource::PlayAsync(IAudioChannel* channel, size_t id, float3 pos, floa
 
 void CSoundSource::PlayStream(IAudioChannel* channel, const std::string& file, float volume)
 {
+	//ZoneScoped;
 	// stop any current playback
 	Stop();
 
@@ -319,6 +329,7 @@ void CSoundSource::PlayStream(IAudioChannel* channel, const std::string& file, f
 
 void CSoundSource::StreamStop()
 {
+	//ZoneScoped;
 	if (!curStream.Valid())
 		return;
 
@@ -327,6 +338,7 @@ void CSoundSource::StreamStop()
 
 void CSoundSource::StreamPause()
 {
+	//ZoneScoped;
 	if (!curStream.Valid())
 		return;
 
@@ -338,16 +350,19 @@ void CSoundSource::StreamPause()
 
 float CSoundSource::GetStreamTime()
 {
+	//ZoneScoped;
 	return (curStream.Valid())? curStream.GetTotalTime() : 0.0f;
 }
 
 float CSoundSource::GetStreamPlayTime()
 {
+	//ZoneScoped;
 	return (curStream.Valid())? curStream.GetPlayTime() : 0.0f;
 }
 
 void CSoundSource::UpdateVolume()
 {
+	//ZoneScoped;
 	if (curChannel == nullptr)
 		return;
 

@@ -23,6 +23,8 @@
 #include "System/StringUtil.h"
 #include "Sim/Misc/GlobalSynced.h"
 
+#include <tracy/Tracy.hpp>
+
 
 static ParamMap paramMap;
 
@@ -56,6 +58,7 @@ static int GuiSoundSetTable(lua_State* L, const void* data);
 
 bool LuaWeaponDefs::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 	InitParamMap();
 
 	typedef int (*IndxFuncType)(lua_State*);
@@ -94,6 +97,7 @@ bool LuaWeaponDefs::PushEntries(lua_State* L)
 
 static int WeaponDefIndex(lua_State* L)
 {
+	//ZoneScoped;
 	// not a default value
 	if (!lua_isstring(L, 2)) {
 		lua_rawget(L, 1);
@@ -150,6 +154,7 @@ static int WeaponDefIndex(lua_State* L)
 
 static int WeaponDefNewIndex(lua_State* L)
 {
+	//ZoneScoped;
 	// not a default value, set it
 	if (!lua_isstring(L, 2)) {
 		lua_rawset(L, 1);
@@ -213,6 +218,7 @@ static int WeaponDefNewIndex(lua_State* L)
 
 static int WeaponDefMetatable(lua_State* L)
 {
+	//ZoneScoped;
 	//const void* userData = lua_touserdata(L, lua_upvalueindex(1));
 	//const WeaponDef* wd = (const WeaponDef*)userData;
 	return 0;
@@ -223,12 +229,14 @@ static int WeaponDefMetatable(lua_State* L)
 
 static int Next(lua_State* L)
 {
+	//ZoneScoped;
 	return LuaUtils::Next(paramMap, L);
 }
 
 
 static int Pairs(lua_State* L)
 {
+	//ZoneScoped;
 	luaL_checktype(L, 1, LUA_TTABLE);
 	lua_pushcfunction(L, Next);	// iterator
 	lua_pushvalue(L, 1);        // state (table)
@@ -242,6 +250,7 @@ static int Pairs(lua_State* L)
 
 static int DamagesArray(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const DamageArray& d = *static_cast<const DamageArray*>(data);
 
 	lua_createtable(L, damageArrayHandler.GetNumTypes(), 5);
@@ -264,6 +273,7 @@ static int DamagesArray(lua_State* L, const void* data)
 
 static int VisualsTable(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const struct WeaponDef::Visuals& v = *static_cast<const struct WeaponDef::Visuals*>(data);
 	lua_createtable(L, 0, 28);
 	HSTR_PUSH_STRING(L, "modelName",            modelLoader.FindModelPath(v.modelName));
@@ -302,42 +312,49 @@ static int VisualsTable(lua_State* L, const void* data)
 
 static int NoEnemyCollide(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, (*reinterpret_cast<const int*>(data)) & Collision::NOENEMIES);
 	return 1;
 }
 
 static int NoFriendlyCollide(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, (*reinterpret_cast<const int*>(data)) & Collision::NOFRIENDLIES);
 	return 1;
 }
 
 static int NoFeatureCollide(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, (*reinterpret_cast<const int*>(data)) & Collision::NOFEATURES);
 	return 1;
 }
 
 static int NoNeutralCollide(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, (*reinterpret_cast<const int*>(data)) & Collision::NONEUTRALS);
 	return 1;
 }
 
 static int NoFireBaseCollide(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, (*reinterpret_cast<const int*>(data)) & Collision::NOFIREBASES);
 	return 1;
 }
 
 static int NoNonTargetCollide(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, (*reinterpret_cast<const int*>(data)) & Collision::NONONTARGETS);
 	return 1;
 }
 
 static int NoGroundCollide(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, (*reinterpret_cast<const int*>(data)) & Collision::NOGROUND);
 	return 1;
 }
@@ -346,6 +363,7 @@ static int NoGroundCollide(lua_State* L, const void* data)
 
 static inline int BuildCategorySet(lua_State* L, const vector<string>& cats)
 {
+	//ZoneScoped;
 	lua_createtable(L, 0, cats.size());
 
 	for (size_t i = 0, n = cats.size(); i < n; i++) {
@@ -379,6 +397,7 @@ static int CategorySetFromBits(lua_State* L, const void* data)
 
 static int CustomParamsTable(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const spring::unordered_map<std::string, std::string>& params = *((const spring::unordered_map<std::string, std::string>*)data);
 	lua_createtable(L, 0, params.size());
 
@@ -393,6 +412,7 @@ static int CustomParamsTable(lua_State* L, const void* data)
 
 static int GuiSoundSetTable(lua_State* L, const void* data)
 {
+	//ZoneScoped;
 	const GuiSoundSet& soundSet = *static_cast<const GuiSoundSet*>(data);
 
 	lua_createtable(L, soundSet.NumSounds(), 0);
@@ -423,6 +443,7 @@ static int GuiSoundSetTable(lua_State* L, const void* data)
 
 static bool InitParamMap()
 {
+	//ZoneScoped;
 	spring::clear_unordered_map(paramMap);
 
 	paramMap["next"]  = DataElement(READONLY_TYPE);

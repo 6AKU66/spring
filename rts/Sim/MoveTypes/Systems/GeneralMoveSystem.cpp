@@ -15,16 +15,19 @@
 #include "System/Threading/ThreadPool.h"
 #include "Sim/Units/UnitDef.h"
 
+#include <tracy/Tracy.hpp>
+
 using namespace MoveTypes;
 
 void GeneralMoveSystem::Init() {
+    //ZoneScoped;
     CMoveMath::InitRangeIsBlockedHashes();
 }
 
 void GeneralMoveSystem::Update() {
     auto view = Sim::registry.view<GeneralMoveType>();
 	{
-        SCOPED_TIMER("Sim::Unit::MoveType::5::UpdateST");
+        SCOPED_TIMER("Sim::Unit::MoveType::5::Update");
         view.each([](GeneralMoveType& unitId){
             CUnit* unit = unitHandler.GetUnit(unitId.value);
             AMoveType* moveType = unit->moveType;

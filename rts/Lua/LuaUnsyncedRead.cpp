@@ -86,6 +86,8 @@
 #include <SDL_keycode.h>
 #include <SDL_mouse.h>
 
+#include <tracy/Tracy.hpp>
+
 
 /******************************************************************************
  * Callouts to get state
@@ -96,6 +98,7 @@
 
 bool LuaUnsyncedRead::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 	REGISTER_LUA_CFUNC(IsReplay);
 	REGISTER_LUA_CFUNC(GetReplayLength);
 
@@ -314,6 +317,7 @@ bool LuaUnsyncedRead::PushEntries(lua_State* L)
 
 static inline CUnit* ParseUnit(lua_State* L, const char* caller, int index)
 {
+	//ZoneScoped;
 	if (!lua_isnumber(L, index)) {
 		luaL_error(L, "%s(): unitID not a number", caller);
 		return nullptr;
@@ -337,6 +341,7 @@ static inline CUnit* ParseUnit(lua_State* L, const char* caller, int index)
 
 static inline CFeature* ParseFeature(lua_State* L, const char* caller, int index)
 {
+	//ZoneScoped;
 	if (!lua_isnumber(L, index)) {
 		luaL_error(L, "%s(): Bad featureID", caller);
 		return nullptr;
@@ -364,6 +369,7 @@ static inline CFeature* ParseFeature(lua_State* L, const char* caller, int index
 
 static int GetSolidObjectLuaDraw(lua_State* L, const CSolidObject* obj)
 {
+	//ZoneScoped;
 	if (obj == nullptr)
 		return 0;
 
@@ -373,6 +379,7 @@ static int GetSolidObjectLuaDraw(lua_State* L, const CSolidObject* obj)
 
 static int GetSolidObjectNoDraw(lua_State* L, const CSolidObject* obj)
 {
+	//ZoneScoped;
 	if (obj == nullptr)
 		return 0;
 
@@ -382,6 +389,7 @@ static int GetSolidObjectNoDraw(lua_State* L, const CSolidObject* obj)
 
 static int GetSolidObjectEngineDrawMask(lua_State* L, const CSolidObject* obj)
 {
+	//ZoneScoped;
 	if (obj == nullptr)
 		return 0;
 
@@ -391,6 +399,7 @@ static int GetSolidObjectEngineDrawMask(lua_State* L, const CSolidObject* obj)
 
 static int GetSolidObjectSelectionVolume(lua_State* L, const CSolidObject* obj)
 {
+	//ZoneScoped;
 	if (obj == nullptr)
 		return 0;
 
@@ -402,6 +411,7 @@ static int GetSolidObjectSelectionVolume(lua_State* L, const CSolidObject* obj)
 template <typename T>
 static void PushNumberContainerAsArray(lua_State* const L, const T &v)
 {
+	//ZoneScoped;
 	lua_createtable(L, v.size(), 0);
 	for (size_t i = 0; const auto &x : v) {
 		lua_pushnumber(L, x);
@@ -412,6 +422,7 @@ static void PushNumberContainerAsArray(lua_State* const L, const T &v)
 template <typename T>
 static size_t PushUnitListSortedByDef(lua_State *const L, const T &units)
 {
+	//ZoneScoped;
 	using unitDefID_t = int;
 	using unitID_t = int;
 
@@ -435,6 +446,7 @@ static size_t PushUnitListSortedByDef(lua_State *const L, const T &units)
 template <typename T>
 static size_t PushSparseUnitTallyByDef(lua_State *const L, const T &v)
 {
+	//ZoneScoped;
 	std::vector <size_t> counts (unitDefHandler->NumUnitDefs() + 1, 0);
 	size_t numDefKeys = 0;
 	for (const int unitID: v)
@@ -467,6 +479,7 @@ static size_t PushSparseUnitTallyByDef(lua_State *const L, const T &v)
  */
 int LuaUnsyncedRead::IsReplay(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, gameSetup->hostDemo);
 	return 1;
 }
@@ -480,6 +493,7 @@ int LuaUnsyncedRead::IsReplay(lua_State* L)
  */
 int LuaUnsyncedRead::GetReplayLength(lua_State* L)
 {
+	//ZoneScoped;
 	if (gameServer != nullptr && gameServer->GetDemoReader()) {
 		lua_pushnumber(L, gameServer->GetDemoReader()->GetFileHeader().gameTime);
 		return 1;
@@ -500,6 +514,7 @@ int LuaUnsyncedRead::GetReplayLength(lua_State* L)
  */
 int LuaUnsyncedRead::GetGameName(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushstring(L, modInfo.humanNameVersioned.c_str());
 	return 1;
 }
@@ -512,6 +527,7 @@ int LuaUnsyncedRead::GetGameName(lua_State* L)
  */
 int LuaUnsyncedRead::GetMenuName(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushstring(L, luaMenuController->GetMenuName().c_str());
 	return 1;
 }
@@ -539,6 +555,7 @@ int LuaUnsyncedRead::GetMenuName(lua_State* L)
  */
 int LuaUnsyncedRead::GetProfilerTimeRecord(lua_State* L)
 {
+	//ZoneScoped;
 	const CTimeProfiler::TimeRecord& record = CTimeProfiler::GetInstance().GetTimeRecord(lua_tostring(L, 1));
 
 	int numRet = 5;
@@ -568,6 +585,7 @@ int LuaUnsyncedRead::GetProfilerTimeRecord(lua_State* L)
  */
 int LuaUnsyncedRead::GetProfilerRecordNames(lua_State* L)
 {
+	//ZoneScoped;
 	const auto& sortedProfiles = CTimeProfiler::GetInstance().GetSortedProfiles();
 
 	lua_createtable(L, sortedProfiles.size(), 0);
@@ -597,6 +615,7 @@ int LuaUnsyncedRead::GetProfilerRecordNames(lua_State* L)
  */
 int LuaUnsyncedRead::GetLuaMemUsage(lua_State* L)
 {
+	//ZoneScoped;
 	const luaContextData* lcd = GetLuaContextData(L);
 
 	// handle and global stats
@@ -654,6 +673,7 @@ int LuaUnsyncedRead::GetVidMemUsage(lua_State* L)
 
 static void PushTimer(lua_State* L, const spring_time& time, bool microseconds)
 {
+	//ZoneScoped;
 	// use time since Spring's epoch in MILLIseconds because that
 	// is more likely to fit in a 32-bit pointer (on any platforms
 	// where sizeof(void*) == 4) than time since ::chrono's epoch
@@ -699,6 +719,7 @@ static void PushTimer(lua_State* L, const spring_time& time, bool microseconds)
  */
 int LuaUnsyncedRead::GetTimer(lua_State* L)
 {
+	//ZoneScoped;
 	PushTimer(L, spring_now(), false);
 	return 1;
 }
@@ -711,6 +732,7 @@ int LuaUnsyncedRead::GetTimer(lua_State* L)
  */
 int LuaUnsyncedRead::GetTimerMicros(lua_State* L)
 {
+	//ZoneScoped;
 	PushTimer(L, spring_now(), true);
 	return 1;
 }
@@ -727,6 +749,7 @@ int LuaUnsyncedRead::GetTimerMicros(lua_State* L)
  */
 int LuaUnsyncedRead::GetFrameTimer(lua_State* L)
 {
+	//ZoneScoped;
 	if (luaL_optboolean(L, 1, false)) {
 		PushTimer(L, game->lastFrameTime, false);
 	} else {
@@ -747,6 +770,7 @@ int LuaUnsyncedRead::GetFrameTimer(lua_State* L)
  */
 int LuaUnsyncedRead::DiffTimers(lua_State* L)
 {
+	//ZoneScoped;
 	if (!lua_islightuserdata(L, 1) || !lua_islightuserdata(L, 2)) {
 		luaL_error(L, "Incorrect arguments to DiffTimers()");
 	}
@@ -802,6 +826,7 @@ int LuaUnsyncedRead::DiffTimers(lua_State* L)
  */
 int LuaUnsyncedRead::GetNumDisplays(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, SDL_GetNumVideoDisplays());
 	return 1;
 }
@@ -818,6 +843,7 @@ int LuaUnsyncedRead::GetNumDisplays(lua_State* L)
  */
 int LuaUnsyncedRead::GetViewGeometry(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, globalRendering->viewSizeX);
 	lua_pushnumber(L, globalRendering->viewSizeY);
 	lua_pushnumber(L, globalRendering->viewPosX);
@@ -837,6 +863,7 @@ int LuaUnsyncedRead::GetViewGeometry(lua_State* L)
  */
 int LuaUnsyncedRead::GetDualViewGeometry(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, globalRendering->dualViewSizeX);
 	lua_pushnumber(L, globalRendering->dualViewSizeY);
 	lua_pushnumber(L, globalRendering->dualViewPosX);
@@ -860,6 +887,7 @@ int LuaUnsyncedRead::GetDualViewGeometry(lua_State* L)
  */
 int LuaUnsyncedRead::GetWindowGeometry(lua_State* L)
 {
+	//ZoneScoped;
 	// origin BOTTOMLEFT
 	const int winPosY_bl = globalRendering->screenSizeY - globalRendering->winSizeY - globalRendering->winPosY;
 
@@ -885,6 +913,7 @@ int LuaUnsyncedRead::GetWindowGeometry(lua_State* L)
  */
 int LuaUnsyncedRead::GetWindowDisplayMode(lua_State* L)
 {
+	//ZoneScoped;
 	SDL_DisplayMode dmode;
 	if (!SDL_GetWindowDisplayMode(globalRendering->GetWindow(), &dmode)) {
 		lua_pushnumber(L, dmode.w);
@@ -920,6 +949,7 @@ int LuaUnsyncedRead::GetWindowDisplayMode(lua_State* L)
  */
 int LuaUnsyncedRead::GetScreenGeometry(lua_State* L)
 {
+	//ZoneScoped;
 	const int displayIndex = luaL_optint(L, 1, -1);
 	const int* displayIndexPtr = (displayIndex != -1) ? &displayIndex : nullptr;
 	const bool queryUsable = luaL_optboolean(L, 2, false); // whether to query usable screen size
@@ -968,6 +998,7 @@ int LuaUnsyncedRead::GetScreenGeometry(lua_State* L)
  */
 int LuaUnsyncedRead::GetMiniMapGeometry(lua_State* L)
 {
+	//ZoneScoped;
 	if (minimap == nullptr)
 		return 0;
 
@@ -989,6 +1020,7 @@ int LuaUnsyncedRead::GetMiniMapGeometry(lua_State* L)
  */
 int LuaUnsyncedRead::GetMiniMapRotation(lua_State* L)
 {
+	//ZoneScoped;
 	if (minimap == nullptr)
 		return 0;
 
@@ -1005,6 +1037,7 @@ int LuaUnsyncedRead::GetMiniMapRotation(lua_State* L)
  */
 int LuaUnsyncedRead::GetMiniMapDualScreen(lua_State* L)
 {
+	//ZoneScoped;
 	if (minimap == nullptr)
 		return 0;
 
@@ -1036,6 +1069,7 @@ int LuaUnsyncedRead::GetMiniMapDualScreen(lua_State* L)
  */
 int LuaUnsyncedRead::GetSelectionBox(lua_State* L)
 {
+	//ZoneScoped;
 	float3 bl, br, tl, tr;
 	if (!mouse->GetSelectionBoxVertices(bl, br, tl, tr)) {
 		lua_pushnil(L);
@@ -1062,6 +1096,7 @@ int LuaUnsyncedRead::GetSelectionBox(lua_State* L)
  */
 int LuaUnsyncedRead::GetDrawSelectionInfo(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, guihandler ? guihandler->GetDrawSelectionInfo() : 0);
 	return 1;
 }
@@ -1078,6 +1113,7 @@ int LuaUnsyncedRead::GetDrawSelectionInfo(lua_State* L)
  */
 int LuaUnsyncedRead::IsAboveMiniMap(lua_State* L)
 {
+	//ZoneScoped;
 	if (minimap == nullptr)
 		return 0;
 
@@ -1108,6 +1144,7 @@ int LuaUnsyncedRead::IsAboveMiniMap(lua_State* L)
  */
 int LuaUnsyncedRead::GetDrawFrame(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, globalRendering->drawFrame & 0xFFFF);
 	lua_pushnumber(L, (globalRendering->drawFrame >> 16) & 0xFFFF);
 	return 2;
@@ -1128,6 +1165,7 @@ int LuaUnsyncedRead::GetDrawFrame(lua_State* L)
  */
 int LuaUnsyncedRead::GetFrameTimeOffset(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, globalRendering->timeOffset);
 	return 1;
 }
@@ -1140,6 +1178,7 @@ int LuaUnsyncedRead::GetFrameTimeOffset(lua_State* L)
  */
 int LuaUnsyncedRead::GetGameSecondsInterpolated(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, (gs->GetLuaSimFrame() + globalRendering->timeOffset) / GAME_SPEED);
 	return 1;
 }
@@ -1152,6 +1191,7 @@ int LuaUnsyncedRead::GetGameSecondsInterpolated(lua_State* L)
  */
 int LuaUnsyncedRead::GetLastUpdateSeconds(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, game->updateDeltaSeconds);
 	return 1;
 }
@@ -1165,6 +1205,7 @@ int LuaUnsyncedRead::GetLastUpdateSeconds(lua_State* L)
  */
 int LuaUnsyncedRead::GetVideoCapturingMode(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, videoCapturing->AllowRecord());
 	return 1;
 }
@@ -1184,6 +1225,7 @@ int LuaUnsyncedRead::GetVideoCapturingMode(lua_State* L)
  */
 int LuaUnsyncedRead::IsUnitAllied(lua_State* L)
 {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1208,6 +1250,7 @@ int LuaUnsyncedRead::IsUnitAllied(lua_State* L)
  */
 int LuaUnsyncedRead::IsUnitSelected(lua_State* L)
 {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 	if (unit == nullptr)
 		return 0;
@@ -1226,6 +1269,7 @@ int LuaUnsyncedRead::IsUnitSelected(lua_State* L)
  */
 int LuaUnsyncedRead::GetUnitLuaDraw(lua_State* L)
 {
+	//ZoneScoped;
 	return (GetSolidObjectLuaDraw(L, ParseUnit(L, __func__, 1)));
 }
 
@@ -1248,6 +1292,7 @@ int LuaUnsyncedRead::GetUnitNoDraw(lua_State* L)
  */
 int LuaUnsyncedRead::GetUnitEngineDrawMask(lua_State* L)
 {
+	//ZoneScoped;
 	return (GetSolidObjectEngineDrawMask(L, ParseUnit(L, __func__, 1)));
 }
 
@@ -1259,6 +1304,7 @@ int LuaUnsyncedRead::GetUnitEngineDrawMask(lua_State* L)
  */
 int LuaUnsyncedRead::GetUnitAlwaysUpdateMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1276,6 +1322,7 @@ int LuaUnsyncedRead::GetUnitAlwaysUpdateMatrix(lua_State* L)
  */
 int LuaUnsyncedRead::GetUnitDrawFlag(lua_State* L)
 {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1293,6 +1340,7 @@ int LuaUnsyncedRead::GetUnitDrawFlag(lua_State* L)
  */
 int LuaUnsyncedRead::GetUnitNoMinimap(lua_State* L)
 {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1310,6 +1358,7 @@ int LuaUnsyncedRead::GetUnitNoMinimap(lua_State* L)
  */
 int LuaUnsyncedRead::GetUnitNoSelect(lua_State* L)
 {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1327,6 +1376,7 @@ int LuaUnsyncedRead::GetUnitNoSelect(lua_State* L)
  * @tparam nil|bool nil when unitID is invalid
  */
 int LuaUnsyncedRead::UnitIconGetDraw(lua_State* L) {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1354,6 +1404,7 @@ int LuaUnsyncedRead::UnitIconGetDraw(lua_State* L) {
  */
 int LuaUnsyncedRead::GetUnitSelectionVolumeData(lua_State* L)
 {
+	//ZoneScoped;
 	return GetSolidObjectSelectionVolume(L, ParseUnit(L, __func__, 1));
 }
 
@@ -1372,6 +1423,7 @@ int LuaUnsyncedRead::GetUnitSelectionVolumeData(lua_State* L)
  */
 int LuaUnsyncedRead::GetFeatureLuaDraw(lua_State* L)
 {
+	//ZoneScoped;
 	return (GetSolidObjectLuaDraw(L, ParseFeature(L, __func__, 1)));
 }
 
@@ -1383,6 +1435,7 @@ int LuaUnsyncedRead::GetFeatureLuaDraw(lua_State* L)
  */
 int LuaUnsyncedRead::GetFeatureNoDraw(lua_State* L)
 {
+	//ZoneScoped;
 	return (GetSolidObjectNoDraw(L, ParseFeature(L, __func__, 1)));
 }
 
@@ -1394,6 +1447,7 @@ int LuaUnsyncedRead::GetFeatureNoDraw(lua_State* L)
  */
 int LuaUnsyncedRead::GetFeatureEngineDrawMask(lua_State* L)
 {
+	//ZoneScoped;
 	return (GetSolidObjectEngineDrawMask(L, ParseFeature(L, __func__, 1)));
 }
 
@@ -1405,6 +1459,7 @@ int LuaUnsyncedRead::GetFeatureEngineDrawMask(lua_State* L)
  */
 int LuaUnsyncedRead::GetFeatureAlwaysUpdateMatrix(lua_State* L)
 {
+	//ZoneScoped;
 	CFeature* feature = ParseFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -1422,6 +1477,7 @@ int LuaUnsyncedRead::GetFeatureAlwaysUpdateMatrix(lua_State* L)
  */
 int LuaUnsyncedRead::GetFeatureDrawFlag(lua_State* L)
 {
+	//ZoneScoped;
 	CFeature* feature = ParseFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -1448,6 +1504,7 @@ int LuaUnsyncedRead::GetFeatureDrawFlag(lua_State* L)
  */
 int LuaUnsyncedRead::GetFeatureSelectionVolumeData(lua_State* L)
 {
+	//ZoneScoped;
 	return GetSolidObjectSelectionVolume(L, ParseFeature(L, __func__, 1));
 }
 
@@ -1455,6 +1512,7 @@ int LuaUnsyncedRead::GetFeatureSelectionVolumeData(lua_State* L)
 
 static int GetObjectTransformMatrix(const CSolidObject* o, lua_State* L)
 {
+	//ZoneScoped;
 	if (o == nullptr)
 		return 0;
 
@@ -1542,6 +1600,7 @@ int LuaUnsyncedRead::GetFeatureTransformMatrix(lua_State* L) { return (GetObject
  */
 int LuaUnsyncedRead::IsUnitInView(lua_State* L)
 {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1562,6 +1621,7 @@ int LuaUnsyncedRead::IsUnitInView(lua_State* L)
  */
 int LuaUnsyncedRead::IsUnitVisible(lua_State* L)
 {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1602,6 +1662,7 @@ int LuaUnsyncedRead::IsUnitVisible(lua_State* L)
  */
 int LuaUnsyncedRead::IsUnitIcon(lua_State* L)
 {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1625,6 +1686,7 @@ int LuaUnsyncedRead::IsUnitIcon(lua_State* L)
  */
 int LuaUnsyncedRead::IsAABBInView(lua_State* L)
 {
+	//ZoneScoped;
 	float3 mins = float3(luaL_checkfloat(L, 1),
 	                     luaL_checkfloat(L, 2),
 	                     luaL_checkfloat(L, 3));
@@ -1652,6 +1714,7 @@ int LuaUnsyncedRead::IsAABBInView(lua_State* L)
  */
 int LuaUnsyncedRead::IsSphereInView(lua_State* L)
 {
+	//ZoneScoped;
 	const float3 pos(luaL_checkfloat(L, 1),
 	                 luaL_checkfloat(L, 2),
 	                 luaL_checkfloat(L, 3));
@@ -1673,6 +1736,7 @@ int LuaUnsyncedRead::IsSphereInView(lua_State* L)
  */
 int LuaUnsyncedRead::GetUnitViewPosition(lua_State* L)
 {
+	//ZoneScoped;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1698,6 +1762,7 @@ public:
 	typedef std::vector< const ObjectList* > ObjectVector;
 
 	void ResetState() override {
+	//ZoneScoped;
 		objectLists.clear();
 		objectLists.reserve(64);
 
@@ -1710,6 +1775,7 @@ public:
 	const ObjectVector& GetObjectLists() { return objectLists; }
 
 	void AddObjectList(const ObjectList* objects) {
+	//ZoneScoped;
 		if (objects->empty())
 			return;
 
@@ -1729,6 +1795,7 @@ protected:
 class CVisUnitQuadDrawer: public CWorldObjectQuadDrawer<CUnit> {
 public:
 	void DrawQuad(int x, int y) override {
+	//ZoneScoped;
 		const CQuadField::Quad& q = quadField.GetQuadAt(x, y);
 		const ObjectList* o = &q.units;
 
@@ -1739,6 +1806,7 @@ public:
 class CVisFeatureQuadDrawer: public CWorldObjectQuadDrawer<CFeature> {
 public:
 	void DrawQuad(int x, int y) override {
+	//ZoneScoped;
 		const CQuadField::Quad& q = quadField.GetQuadAt(x, y);
 		const ObjectList* o = &q.features;
 
@@ -1749,6 +1817,7 @@ public:
 class CVisProjectileQuadDrawer: public CWorldObjectQuadDrawer<CProjectile> {
 public:
 	void DrawQuad(int x, int y) override {
+	//ZoneScoped;
 		const CQuadField::Quad& q = quadField.GetQuadAt(x, y);
 		const ObjectList* o = &q.projectiles;
 
@@ -1767,6 +1836,7 @@ public:
  */
 int LuaUnsyncedRead::GetVisibleUnits(lua_State* L)
 {
+	//ZoneScoped;
 	// arg 1 - teamID
 	int teamID = luaL_optint(L, 1, -1);
 	int allyTeamID = CLuaHandle::GetHandleReadAllyTeam(L);
@@ -1866,6 +1936,7 @@ int LuaUnsyncedRead::GetVisibleUnits(lua_State* L)
  */
 int LuaUnsyncedRead::GetVisibleFeatures(lua_State* L)
 {
+	//ZoneScoped;
 	// arg 1 - allyTeamID
 	int allyTeamID = luaL_optint(L, 1, -1);
 
@@ -1947,6 +2018,7 @@ int LuaUnsyncedRead::GetVisibleFeatures(lua_State* L)
  */
 int LuaUnsyncedRead::GetVisibleProjectiles(lua_State* L)
 {
+	//ZoneScoped;
 	int allyTeamID = luaL_optint(L, 1, -1);
 
 	if (allyTeamID >= 0) {
@@ -2015,6 +2087,7 @@ int LuaUnsyncedRead::GetVisibleProjectiles(lua_State* L)
 }
 
 namespace {
+	//ZoneScoped;
 	template<typename V>
 	static int GetRenderObjects(lua_State* L, const V& renderObjects, const char* func) {
 		const int  drawMask = luaL_optint(L, 1, 0);
@@ -2096,6 +2169,7 @@ namespace {
  */
 int LuaUnsyncedRead::GetRenderUnits(lua_State* L)
 {
+	//ZoneScoped;
 	return GetRenderObjects(L, unitDrawer->GetUnsortedUnits(), __func__);
 }
 
@@ -2105,6 +2179,7 @@ int LuaUnsyncedRead::GetRenderUnits(lua_State* L)
  */
 int LuaUnsyncedRead::GetRenderUnitsDrawFlagChanged(lua_State* L)
 {
+	//ZoneScoped;
 	return GetRenderObjectsDrawFlagChanged(L, unitDrawer->GetUnsortedUnits(), __func__);
 }
 
@@ -2114,6 +2189,7 @@ int LuaUnsyncedRead::GetRenderUnitsDrawFlagChanged(lua_State* L)
  */
 int LuaUnsyncedRead::GetRenderFeatures(lua_State* L)
 {
+	//ZoneScoped;
 	return GetRenderObjects(L, featureDrawer->GetUnsortedFeatures(), __func__);
 }
 
@@ -2123,6 +2199,7 @@ int LuaUnsyncedRead::GetRenderFeatures(lua_State* L)
  */
 int LuaUnsyncedRead::GetRenderFeaturesDrawFlagChanged(lua_State* L)
 {
+	//ZoneScoped;
 	return GetRenderObjectsDrawFlagChanged(L, featureDrawer->GetUnsortedFeatures(), __func__);
 }
 
@@ -2133,6 +2210,7 @@ int LuaUnsyncedRead::GetRenderFeaturesDrawFlagChanged(lua_State* L)
  */
 int LuaUnsyncedRead::ClearUnitsPreviousDrawFlag(lua_State* L)
 {
+	//ZoneScoped;
 	unitDrawer->ClearPreviousDrawFlags();
 	return 0;
 }
@@ -2160,6 +2238,7 @@ int LuaUnsyncedRead::ClearFeaturesPreviousDrawFlag(lua_State* L)
  */
 int LuaUnsyncedRead::GetUnitsInScreenRectangle(lua_State* L)
 {
+	//ZoneScoped;
 	float l = luaL_checkfloat(L, 1);
 	float t = luaL_checkfloat(L, 2);
 	float r = luaL_checkfloat(L, 3);
@@ -2258,6 +2337,7 @@ int LuaUnsyncedRead::GetUnitsInScreenRectangle(lua_State* L)
 	*/
 int LuaUnsyncedRead::GetFeaturesInScreenRectangle(lua_State* L)
 {
+	//ZoneScoped;
 	float l = luaL_checkfloat(L, 1);
 	float t = luaL_checkfloat(L, 2);
 	float r = luaL_checkfloat(L, 3);
@@ -2322,6 +2402,7 @@ int LuaUnsyncedRead::GetLocalPlayerID(lua_State* L)
  */
 int LuaUnsyncedRead::GetLocalTeamID(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, gu->myTeam);
 	return 1;
 }
@@ -2334,6 +2415,7 @@ int LuaUnsyncedRead::GetLocalTeamID(lua_State* L)
  */
 int LuaUnsyncedRead::GetLocalAllyTeamID(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, gu->myAllyTeam);
 	return 1;
 }
@@ -2348,6 +2430,7 @@ int LuaUnsyncedRead::GetLocalAllyTeamID(lua_State* L)
  */
 int LuaUnsyncedRead::GetSpectatingState(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, gu->spectating);
 	lua_pushboolean(L, gu->spectatingFullView);
 	lua_pushboolean(L, gu->spectatingFullSelect);
@@ -2365,6 +2448,7 @@ int LuaUnsyncedRead::GetSpectatingState(lua_State* L)
  */
 int LuaUnsyncedRead::GetSelectedUnits(lua_State* L)
 {
+	//ZoneScoped;
 	PushNumberContainerAsArray(L, selectedUnitsHandler.selectedUnits);
 	return 1;
 }
@@ -2377,6 +2461,7 @@ int LuaUnsyncedRead::GetSelectedUnits(lua_State* L)
  */
 int LuaUnsyncedRead::GetSelectedUnitsSorted(lua_State* L)
 {
+	//ZoneScoped;
 	const auto numDefKeys = PushUnitListSortedByDef(L, selectedUnitsHandler.selectedUnits);
 	lua_pushnumber(L, numDefKeys);
 
@@ -2393,6 +2478,7 @@ int LuaUnsyncedRead::GetSelectedUnitsSorted(lua_State* L)
  */
 int LuaUnsyncedRead::GetSelectedUnitsCounts(lua_State* L)
 {
+	//ZoneScoped;
 	const auto numDefKeys = PushSparseUnitTallyByDef(L, selectedUnitsHandler.selectedUnits);
 	lua_pushnumber(L, numDefKeys);
 
@@ -2407,6 +2493,7 @@ int LuaUnsyncedRead::GetSelectedUnitsCounts(lua_State* L)
  */
 int LuaUnsyncedRead::GetSelectedUnitsCount(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, selectedUnitsHandler.selectedUnits.size());
 	return 1;
 }
@@ -2422,6 +2509,7 @@ int LuaUnsyncedRead::GetSelectedUnitsCount(lua_State* L)
  */
 int LuaUnsyncedRead::GetBoxSelectionByEngine(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, selectedUnitsHandler.GetBoxSelectionHandledByEngine());
 	return 1;
 }
@@ -2437,6 +2525,7 @@ int LuaUnsyncedRead::GetBoxSelectionByEngine(lua_State* L)
  */
 int LuaUnsyncedRead::IsGUIHidden(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, game != nullptr && game->hideInterface);
 	return 1;
 }
@@ -2449,6 +2538,7 @@ int LuaUnsyncedRead::IsGUIHidden(lua_State* L)
  */
 int LuaUnsyncedRead::HaveShadows(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, shadowHandler.ShadowsLoaded());
 	return 1;
 }
@@ -2462,6 +2552,7 @@ int LuaUnsyncedRead::HaveShadows(lua_State* L)
  */
 int LuaUnsyncedRead::HaveAdvShading(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, unitDrawer->UseAdvShading());
 	lua_pushboolean(L, readMap->GetGroundDrawer()->UseAdvShading());
 	return 2;
@@ -2477,6 +2568,7 @@ int LuaUnsyncedRead::HaveAdvShading(lua_State* L)
  */
 int LuaUnsyncedRead::GetWaterMode(lua_State* L)
 {
+	//ZoneScoped;
 	const auto& water = IWater::GetWater();
 	lua_pushnumber(L, water->GetID());
 	lua_pushstring(L, IWater::GetWaterName(water->GetID()));
@@ -2491,6 +2583,7 @@ int LuaUnsyncedRead::GetWaterMode(lua_State* L)
  */
 int LuaUnsyncedRead::GetMapDrawMode(lua_State* L)
 {
+	//ZoneScoped;
 	using P = std::pair<const char*, const char*>;
 	constexpr std::array<P, 5> modes = {
 		P(        "", "normal"            ),
@@ -2525,6 +2618,7 @@ int LuaUnsyncedRead::GetMapDrawMode(lua_State* L)
  */
 int LuaUnsyncedRead::GetMapSquareTexture(lua_State* L)
 {
+	//ZoneScoped;
 	if (CLuaHandle::GetHandleSynced(L)) {
 		return 0;
 	}
@@ -2586,6 +2680,7 @@ int LuaUnsyncedRead::GetMapSquareTexture(lua_State* L)
  */
 int LuaUnsyncedRead::GetLosViewColors(lua_State* L)
 {
+	//ZoneScoped;
 #define PACK_COLOR_VECTOR(color) \
 	lua_createtable(L, 3, 0); \
 	lua_pushnumber(L, color[0] / scale); lua_rawseti(L, -2, 1); \
@@ -2616,6 +2711,7 @@ int LuaUnsyncedRead::GetLosViewColors(lua_State* L)
  */
 int LuaUnsyncedRead::GetNanoProjectileParams(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, CNanoProjectile::rotVal0 * (math::RAD_TO_DEG                            ));
 	lua_pushnumber(L, CNanoProjectile::rotVel0 * (math::RAD_TO_DEG * GAME_SPEED               ));
 	lua_pushnumber(L, CNanoProjectile::rotAcc0 * (math::RAD_TO_DEG * (GAME_SPEED * GAME_SPEED)));
@@ -2635,6 +2731,7 @@ int LuaUnsyncedRead::GetNanoProjectileParams(lua_State* L)
  */
 int LuaUnsyncedRead::GetCameraNames(lua_State* L)
 {
+	//ZoneScoped;
 	const std::array<CCameraController*, CCameraHandler::CAMERA_MODE_LAST>& cc = camHandler->GetControllers();
 
 	lua_createtable(L, 0, cc.size());
@@ -2685,6 +2782,7 @@ int LuaUnsyncedRead::GetCameraNames(lua_State* L)
  */
 int LuaUnsyncedRead::GetCameraState(lua_State* L)
 {
+	//ZoneScoped;
 	CCameraController::StateMap camState;
 	camHandler->GetState(camState);
 
@@ -2757,6 +2855,7 @@ int LuaUnsyncedRead::GetCameraState(lua_State* L)
  */
 int LuaUnsyncedRead::GetCameraPosition(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, camera->GetPos().x);
 	lua_pushnumber(L, camera->GetPos().y);
 	lua_pushnumber(L, camera->GetPos().z);
@@ -2772,6 +2871,7 @@ int LuaUnsyncedRead::GetCameraPosition(lua_State* L)
  */
 int LuaUnsyncedRead::GetCameraDirection(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, camera->GetDir().x);
 	lua_pushnumber(L, camera->GetDir().y);
 	lua_pushnumber(L, camera->GetDir().z);
@@ -2787,6 +2887,7 @@ int LuaUnsyncedRead::GetCameraDirection(lua_State* L)
  */
 int LuaUnsyncedRead::GetCameraRotation(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, camera->GetRot().x);
 	lua_pushnumber(L, camera->GetRot().y);
 	lua_pushnumber(L, camera->GetRot().z);
@@ -2801,6 +2902,7 @@ int LuaUnsyncedRead::GetCameraRotation(lua_State* L)
  */
 int LuaUnsyncedRead::GetCameraFOV(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, camera->GetVFOV());
 	lua_pushnumber(L, camera->GetHFOV());
 	return 2;
@@ -2822,6 +2924,7 @@ int LuaUnsyncedRead::GetCameraFOV(lua_State* L)
  */
 int LuaUnsyncedRead::GetCameraVectors(lua_State* L)
 {
+	//ZoneScoped;
 #define PACK_CAMERA_VECTOR(s,n) \
 	HSTR_PUSH(L, #s);           \
 	lua_createtable(L, 3, 0);            \
@@ -2855,6 +2958,7 @@ int LuaUnsyncedRead::GetCameraVectors(lua_State* L)
  */
 int LuaUnsyncedRead::WorldToScreenCoords(lua_State* L)
 {
+	//ZoneScoped;
 	const float3 worldPos(luaL_checkfloat(L, 1),
 	                      luaL_checkfloat(L, 2),
 	                      luaL_checkfloat(L, 3));
@@ -2892,6 +2996,7 @@ int LuaUnsyncedRead::WorldToScreenCoords(lua_State* L)
  */
 int LuaUnsyncedRead::TraceScreenRay(lua_State* L)
 {
+	//ZoneScoped;
 	// window coordinates
 	const int mx = luaL_checkint(L, 1);
 	const int my = luaL_checkint(L, 2);
@@ -3003,6 +3108,7 @@ int LuaUnsyncedRead::TraceScreenRay(lua_State* L)
  */
 int LuaUnsyncedRead::GetPixelDir(lua_State* L)
 {
+	//ZoneScoped;
 	const int x = luaL_checkint(L, 1);
 	const int y = luaL_checkint(L, 2);
 	const float3 dir = camera->CalcPixelDir(x, y);
@@ -3018,6 +3124,7 @@ int LuaUnsyncedRead::GetPixelDir(lua_State* L)
 
 static bool AddPlayerToRoster(lua_State* L, int playerID, bool onlyActivePlayers, bool includePathingFlag)
 {
+	//ZoneScoped;
 #define PUSH_ROSTER_ENTRY(type, val) \
 	lua_push ## type(L, val); lua_rawseti(L, -2, index++);
 
@@ -3085,6 +3192,7 @@ int LuaUnsyncedRead::GetTeamColor(lua_State* L)
  */
 int LuaUnsyncedRead::GetTeamOrigColor(lua_State* L)
 {
+	//ZoneScoped;
 	const int teamID = luaL_checkint(L, 1);
 	if ((teamID < 0) || (teamID >= teamHandler.ActiveTeams()))
 		return 0;
@@ -3108,6 +3216,7 @@ int LuaUnsyncedRead::GetTeamOrigColor(lua_State* L)
  */
 int LuaUnsyncedRead::GetDrawSeconds(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, spring_tomsecs(globalRendering->grTime) * 0.001f);
 	return 1;
 }
@@ -3127,6 +3236,7 @@ int LuaUnsyncedRead::GetDrawSeconds(lua_State* L)
  */
 int LuaUnsyncedRead::GetSoundStreamTime(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, Channels::BGMusic->StreamGetPlayTime());
 	lua_pushnumber(L, Channels::BGMusic->StreamGetTime());
 	return 2;
@@ -3139,6 +3249,7 @@ int LuaUnsyncedRead::GetSoundStreamTime(lua_State* L)
  */
 int LuaUnsyncedRead::GetSoundEffectParams(lua_State* L)
 {
+	//ZoneScoped;
 #if defined(HEADLESS) || defined(NO_SOUND)
 	return 0;
 #else
@@ -3230,6 +3341,7 @@ int LuaUnsyncedRead::GetSoundEffectParams(lua_State* L)
  */
 int LuaUnsyncedRead::GetFPS(lua_State* L)
 {
+	//ZoneScoped;
 	assert(globalRendering != nullptr);
 	// true FPS is never fractional, but the calculation averages over time
 	lua_pushnumber(L, int(globalRendering->FPS));
@@ -3246,6 +3358,7 @@ int LuaUnsyncedRead::GetFPS(lua_State* L)
  */
 int LuaUnsyncedRead::GetGameSpeed(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, gs->wantedSpeedFactor);
 	lua_pushnumber(L, gs->speedFactor);
 	lua_pushboolean(L, gs->paused);
@@ -3263,6 +3376,7 @@ int LuaUnsyncedRead::GetGameSpeed(lua_State* L)
  */
 int LuaUnsyncedRead::GetGameState(lua_State* L)
 {
+	//ZoneScoped;
   const float maxLatency = luaL_optfloat(L, 1, 500.0f);
 
 	lua_pushboolean(L, game->IsDoneLoading());
@@ -3289,6 +3403,7 @@ int LuaUnsyncedRead::GetGameState(lua_State* L)
  */
 int LuaUnsyncedRead::GetActiveCommand(lua_State* L)
 {
+	//ZoneScoped;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -3318,6 +3433,7 @@ int LuaUnsyncedRead::GetActiveCommand(lua_State* L)
  */
 int LuaUnsyncedRead::GetDefaultCommand(lua_State* L)
 {
+	//ZoneScoped;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -3367,6 +3483,7 @@ int LuaUnsyncedRead::GetDefaultCommand(lua_State* L)
  */
 int LuaUnsyncedRead::GetActiveCmdDescs(lua_State* L)
 {
+	//ZoneScoped;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -3397,6 +3514,7 @@ int LuaUnsyncedRead::GetActiveCmdDescs(lua_State* L)
  */
 int LuaUnsyncedRead::GetActiveCmdDesc(lua_State* L)
 {
+	//ZoneScoped;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -3421,6 +3539,7 @@ int LuaUnsyncedRead::GetActiveCmdDesc(lua_State* L)
  */
 int LuaUnsyncedRead::GetCmdDescIndex(lua_State* L)
 {
+	//ZoneScoped;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -3447,6 +3566,7 @@ int LuaUnsyncedRead::GetCmdDescIndex(lua_State* L)
  */
 int LuaUnsyncedRead::GetBuildFacing(lua_State* L)
 {
+	//ZoneScoped;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -3462,6 +3582,7 @@ int LuaUnsyncedRead::GetBuildFacing(lua_State* L)
  */
 int LuaUnsyncedRead::GetBuildSpacing(lua_State* L)
 {
+	//ZoneScoped;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -3477,6 +3598,7 @@ int LuaUnsyncedRead::GetBuildSpacing(lua_State* L)
  */
 int LuaUnsyncedRead::GetGatherMode(lua_State* L)
 {
+	//ZoneScoped;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -3495,6 +3617,7 @@ int LuaUnsyncedRead::GetGatherMode(lua_State* L)
  */
 int LuaUnsyncedRead::GetActivePage(lua_State* L)
 {
+	//ZoneScoped;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -3523,6 +3646,7 @@ int LuaUnsyncedRead::GetActivePage(lua_State* L)
  */
 int LuaUnsyncedRead::GetMouseState(lua_State* L)
 {
+	//ZoneScoped;
 	assert(mouse != nullptr);
 	assert(globalRendering != nullptr);
 
@@ -3546,6 +3670,7 @@ int LuaUnsyncedRead::GetMouseState(lua_State* L)
  */
 int LuaUnsyncedRead::GetMouseCursor(lua_State* L)
 {
+	//ZoneScoped;
 	assert(mouse != nullptr);
 
 	lua_pushsstring(L, mouse->GetCurrentCursor());
@@ -3569,6 +3694,7 @@ int LuaUnsyncedRead::GetMouseCursor(lua_State* L)
  */
 int LuaUnsyncedRead::GetMouseStartPosition(lua_State* L)
 {
+	//ZoneScoped;
 	assert(mouse != nullptr);
 
 	const int button = luaL_checkint(L, 1);
@@ -3602,6 +3728,7 @@ int LuaUnsyncedRead::GetMouseStartPosition(lua_State* L)
  */
 int LuaUnsyncedRead::GetClipboard(lua_State* L)
 {
+	//ZoneScoped;
 	char* text = SDL_GetClipboardText();
 	if (text == nullptr)
 		return 0;
@@ -3618,6 +3745,7 @@ int LuaUnsyncedRead::GetClipboard(lua_State* L)
  */
 int LuaUnsyncedRead::IsUserWriting(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, gameTextInput.userWriting);
 	return 1;
 }
@@ -3636,6 +3764,7 @@ int LuaUnsyncedRead::IsUserWriting(lua_State* L)
  */
 int LuaUnsyncedRead::GetLastMessagePositions(lua_State* L)
 {
+	//ZoneScoped;
 	lua_createtable(L, infoConsole->GetMsgPosCount(), 0);
 
 	for (unsigned int i = 1; i <= infoConsole->GetMsgPosCount(); i++) {
@@ -3660,6 +3789,7 @@ int LuaUnsyncedRead::GetLastMessagePositions(lua_State* L)
  */
 int LuaUnsyncedRead::GetConsoleBuffer(lua_State* L)
 {
+	//ZoneScoped;
 	std::vector<CInfoConsole::RawLine> lines;
 	infoConsole->GetRawLines(lines);
 
@@ -3696,6 +3826,7 @@ int LuaUnsyncedRead::GetConsoleBuffer(lua_State* L)
  */
 int LuaUnsyncedRead::GetCurrentTooltip(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushsstring(L, mouse->GetCurrentTooltip());
 	return 1;
 }
@@ -3715,6 +3846,7 @@ int LuaUnsyncedRead::GetCurrentTooltip(lua_State* L)
  */
 int LuaUnsyncedRead::GetKeyFromScanSymbol(lua_State* L)
 {
+	//ZoneScoped;
 	const std::string& symbol = StringToLower(luaL_optstring(L, 1, ""));
 
 	std::string result = "";
@@ -3751,6 +3883,7 @@ int LuaUnsyncedRead::GetKeyFromScanSymbol(lua_State* L)
  */
 int LuaUnsyncedRead::GetKeyState(lua_State* L)
 {
+	//ZoneScoped;
 	const int key = SDL12_keysyms(luaL_checkint(L, 1));
 	lua_pushboolean(L, KeyInput::IsKeyPressed(key));
 	return 1;
@@ -3767,6 +3900,7 @@ int LuaUnsyncedRead::GetKeyState(lua_State* L)
  */
 int LuaUnsyncedRead::GetModKeyState(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushboolean(L, KeyInput::GetKeyModState(KMOD_ALT));
 	lua_pushboolean(L, KeyInput::GetKeyModState(KMOD_CTRL));
 	lua_pushboolean(L, KeyInput::GetKeyModState(KMOD_GUI));
@@ -3782,6 +3916,7 @@ int LuaUnsyncedRead::GetModKeyState(lua_State* L)
  */
 int LuaUnsyncedRead::GetPressedKeys(lua_State* L)
 {
+	//ZoneScoped;
 	const auto& keys = KeyInput::GetPressedKeys();
 
 	lua_createtable(L, keys.size(), 0);
@@ -3813,6 +3948,7 @@ int LuaUnsyncedRead::GetPressedKeys(lua_State* L)
  */
 int LuaUnsyncedRead::GetPressedScans(lua_State* L)
 {
+	//ZoneScoped;
 	const auto& scans = KeyInput::GetPressedScans();
 
 	lua_createtable(L, scans.size(), 0);
@@ -3844,6 +3980,7 @@ int LuaUnsyncedRead::GetPressedScans(lua_State* L)
  */
 int LuaUnsyncedRead::GetInvertQueueKey(lua_State* L)
 {
+	//ZoneScoped;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -3860,6 +3997,7 @@ int LuaUnsyncedRead::GetInvertQueueKey(lua_State* L)
  */
 int LuaUnsyncedRead::GetKeyCode(lua_State* L)
 {
+	//ZoneScoped;
 	lua_pushnumber(L, SDL21_keysyms(keyCodes.GetCode(luaL_checksstring(L, 1))));
 	return 1;
 }
@@ -3874,6 +4012,7 @@ int LuaUnsyncedRead::GetKeyCode(lua_State* L)
  */
 int LuaUnsyncedRead::GetKeySymbol(lua_State* L)
 {
+	//ZoneScoped;
 	const int keycode = SDL12_keysyms(luaL_checkint(L, 1));
 	lua_pushsstring(L, keyCodes.GetName(keycode));
 	lua_pushsstring(L, keyCodes.GetDefaultName(keycode));
@@ -3890,6 +4029,7 @@ int LuaUnsyncedRead::GetKeySymbol(lua_State* L)
  */
 int LuaUnsyncedRead::GetScanSymbol(lua_State* L)
 {
+	//ZoneScoped;
 	const int scanCode = luaL_checkint(L, 1);
 	lua_pushsstring(L, scanCodes.GetName(scanCode));
 	lua_pushsstring(L, scanCodes.GetDefaultName(scanCode));
@@ -3918,6 +4058,7 @@ int LuaUnsyncedRead::GetScanSymbol(lua_State* L)
  */
 int LuaUnsyncedRead::GetKeyBindings(lua_State* L)
 {
+	//ZoneScoped;
 	ActionList actions;
 	const std::string& argument = luaL_optstring(L, 1, "");
 
@@ -3971,6 +4112,7 @@ int LuaUnsyncedRead::GetKeyBindings(lua_State* L)
  */
 int LuaUnsyncedRead::GetActionHotKeys(lua_State* L)
 {
+	//ZoneScoped;
 	const CKeyBindings::HotkeyList& hotkeys = keyBindings.GetHotkeys(luaL_checksstring(L, 1));
 
 	lua_createtable(L, 0, hotkeys.size());
@@ -3996,6 +4138,7 @@ int LuaUnsyncedRead::GetActionHotKeys(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroupList(lua_State* L)
 {
+	//ZoneScoped;
 	unsigned int count = 0;
 
 	const std::vector<CGroup>& groups = uiGroupHandlers[gu->myTeam].GetGroups();
@@ -4037,6 +4180,7 @@ int LuaUnsyncedRead::GetSelectedGroup(lua_State* L)
  */
 int LuaUnsyncedRead::GetUnitGroup(lua_State* L)
 {
+	//ZoneScoped;
 	const CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -4062,6 +4206,7 @@ int LuaUnsyncedRead::GetUnitGroup(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroupUnits(lua_State* L)
 {
+	//ZoneScoped;
 	const int groupID = luaL_checkint(L, 1);
 
 	if (!uiGroupHandlers[gu->myTeam].HasGroup(groupID))
@@ -4082,6 +4227,7 @@ int LuaUnsyncedRead::GetGroupUnits(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroupUnitsSorted(lua_State* L)
 {
+	//ZoneScoped;
 	const int groupID = luaL_checkint(L, 1);
 
 	if (!uiGroupHandlers[gu->myTeam].HasGroup(groupID))
@@ -4102,6 +4248,7 @@ int LuaUnsyncedRead::GetGroupUnitsSorted(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroupUnitsCounts(lua_State* L)
 {
+	//ZoneScoped;
 	const int groupID = luaL_checkint(L, 1);
 
 	if (!uiGroupHandlers[gu->myTeam].HasGroup(groupID))
@@ -4122,6 +4269,7 @@ int LuaUnsyncedRead::GetGroupUnitsCounts(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroupUnitsCount(lua_State* L)
 {
+	//ZoneScoped;
 	const CGroup* group = uiGroupHandlers[gu->myTeam].GetGroup(luaL_checkint(L, 1));
 
 	lua_pushnumber(L, group->units.size());
@@ -4160,6 +4308,7 @@ int LuaUnsyncedRead::GetGroupUnitsCount(lua_State* L)
  */
 int LuaUnsyncedRead::GetPlayerRoster(lua_State* L)
 {
+	//ZoneScoped;
 	const PlayerRoster::SortType oldSortType = playerRoster.GetSortType();
 
 	if (!lua_isnone(L, 1))
@@ -4196,6 +4345,7 @@ int LuaUnsyncedRead::GetPlayerRoster(lua_State* L)
  */
 int LuaUnsyncedRead::GetPlayerTraffic(lua_State* L)
 {
+	//ZoneScoped;
 	const int playerID = luaL_checkint(L, 1);
 	const int packetID = (int)luaL_optnumber(L, 2, -1);
 
@@ -4251,6 +4401,7 @@ int LuaUnsyncedRead::GetPlayerTraffic(lua_State* L)
  */
 int LuaUnsyncedRead::GetPlayerStatistics(lua_State* L)
 {
+	//ZoneScoped;
 	const int playerID = luaL_checkint(L, 1);
 	if (!playerHandler.IsValidPlayer(playerID))
 		return 0;
@@ -4303,6 +4454,7 @@ int LuaUnsyncedRead::GetPlayerStatistics(lua_State* L)
  */
 int LuaUnsyncedRead::GetConfigParams(lua_State* L)
 {
+	//ZoneScoped;
 	ConfigVariable::MetaDataMap cfgmap = ConfigVariable::GetMetaDataMap();
 	lua_createtable(L, cfgmap.size(), 0);
 
@@ -4379,6 +4531,7 @@ int LuaUnsyncedRead::GetConfigParams(lua_State* L)
  */
 int LuaUnsyncedRead::GetConfigInt(lua_State* L)
 {
+	//ZoneScoped;
 	const auto key = luaL_checkstring(L, 1);
 	if (!lua_isnoneornil(L, 2))
 		lua_pushinteger(L, configHandler->GetIntSafe(key, luaL_optint(L, 2, 0)));
@@ -4400,6 +4553,7 @@ int LuaUnsyncedRead::GetConfigInt(lua_State* L)
  */
 int LuaUnsyncedRead::GetConfigFloat(lua_State* L)
 {
+	//ZoneScoped;
 	const auto key = luaL_checkstring(L, 1);
 	if (!lua_isnoneornil(L, 2))
 		lua_pushnumber(L, configHandler->GetFloatSafe(key, luaL_optfloat(L, 2, 0.0f)));
@@ -4421,6 +4575,7 @@ int LuaUnsyncedRead::GetConfigFloat(lua_State* L)
  */
 int LuaUnsyncedRead::GetConfigString(lua_State* L)
 {
+	//ZoneScoped;
 	const auto key = luaL_checkstring(L, 1);
 	if (!lua_isnoneornil(L, 2))
 		lua_pushsstring(L, configHandler->GetStringSafe(key, luaL_optstring(L, 2, "")));
@@ -4439,6 +4594,7 @@ int LuaUnsyncedRead::GetConfigString(lua_State* L)
  * @treturn {[string]=number,...} sections where keys are names and loglevel are values. E.g. `{ "KeyBindings" = LOG.INFO, "Font" = LOG.INFO, "Sound" = LOG.WARNING, ... }`
  */
 int LuaUnsyncedRead::GetLogSections(lua_State* L) {
+	//ZoneScoped;
 	const int numLogSections = log_filter_section_getNumRegisteredSections();
 
 	lua_createtable(L, 0, numLogSections);
@@ -4469,6 +4625,7 @@ int LuaUnsyncedRead::GetLogSections(lua_State* L) {
  */
 int LuaUnsyncedRead::GetAllGroundDecals(lua_State* L)
 {
+	//ZoneScoped;
 	const auto& decals = groundDecals->GetAllDecals();
 
 	int numValid = 0;
@@ -4504,6 +4661,7 @@ int LuaUnsyncedRead::GetAllGroundDecals(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalMiddlePos(lua_State* L)
 {
+	//ZoneScoped;
 	const auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		return 0;
@@ -4531,6 +4689,7 @@ int LuaUnsyncedRead::GetGroundDecalMiddlePos(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalQuadPos(lua_State* L)
 {
+	//ZoneScoped;
 	const auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		return 0;
@@ -4559,6 +4718,7 @@ int LuaUnsyncedRead::GetGroundDecalQuadPos(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalSizeAndHeight(lua_State* L)
 {
+	//ZoneScoped;
 	const auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		return 0;
@@ -4581,6 +4741,7 @@ int LuaUnsyncedRead::GetGroundDecalSizeAndHeight(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalRotation(lua_State* L)
 {
+	//ZoneScoped;
 	const auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		return 0;
@@ -4601,6 +4762,7 @@ int LuaUnsyncedRead::GetGroundDecalRotation(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalTexture(lua_State* L)
 {
+	//ZoneScoped;
 	const auto& texName = groundDecals->GetDecalTexture(luaL_checkint(L, 1), luaL_optboolean(L, 2, true));
 	lua_pushsstring(L, texName);
 
@@ -4615,6 +4777,7 @@ int LuaUnsyncedRead::GetGroundDecalTexture(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalTextures(lua_State* L)
 {
+	//ZoneScoped;
 	const auto& texNames = groundDecals->GetDecalTextures(luaL_optboolean(L, 2, true));
 	LuaUtils::PushStringVector(L, texNames);
 
@@ -4652,6 +4815,7 @@ int LuaUnsyncedRead::GetGroundDecalTextureParams(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalAlpha(lua_State* L)
 {
+	//ZoneScoped;
 	const auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		return 0;
@@ -4676,6 +4840,7 @@ int LuaUnsyncedRead::GetGroundDecalAlpha(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalNormal(lua_State* L)
 {
+	//ZoneScoped;
 	const auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		return 0;
@@ -4701,6 +4866,7 @@ int LuaUnsyncedRead::GetGroundDecalNormal(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalTint(lua_State* L)
 {
+	//ZoneScoped;
 	const auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		return 0;
@@ -4728,6 +4894,7 @@ int LuaUnsyncedRead::GetGroundDecalTint(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalMisc(lua_State* L)
 {
+	//ZoneScoped;
 	const auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		return 0;
@@ -4753,6 +4920,7 @@ int LuaUnsyncedRead::GetGroundDecalMisc(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalCreationFrame(lua_State* L)
 {
+	//ZoneScoped;
 	const auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		return 0;
@@ -4773,6 +4941,7 @@ int LuaUnsyncedRead::GetGroundDecalCreationFrame(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalOwner(lua_State* L)
 {
+	//ZoneScoped;
 	const auto* so = groundDecals->GetDecalSolidObjectOwner(luaL_checkint(L, 1));
 	if (so == nullptr)
 		return 0;
@@ -4794,6 +4963,7 @@ int LuaUnsyncedRead::GetGroundDecalOwner(lua_State* L)
  */
 int LuaUnsyncedRead::GetGroundDecalType(lua_State* L)
 {
+	//ZoneScoped;
 	const auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal || decal->info.type == static_cast<uint8_t>(GroundDecal::Type::DECAL_NONE)) {
 		return 0;
@@ -4835,6 +5005,7 @@ int LuaUnsyncedRead::GetGroundDecalType(lua_State* L)
  * @treturn nil|number GC values are expressed in Kbytes: #bytes/2^10
  */
 int LuaUnsyncedRead::GetSyncedGCInfo(lua_State* L) {
+	//ZoneScoped;
 	if (luaRules == nullptr)
 		return 0;
 

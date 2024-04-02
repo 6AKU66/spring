@@ -23,6 +23,8 @@
 #include "System/FileSystem/FileSystem.h"
 #include "System/StringUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 /******************************************************************************
  * Game constants
  * @module Game
@@ -113,6 +115,7 @@
 
 bool LuaConstGame::PushEntries(lua_State* L)
 {
+	//ZoneScoped;
 	{
 		// game, should perhaps be moved over to ConstEngine
 		LuaPushNamedNumber(L, "maxTeams"  , MAX_TEAMS  );

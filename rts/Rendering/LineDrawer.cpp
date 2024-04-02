@@ -9,6 +9,8 @@
 #include "Rendering/GlobalRendering.h"
 #include "Game/UI/CommandColors.h"
 
+#include <tracy/Tracy.hpp>
+
 CLineDrawer lineDrawer;
 
 
@@ -29,6 +31,7 @@ CLineDrawer::CLineDrawer()
 
 void CLineDrawer::UpdateLineStipple()
 {
+	//ZoneScoped;
 	stippleTimer += (globalRendering->lastFrameTime * 0.001f * cmdColors.StippleSpeed());
 	stippleTimer = std::fmod(stippleTimer, (16.0f / 20.0f));
 }
@@ -36,6 +39,7 @@ void CLineDrawer::UpdateLineStipple()
 
 void CLineDrawer::SetupLineStipple()
 {
+	//ZoneScoped;
 	const unsigned int stipPat = (0xffff & cmdColors.StipplePattern());
 	if ((stipPat != 0x0000) && (stipPat != 0xffff)) {
 		lineStipple = true;
@@ -51,6 +55,7 @@ void CLineDrawer::SetupLineStipple()
 
 void CLineDrawer::DrawAll()
 {
+	//ZoneScoped;
 	if (lines.empty() && stippled.empty())
 		return;
 	

@@ -34,6 +34,8 @@
 #include "System/StringUtil.h"
 #include "System/Log/ILog.h"
 
+#include <tracy/Tracy.hpp>
+
 
 
 // for "$info:los", etc
@@ -45,6 +47,7 @@ static spring::unsynced_map<size_t, LuaMatTexture> luaMatTextures;
 
 void LuaOpenGLUtils::ResetState()
 {
+	//ZoneScoped;
 	// must be cleared, LuaMatTexture's contain pointers
 	luaMatTextures.clear();
 }
@@ -53,6 +56,7 @@ void LuaOpenGLUtils::ResetState()
 
 LuaMatTexture::Type LuaOpenGLUtils::GetLuaMatTextureType(const std::string& name)
 {
+	//ZoneScoped;
 	switch (hashString(name.c_str())) {
 		// atlases
 		case hashString("$units" ): { return LuaMatTexture::LUATEX_3DOTEXTURE; } break;
@@ -167,6 +171,7 @@ LuaMatrixType LuaOpenGLUtils::GetLuaMatrixType(const char* name)
 
 const CMatrix44f* LuaOpenGLUtils::GetNamedMatrix(const char* name)
 {
+	//ZoneScoped;
 	switch (GetLuaMatrixType(name)) {
 		case LUAMATRICES_SHADOW:
 			return &shadowHandler.GetShadowMatrix();
@@ -198,6 +203,7 @@ const CMatrix44f* LuaOpenGLUtils::GetNamedMatrix(const char* name)
 
 S3DModel* ParseModel(int defID)
 {
+	//ZoneScoped;
 	const SolidObjectDef* objectDef = nullptr;
 
 	if (defID < 0) {
@@ -214,6 +220,7 @@ S3DModel* ParseModel(int defID)
 
 bool ParseTexture(const S3DModel* model, LuaMatTexture& texUnit, char texNum)
 {
+	//ZoneScoped;
 	if (model == nullptr)
 		return false;
 
@@ -244,6 +251,7 @@ bool ParseTexture(const S3DModel* model, LuaMatTexture& texUnit, char texNum)
 
 bool ParseUnitTexture(LuaMatTexture& texUnit, const std::string& texture)
 {
+	//ZoneScoped;
 	if (texture.length() < 4)
 		return false;
 
@@ -279,6 +287,7 @@ bool ParseUnitTexture(LuaMatTexture& texUnit, const std::string& texture)
 
 static bool ParseNamedSubTexture(LuaMatTexture& texUnit, const std::string& texName)
 {
+	//ZoneScoped;
 	const size_t texNameHash = hashString(texName.c_str());
 	const auto luaMatTexIt = luaMatTextures.find(texNameHash);
 
@@ -338,6 +347,7 @@ static bool ParseNamedSubTexture(LuaMatTexture& texUnit, const std::string& texN
 
 bool LuaOpenGLUtils::ParseTextureImage(lua_State* L, LuaMatTexture& texUnit, const std::string& image)
 {
+	//ZoneScoped;
 	// NOTE: current formats:
 	//
 	// #12          --  unitDef 12 buildpic
@@ -487,6 +497,7 @@ bool LuaOpenGLUtils::ParseTextureImage(lua_State* L, LuaMatTexture& texUnit, con
 
 GLuint LuaMatTexture::GetTextureID() const
 {
+	//ZoneScoped;
 	GLuint texID = 0;
 
 	#define groundDrawer (readMap->GetGroundDrawer())
@@ -650,6 +661,7 @@ GLuint LuaMatTexture::GetTextureID() const
 
 GLuint LuaMatTexture::GetTextureTarget() const
 {
+	//ZoneScoped;
 	GLuint texType = GL_TEXTURE_2D;
 
 	#define groundDrawer (readMap->GetGroundDrawer())
@@ -766,6 +778,7 @@ GLuint LuaMatTexture::GetTextureTarget() const
 
 void LuaMatTexture::Bind() const
 {
+	//ZoneScoped;
 	const GLuint texID = GetTextureID();
 	const GLuint texType = GetTextureTarget();
 
@@ -806,6 +819,7 @@ void LuaMatTexture::Bind() const
 
 void LuaMatTexture::Unbind() const
 {
+	//ZoneScoped;
 	if (type == LUATEX_NONE)
 		return;
 
@@ -827,6 +841,7 @@ void LuaMatTexture::Unbind() const
 
 std::tuple<int, int, int> LuaMatTexture::GetSize() const
 {
+	//ZoneScoped;
 	#define groundDrawer (readMap->GetGroundDrawer())
 	#define gdGeomBuff (groundDrawer->GetGeometryBuffer())
 	#define udGeomBuff (unitDrawer->GetGeometryBuffer())
@@ -1012,6 +1027,7 @@ std::tuple<int, int, int> LuaMatTexture::GetSize() const
 
 int LuaMatTexture::Compare(const LuaMatTexture& a, const LuaMatTexture& b)
 {
+	//ZoneScoped;
 	if (a.type != b.type)
 		return (a.type < b.type) ? -1 : +1;
 
@@ -1027,6 +1043,7 @@ int LuaMatTexture::Compare(const LuaMatTexture& a, const LuaMatTexture& b)
 
 void LuaMatTexture::Print(const string& indent) const
 {
+	//ZoneScoped;
 	const char* typeName = "Unknown";
 
 	switch (type) {
