@@ -52,10 +52,13 @@
 #include "System/Config/ConfigHandler.h"
 #include "System/LoadLock.h"
 
+#include <tracy/Tracy.hpp>
+
 CONFIG(bool, PreloadModels).defaultValue(true).description("The engine will preload all models");
 
 void CWorldDrawer::InitPre() const
 {
+	//ZoneScoped;
 	LuaObjectDrawer::Init();
 
 	CColorMap::InitStatic();
@@ -79,6 +82,7 @@ void CWorldDrawer::InitPre() const
 
 void CWorldDrawer::InitPost() const
 {
+	//ZoneScoped;
 	char buf[512] = {0};
 
 	CModelsLock::SetThreadSafety(true);
@@ -175,6 +179,7 @@ void CWorldDrawer::InitPost() const
 
 void CWorldDrawer::Kill()
 {
+	//ZoneScoped;
 	spring::SafeDelete(infoTextureHandler);
 
 	IWater::KillWater();
@@ -433,6 +438,7 @@ void CWorldDrawer::DrawAlphaObjects() const
 
 void CWorldDrawer::DrawMiscObjects() const
 {
+	//ZoneScoped;
 
 	{
 		// note: duplicated in CMiniMap::DrawWorldStuff()
@@ -464,6 +470,7 @@ void CWorldDrawer::DrawMiscObjects() const
 
 void CWorldDrawer::DrawBelowWaterOverlay() const
 {
+	//ZoneScoped;
 
 	if (!globalRendering->drawWater)
 		return;

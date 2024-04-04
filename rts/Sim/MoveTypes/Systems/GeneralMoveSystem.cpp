@@ -15,9 +15,12 @@
 #include "System/Threading/ThreadPool.h"
 #include "Sim/Units/UnitDef.h"
 
+#include <tracy/Tracy.hpp>
+
 using namespace MoveTypes;
 
 void GeneralMoveSystem::Init() {
+    //ZoneScoped;
     CMoveMath::InitRangeIsBlockedHashes();
 }
 

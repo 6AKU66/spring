@@ -3,13 +3,14 @@
 #include "HeightLinePalette.h"
 #include "System/Config/ConfigHandler.h"
 
-
+#include <tracy/Tracy.hpp>
 
 CONFIG(bool, ColorElev).defaultValue(true).description("If heightmap (default hotkey [F1]) should be colored or not.");
 
 
 static std::array<SColor, 256> CreateColored()
 {
+	//ZoneScoped;
 	std::array<SColor, 256> arr;
 	for(int a = 0; a < 86; ++a) {
 		arr[a].r = 255 - a*3;
@@ -36,6 +37,7 @@ static std::array<SColor, 256> CreateColored()
 
 static std::array<SColor, 256> CreateBW()
 {
+	//ZoneScoped;
 	std::array<SColor, 256> arr;
 	for (int a = 0; a < 29; ++a) {
 		arr[a].r = 255 - a*8;
@@ -62,6 +64,7 @@ std::array<SColor, 256> CHeightLinePalette::paletteBlackAndWhite = CreateBW();
 
 const SColor* CHeightLinePalette::GetData()
 {
+	//ZoneScoped;
 	if (configHandler->GetBool("ColorElev")) {
 		return &paletteColored[0];
 	} else {
