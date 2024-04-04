@@ -314,6 +314,7 @@ bool LuaUnsyncedCtrl::PushEntries(lua_State* L)
 	REGISTER_LUA_CFUNC(SetGroundDecalQuadPosAndHeight);
 	REGISTER_LUA_CFUNC(SetGroundDecalRotation);
 	REGISTER_LUA_CFUNC(SetGroundDecalTexture);
+	REGISTER_LUA_CFUNC(SetGroundDecalTextureParams);
 	REGISTER_LUA_CFUNC(SetGroundDecalAlpha);
 	REGISTER_LUA_CFUNC(SetGroundDecalNormal);
 	REGISTER_LUA_CFUNC(SetGroundDecalTint);
@@ -2096,7 +2097,7 @@ int LuaUnsyncedCtrl::SetUnitLeaveTracks(lua_State* L)
 	if (unit == nullptr)
 		return 0;
 
-	unit->leaveTracks = lua_toboolean(L, 2);
+	groundDecals->SetUnitLeaveTracks(unit, lua_toboolean(L, 2));
 	return 0;
 }
 
@@ -4740,13 +4741,36 @@ int LuaUnsyncedCtrl::SetGroundDecalTexture(lua_State* L)
 	return 1;
 }
 
+/***
+ *
+ * @function Spring.SetGroundDecalTextureParams
+ * @number decalID
+ * @number texWrapDistance[opt=currTexWrapDistance] if non-zero sets the mode to repeat the texture along the left-right direction of the decal every texWrapFactor elmos
+ * @number texTraveledDistance[opt=currTexTraveledDistance] shifts the texture repetition defined by texWrapFactor so the texture of a next line in the continuous multiline can start where the previous finished. For that it should collect all elmo lengths of the previously set multiline segments.
+ * @treturn nil|bool decalSet
+ */
+int LuaUnsyncedCtrl::SetGroundDecalTextureParams(lua_State* L)
+{
+	auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
+	if (!decal) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	decal->uvWrapDistance     = luaL_optfloat(L, 2, decal->uvWrapDistance);
+	decal->uvTraveledDistance = luaL_optfloat(L, 3, decal->uvTraveledDistance);
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 
 /***
  *
  * @function Spring.SetGroundDecalAlpha
  * @number decalID
  * @number[opt=currAlpha] alpha Between 0 and 1
- * @number[opt=currAlphaFalloff] alphaFalloff Between 0 and 1, per frame
+ * @number[opt=currAlphaFalloff] alphaFalloff Between 0 and 1, per second
  * @treturn bool decalSet
  */
 int LuaUnsyncedCtrl::SetGroundDecalAlpha(lua_State* L)
@@ -4759,7 +4783,7 @@ int LuaUnsyncedCtrl::SetGroundDecalAlpha(lua_State* L)
 	}
 
 	decal->alpha = luaL_optfloat(L, 2, decal->alpha);
-	decal->alphaFalloff = luaL_optfloat(L, 3, decal->alphaFalloff);
+	decal->alphaFalloff = luaL_optfloat(L, 3, decal->alphaFalloff * GAME_SPEED) / GAME_SPEED;
 
 	lua_pushboolean(L, true);
 	return 1;

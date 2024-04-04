@@ -290,6 +290,7 @@ bool LuaUnsyncedRead::PushEntries(lua_State* L)
 	REGISTER_LUA_CFUNC(GetGroundDecalRotation);
 	REGISTER_LUA_CFUNC(GetGroundDecalTexture);
 	REGISTER_LUA_CFUNC(GetGroundDecalTextures);
+	REGISTER_LUA_CFUNC(GetGroundDecalTextureParams);
 	REGISTER_LUA_CFUNC(GetGroundDecalAlpha);
 	REGISTER_LUA_CFUNC(GetGroundDecalNormal);
 	REGISTER_LUA_CFUNC(GetGroundDecalTint);
@@ -4620,9 +4621,7 @@ int LuaUnsyncedRead::GetLogSections(lua_State* L) {
  *
  * @function Spring.GetAllGroundDecals
  *
- * Note, won't ever return an empty table (if there's no decals it returns nil)
- *
- * @treturn nil|{[number],...} decalIDs
+ * @treturn {[number],...} decalIDs
  */
 int LuaUnsyncedRead::GetAllGroundDecals(lua_State* L)
 {
@@ -4634,8 +4633,10 @@ int LuaUnsyncedRead::GetAllGroundDecals(lua_State* L)
 		numValid += d.IsValid();
 	}
 
-	if (numValid == 0)
-		return 0;
+	if (numValid == 0) {
+		lua_newtable(L);
+		return 1;
+	}
 
 	int i = 1;
 	lua_createtable(L, numValid, 0);
@@ -4786,10 +4787,31 @@ int LuaUnsyncedRead::GetGroundDecalTextures(lua_State* L)
 
 /***
  *
+ * @function Spring.SetGroundDecalTextureParams
+ * @number decalID
+ * @treturn nil|number texWrapDistance if non-zero sets the mode to repeat the texture along the left-right direction of the decal every texWrapFactor elmos
+ * @treturn number texTraveledDistance shifts the texture repetition defined by texWrapFactor so the texture of a next line in the continuous multiline can start where the previous finished. For that it should collect all elmo lengths of the previously set multiline segments.
+ */
+int LuaUnsyncedRead::GetGroundDecalTextureParams(lua_State* L)
+{
+	const auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
+	if (!decal) {
+		return 0;
+	}
+
+	lua_pushnumber(L, decal->uvWrapDistance);
+	lua_pushnumber(L, decal->uvTraveledDistance);
+
+	return 2;
+}
+
+
+/***
+ *
  * @function Spring.GetGroundDecalAlpha
  * @number decalID
  * @treturn nil|number alpha Between 0 and 1
- * @treturn number alphaFalloff Between 0 and 1, per frame
+ * @treturn number alphaFalloff Between 0 and 1, per second
  */
 int LuaUnsyncedRead::GetGroundDecalAlpha(lua_State* L)
 {
@@ -4800,7 +4822,7 @@ int LuaUnsyncedRead::GetGroundDecalAlpha(lua_State* L)
 	}
 
 	lua_pushnumber(L, decal->alpha);
-	lua_pushnumber(L, decal->alphaFalloff);
+	lua_pushnumber(L, decal->alphaFalloff * GAME_SPEED);
 
 	return 2;
 }

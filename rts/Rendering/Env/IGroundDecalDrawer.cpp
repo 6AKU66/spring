@@ -6,6 +6,7 @@
 #include "System/Exceptions.h"
 #include "System/SafeUtil.h"
 #include "System/Log/ILog.h"
+#include "Sim/Units/Unit.h"
 
 #include <tracy/Tracy.hpp>
 
@@ -67,4 +68,9 @@ void IGroundDecalDrawer::SetDrawDecals(bool v)
 	}
 
 	groundDecals->OnDecalLevelChanged();
+}
+
+void NullGroundDecalDrawer::SetUnitLeaveTracks(CUnit* unit, bool leaveTracks)
+{
+	unit->leaveTracks = leaveTracks;
 }
