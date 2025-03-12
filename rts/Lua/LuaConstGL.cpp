@@ -8,6 +8,8 @@
 #include "LuaUtils.h"
 #include "Rendering/GL/myGL.h"
 
+#include <tracy/Tracy.hpp>
+
 
 /******************************************************************************
  * OpenGL Constants
@@ -16,6 +18,7 @@
 
 bool LuaConstGL::PushEntries(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 #define PUSH_GL(cmd) LuaPushNamedNumber(L, #cmd, GL_ ## cmd)
 
 	/***

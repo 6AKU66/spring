@@ -12,6 +12,8 @@
 
 #include "System/Misc/TracyDefs.h"
 
+#include <tracy/Tracy.hpp>
+
 using namespace MoveTypes;
 
 void MoveTypes::RegisterFeatureForUnitTrapCheck(CFeature* object) {

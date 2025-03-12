@@ -31,6 +31,8 @@
 
 #include "LuaUtils.h"
 
+#include <tracy/Tracy.hpp>
+
 
 /******************************************************************************
  * Vertex Buffer Object
@@ -82,6 +84,7 @@ namespace {
 
 inline void LuaVBOImpl::InstanceBufferCheck(int attrID, const char* func)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	VBOExistenceCheck(vbo, func);
 	/*
 	if (defTarget != GL_ARRAY_BUFFER) {
@@ -95,6 +98,7 @@ inline void LuaVBOImpl::InstanceBufferCheck(int attrID, const char* func)
 
 inline void LuaVBOImpl::InstanceBufferCheckAndFormatCheck(int attrID, const char* func)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	InstanceBufferCheck(attrID, func);
 
 	const BufferAttribDef& bad = bufferAttribDefs[attrID];
@@ -113,6 +117,7 @@ inline void LuaVBOImpl::InstanceBufferCheckAndFormatCheck(int attrID, const char
  */
 void LuaVBOImpl::Delete()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	//safe to call multiple times
 	if (vboOwner)
 		spring::SafeDelete(vbo);
@@ -130,6 +135,7 @@ void LuaVBOImpl::Delete()
 
 bool LuaVBOImpl::IsTypeValid(GLenum type)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto arrayBufferValidType = [type]() {
 		switch (type) {
 		case GL_BYTE:
@@ -170,6 +176,7 @@ bool LuaVBOImpl::IsTypeValid(GLenum type)
 
 void LuaVBOImpl::GetTypePtr(GLenum type, GLint size, uint32_t& thisPointer, uint32_t& nextPointer, GLsizei& alignment, GLsizei& sizeInBytes)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto tightParams = [type, size](GLsizei& sz, GLsizei& al) -> bool {
 		switch (type) {
 		case GL_BYTE:
@@ -277,6 +284,7 @@ void LuaVBOImpl::GetTypePtr(GLenum type, GLint size, uint32_t& thisPointer, uint
 
 bool LuaVBOImpl::FillAttribsTableImpl(const sol::table& attrDefTable)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uint32_t attributesCountMax;
 	GLenum typeDefault;
 	GLint sizeDefault;
@@ -361,6 +369,7 @@ bool LuaVBOImpl::FillAttribsTableImpl(const sol::table& attrDefTable)
 
 bool LuaVBOImpl::FillAttribsNumberImpl(const int numVec4Attribs)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uint32_t attributesCountMax;
 	GLenum typeDefault;
 	GLint sizeDefault;
@@ -411,6 +420,7 @@ bool LuaVBOImpl::FillAttribsNumberImpl(const int numVec4Attribs)
 
 bool LuaVBOImpl::DefineElementArray(const sol::optional<sol::object> attribDefArgOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	GLenum indexType = LuaVBOImpl::DEFAULT_INDX_ATTR_TYPE;
 
 	if (attribDefArgOpt.has_value()) {
@@ -538,6 +548,7 @@ bool LuaVBOImpl::DefineElementArray(const sol::optional<sol::object> attribDefAr
  */
 void LuaVBOImpl::Define(const int elementsCount, const sol::optional<sol::object> attribDefArgOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (vbo) {
 		LuaUtils::SolLuaError("[LuaVBOImpl::%s] Attempt to call %s() multiple times. VBO definition is immutable.", __func__, __func__);
 	}
@@ -592,6 +603,7 @@ void LuaVBOImpl::Define(const int elementsCount, const sol::optional<sol::object
  */
 std::tuple<uint32_t, uint32_t, uint32_t> LuaVBOImpl::GetBufferSize()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return std::make_tuple(
 		elementsCount,
 		bufferSizeInBytes,
@@ -635,6 +647,7 @@ std::tuple<uint32_t, uint32_t, uint32_t> LuaVBOImpl::GetBufferSize()
  */
 size_t LuaVBOImpl::Upload(const sol::stack_table& luaTblData, sol::optional<int> attribIdxOpt, sol::optional<int> elemOffsetOpt, sol::optional<int> luaStartIndexOpt, sol::optional<int> luaFinishIndexOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	VBOExistenceCheck(vbo, __func__);
 
 	const uint32_t elemOffset = static_cast<uint32_t>(std::max(elemOffsetOpt.value_or(0), 0));
@@ -689,6 +702,7 @@ size_t LuaVBOImpl::Upload(const sol::stack_table& luaTblData, sol::optional<int>
  */
 sol::as_table_t<std::vector<lua_Number>> LuaVBOImpl::Download(sol::optional<int> attribIdxOpt, sol::optional<int> elemOffsetOpt, sol::optional<int> elemCountOpt, sol::optional<bool> forceGPUReadOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::vector<lua_Number> dataVec;
 
 	VBOExistenceCheck(vbo, __func__);
@@ -788,6 +802,7 @@ sol::as_table_t<std::vector<lua_Number>> LuaVBOImpl::Download(sol::optional<int>
 
 void LuaVBOImpl::Clear()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	VBOExistenceCheck(vbo, __func__);
 
 	GLubyte val = 0;
@@ -798,6 +813,7 @@ void LuaVBOImpl::Clear()
 
 void LuaVBOImpl::UpdateModelsVBOElementCount()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (vboOwner)
 		return;
 
@@ -829,6 +845,7 @@ void LuaVBOImpl::UpdateModelsVBOElementCount()
 */
 size_t LuaVBOImpl::ModelsVBOImpl()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto engineVertAttribDefFunc = [this]() {
 		// float3 pos
 		this->bufferAttribDefs[0] = {
@@ -945,6 +962,7 @@ size_t LuaVBOImpl::ModelsVBOImpl()
 template<typename Iterable>
 size_t LuaVBOImpl::MatrixDataFromProjectileIDsImpl(const Iterable& ids, int attrID, sol::optional<int> elemOffsetOpt, const char* func)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const size_t idsSize = ids.size();
 	if (idsSize == 0u) //empty Iterable
 		return 0u;
@@ -1020,6 +1038,7 @@ size_t LuaVBOImpl::MatrixDataFromProjectileIDsImpl(const Iterable& ids, int attr
 template<typename TObj>
 SInstanceData LuaVBOImpl::InstanceDataFromGetData(int id, int attrID, uint8_t defTeamID)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uint32_t teamID = defTeamID;
 
 	const TObj* obj = LuaUtils::SolIdToObject<TObj>(id, __func__);
@@ -1053,6 +1072,7 @@ SInstanceData LuaVBOImpl::InstanceDataFromGetData(int id, int attrID, uint8_t de
 template<typename TObj>
 size_t LuaVBOImpl::InstanceDataFromImpl(int id, int attrID, uint8_t defTeamID, const sol::optional<int>& elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	InstanceBufferCheckAndFormatCheck(attrID, __func__);
 
 	const uint32_t elemOffset = elemOffsetOpt.value_or(0u);
@@ -1071,6 +1091,7 @@ size_t LuaVBOImpl::InstanceDataFromImpl(int id, int attrID, uint8_t defTeamID, c
 template<typename TObj>
 size_t LuaVBOImpl::InstanceDataFromImpl(const sol::stack_table& ids, int attrID, uint8_t defTeamID, const sol::optional<int>& elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	InstanceBufferCheckAndFormatCheck(attrID, __func__);
 
 	std::size_t idsSize = ids.size();
@@ -1100,6 +1121,7 @@ size_t LuaVBOImpl::InstanceDataFromImpl(const sol::stack_table& ids, int attrID,
 template<typename TIn, typename AttribTestFunc>
 size_t LuaVBOImpl::UploadImpl(const std::vector<TIn>& dataVec, uint32_t elemOffset, AttribTestFunc attribTestFunc)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (dataVec.empty())
 		return 0u;
 
@@ -1194,6 +1216,7 @@ size_t LuaVBOImpl::UploadImpl(const std::vector<TIn>& dataVec, uint32_t elemOffs
  */
 size_t LuaVBOImpl::ModelsVBO()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!S3DModelVAO::IsValid()) {
 		LuaUtils::SolLuaError("[LuaVBOImpl::%s] No ModelsVBO is available. Probably due to no GL4 support", __func__);
 		return 0;
@@ -1231,12 +1254,14 @@ size_t LuaVBOImpl::ModelsVBO()
  */
 size_t LuaVBOImpl::InstanceDataFromUnitDefIDs(int id, int attrID, sol::optional<int> teamIdOpt, sol::optional<int> elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uint8_t defTeamID = teamIdOpt.value_or(gu->myTeam);
 	return InstanceDataFromImpl<UnitDef>(id, attrID, defTeamID, elemOffsetOpt);
 }
 
 size_t LuaVBOImpl::InstanceDataFromUnitDefIDs(const sol::stack_table& ids, int attrID, sol::optional<int> teamIdOpt, sol::optional<int> elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uint8_t defTeamID = teamIdOpt.value_or(gu->myTeam);
 	return InstanceDataFromImpl<UnitDef>(ids, attrID, defTeamID, elemOffsetOpt);
 }
@@ -1270,12 +1295,14 @@ size_t LuaVBOImpl::InstanceDataFromUnitDefIDs(const sol::stack_table& ids, int a
  */
 size_t LuaVBOImpl::InstanceDataFromFeatureDefIDs(int id, int attrID, sol::optional<int> teamIdOpt, sol::optional<int> elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uint8_t defTeamID = teamIdOpt.value_or(gu->myTeam);
 	return InstanceDataFromImpl<FeatureDef>(id, attrID, defTeamID, elemOffsetOpt);
 }
 
 size_t LuaVBOImpl::InstanceDataFromFeatureDefIDs(const sol::stack_table& ids, int attrID, sol::optional<int> teamIdOpt, sol::optional<int> elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uint8_t defTeamID = teamIdOpt.value_or(gu->myTeam);
 	return InstanceDataFromImpl<FeatureDef>(ids, attrID, defTeamID, elemOffsetOpt);
 }
@@ -1310,11 +1337,13 @@ size_t LuaVBOImpl::InstanceDataFromFeatureDefIDs(const sol::stack_table& ids, in
  */
 size_t LuaVBOImpl::InstanceDataFromUnitIDs(int id, int attrID, sol::optional<int> elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return InstanceDataFromImpl<CUnit>(id, attrID, /*noop*/ 0u, elemOffsetOpt);
 }
 
 size_t LuaVBOImpl::InstanceDataFromUnitIDs(const sol::stack_table& ids, int attrID, sol::optional<int> elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return InstanceDataFromImpl<CUnit>(ids, attrID, /*noop*/ 0u, elemOffsetOpt);
 }
 
@@ -1338,11 +1367,13 @@ size_t LuaVBOImpl::InstanceDataFromUnitIDs(const sol::stack_table& ids, int attr
  */
 size_t LuaVBOImpl::InstanceDataFromFeatureIDs(int id, int attrID, sol::optional<int> elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return InstanceDataFromImpl<CFeature>(id, attrID, /*noop*/ 0u, elemOffsetOpt);
 }
 
 size_t LuaVBOImpl::InstanceDataFromFeatureIDs(const sol::stack_table& ids, int attrID, sol::optional<int> elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return InstanceDataFromImpl<CFeature>(ids, attrID, /*noop*/ 0u, elemOffsetOpt);
 }
 
@@ -1360,11 +1391,13 @@ size_t LuaVBOImpl::InstanceDataFromFeatureIDs(const sol::stack_table& ids, int a
  */
 size_t LuaVBOImpl::MatrixDataFromProjectileIDs(int id, int attrID, sol::optional<int> elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return MatrixDataFromProjectileIDsImpl(std::initializer_list<int>{id}, attrID, elemOffsetOpt, __func__);
 }
 
 size_t LuaVBOImpl::MatrixDataFromProjectileIDs(const sol::stack_table& ids, int attrID, sol::optional<int> elemOffsetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::size_t idsSize = ids.size();
 
 	static std::vector<int> idsVec;
@@ -1381,6 +1414,7 @@ size_t LuaVBOImpl::MatrixDataFromProjectileIDs(const sol::stack_table& ids, int 
 
 int LuaVBOImpl::BindBufferRangeImpl(GLuint bindingIndex,  const sol::optional<int> elemOffsetOpt, const sol::optional<int> elemCountOpt, const sol::optional<GLenum> targetOpt, bool bind)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	VBOExistenceCheck(vbo, __func__);
 
 	const uint32_t elemOffset = static_cast<uint32_t>(std::max(elemOffsetOpt.value_or(0), 0));
@@ -1446,6 +1480,7 @@ int LuaVBOImpl::BindBufferRangeImpl(GLuint bindingIndex,  const sol::optional<in
  */
 int LuaVBOImpl::BindBufferRange(const GLuint index, const sol::optional<int> elemOffsetOpt, const sol::optional<int> elemCountOpt, const sol::optional<GLenum> targetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return BindBufferRangeImpl(index, elemOffsetOpt, elemCountOpt, targetOpt, true);
 }
 
@@ -1461,6 +1496,7 @@ int LuaVBOImpl::BindBufferRange(const GLuint index, const sol::optional<int> ele
  */
 int LuaVBOImpl::UnbindBufferRange(const GLuint index, const sol::optional<int> elemOffsetOpt, const sol::optional<int> elemCountOpt, const sol::optional<GLenum> targetOpt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return BindBufferRangeImpl(index, elemOffsetOpt, elemCountOpt, targetOpt, false);
 }
 
@@ -1472,6 +1508,7 @@ int LuaVBOImpl::UnbindBufferRange(const GLuint index, const sol::optional<int> e
  */
 void LuaVBOImpl::DumpDefinition()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	VBOExistenceCheck(vbo, __func__);
 
 	std::ostringstream ss;
@@ -1499,6 +1536,7 @@ uint32_t LuaVBOImpl::GetID() const
 
 void LuaVBOImpl::AllocGLBuffer(size_t byteSize)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (defTarget == GL_UNIFORM_BUFFER && bufferSizeInBytes > UBO_SAFE_SIZE_BYTES) {
 		LuaUtils::SolLuaError("[LuaVBOImpl::%s] Exceeded [%u] safe UBO buffer size limit of [%u] bytes", __func__, bufferSizeInBytes, LuaVBOImpl::UBO_SAFE_SIZE_BYTES);
 	}
@@ -1524,6 +1562,7 @@ void LuaVBOImpl::AllocGLBuffer(size_t byteSize)
 // Allow for a ~magnitude faster loops than other the map
 void LuaVBOImpl::CopyAttrMapToVec()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	bufferAttribDefsVec.reserve(bufferAttribDefs.size());
 	for (const auto& va : bufferAttribDefs)
 		bufferAttribDefsVec.push_back(va);
@@ -1531,11 +1570,13 @@ void LuaVBOImpl::CopyAttrMapToVec()
 
 bool LuaVBOImpl::Supported(GLenum target)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return VBO::IsSupported(target);
 }
 
 template<typename T>
 T LuaVBOImpl::MaybeFunc(const sol::table& tbl, const std::string& key, T defValue) {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const sol::optional<T> maybeValue = tbl[key];
 	return maybeValue.value_or(defValue);
 }
@@ -1543,6 +1584,7 @@ T LuaVBOImpl::MaybeFunc(const sol::table& tbl, const std::string& key, T defValu
 template<typename TIn, typename TOut, typename TIter>
 bool LuaVBOImpl::TransformAndWrite(int& bytesWritten, GLubyte*& mappedBuf, const int mappedBufferSizeInBytes, const int count, TIter& bdvIter, const TIter& bdvIterEnd, const bool copyData)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	constexpr int outValSize = sizeof(TOut);
 	const int outValSizeStride = count * outValSize;
 
@@ -1575,6 +1617,7 @@ bool LuaVBOImpl::TransformAndWrite(int& bytesWritten, GLubyte*& mappedBuf, const
 template<typename TIn>
 bool LuaVBOImpl::TransformAndRead(int& bytesRead, GLubyte*& mappedBuf, const int mappedBufferSizeInBytes, const int count, std::vector<lua_Number>& vec, const bool copyData)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	constexpr int inValSize = sizeof(TIn);
 	const int inValSizeStride = count * inValSize;
 

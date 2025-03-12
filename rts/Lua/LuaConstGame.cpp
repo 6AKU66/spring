@@ -23,6 +23,8 @@
 #include "System/FileSystem/FileSystem.h"
 #include "System/StringUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 /******************************************************************************
  * Game constants
  * @see rts/Lua/LuaConstGame.cpp
@@ -117,6 +119,7 @@
 
 bool LuaConstGame::PushEntries(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	{
 		// game, should perhaps be moved over to ConstEngine
 		LuaPushNamedNumber(L, "maxTeams"  , MAX_TEAMS  );

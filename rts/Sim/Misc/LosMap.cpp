@@ -13,6 +13,8 @@
 #include "System/Threading/ThreadPool.h"
 #include "Game/GlobalUnsynced.h" // for myAllyTeam
 
+RECOIL_DETAILED_TRACY_ZONE;
+
 constexpr float LOS_BONUS_HEIGHT = 5.0f;
 
 static std::array<std::vector<float>, ThreadPool::MAX_THREADS> RADIUS_ISQRT_TABLES;
@@ -51,6 +53,7 @@ static void isqrtTableExpand(unsigned r, int threadNum)
 template<typename F>
 void MidpointCircleAlgo(int radius, const F& func)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	int x = radius;
 	int y = 0;
 	int decisionOver2 = 1 - x;
@@ -121,14 +124,17 @@ public:
 	void GenerateForLosSize(size_t losSize);
 
 	const int2 GetLosTableRaySquare(size_t losSize, size_t rayIndex, size_t squareIdx) {
+		RECOIL_DETAILED_TRACY_ZONE;
 		return losTables[losSize][rayIndex][squareIdx];
 	}
 
 	size_t GetLosTableRaySize(size_t losSize, size_t rayIndex) {
+		RECOIL_DETAILED_TRACY_ZONE;
 		return losTables[losSize][rayIndex].size();
 	}
 
 	size_t GetLosTableSize(size_t losSize) {
+		RECOIL_DETAILED_TRACY_ZONE;
 		return losTables[losSize].size();
 	}
 

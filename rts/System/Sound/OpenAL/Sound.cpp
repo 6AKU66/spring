@@ -44,23 +44,28 @@
 
 #include "System/float3.h"
 
+#include <tracy/Tracy.hpp>
+
 
 spring::recursive_mutex soundMutex;
 
 
 CSound::CSound()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	configHandler->NotifyOnChange(this, {"snd_volmaster", "snd_eaxpreset", "snd_filter", "UseEFX", "snd_volgeneral", "snd_volunitreply", "snd_volbattle", "snd_volui", "snd_volmusic", "PitchAdjust"});
 }
 
 CSound::~CSound()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	configHandler->RemoveObserver(this);
 }
 
 
 void CSound::Init()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	{
@@ -112,6 +117,7 @@ void CSound::Init()
 
 void CSound::Kill()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	LOG("[Sound::%s] soundThread.joinable()=%d", __func__, soundThread.joinable());
 
 	{
@@ -126,6 +132,7 @@ void CSound::Kill()
 
 
 void CSound::Cleanup() {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (curContext != nullptr) {
 		LOG("[Sound::%s][alcDestroyContext(%p)]", __func__, curContext);
 		alcMakeContextCurrent(nullptr);
@@ -154,6 +161,7 @@ void CSound::Cleanup() {
 
 bool CSound::HasSoundItem(const std::string& name) const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// soundMap can be concurrently touched by GetSoundId if preloading
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
@@ -165,6 +173,7 @@ bool CSound::HasSoundItem(const std::string& name) const
 
 bool CSound::PreloadSoundItem(const std::string& name)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	#if 0
 	ThreadPool::Enqueue([name]() { sound->GetSoundId(name); });
 	#else
@@ -176,6 +185,7 @@ bool CSound::PreloadSoundItem(const std::string& name)
 
 size_t CSound::GetDefSoundId(const std::string& name)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// only attempt to load if sounds.lua has an entry for this sound
 	if (!HasSoundItem(name))
 		return 0;
@@ -185,6 +195,7 @@ size_t CSound::GetDefSoundId(const std::string& name)
 
 size_t CSound::GetSoundId(const std::string& name)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	// do not preload-loop forever, erase even if the sound fails to load
@@ -216,6 +227,7 @@ size_t CSound::GetSoundId(const std::string& name)
 
 
 SoundItem* CSound::GetSoundItem(size_t id) {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// id==0 is a special id and invalid
 	if (id == 0 || id >= soundItems.size())
 		return nullptr;
@@ -226,6 +238,7 @@ SoundItem* CSound::GetSoundItem(size_t id) {
 
 CSoundSource* CSound::GetNextBestSource(bool lock)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::unique_lock<spring::recursive_mutex> lck(soundMutex, std::defer_lock);
 	if (lock)
 		lck.lock();
@@ -261,6 +274,7 @@ CSoundSource* CSound::GetNextBestSource(bool lock)
 
 void CSound::PitchAdjust(const float newPitch)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	switch (pitchAdjustMode) {
@@ -272,6 +286,7 @@ void CSound::PitchAdjust(const float newPitch)
 
 void CSound::ConfigNotify(const std::string& key, const std::string& value)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	switch (hashString(key.c_str())) {
@@ -335,6 +350,7 @@ void CSound::ConfigNotify(const std::string& key, const std::string& value)
 
 bool CSound::Mute()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	if ((mute = !mute))
@@ -347,6 +363,7 @@ bool CSound::Mute()
 
 void CSound::DeviceChanged(uint32_t sdlDeviceIndex)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (hasAlcSoftLoopBack && sdlDeviceIndex == sdlDeviceID) {
 		SDL_CloseAudioDevice(sdlDeviceIndex);
 		Kill();
@@ -357,6 +374,7 @@ void CSound::DeviceChanged(uint32_t sdlDeviceIndex)
 
 void CSound::Iconified(bool state)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	if (appIsIconified != state && !mute) {
@@ -372,6 +390,7 @@ void CSound::Iconified(bool state)
 
 void CSound::OpenOpenALDevice(const std::string& deviceName)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(curDevice == nullptr);
 
 	if (!deviceName.empty()) {
@@ -423,6 +442,7 @@ static void SDLCALL RenderSDLSamples(void* userdata, Uint8* stream, int len)
 
 static const char* ChannelsName(ALCenum chans)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	switch (chans) {
 		case ALC_MONO_SOFT: return "Mono";
 		case ALC_STEREO_SOFT: return "Stereo";
@@ -436,6 +456,7 @@ static const char* ChannelsName(ALCenum chans)
 
 static const char* TypeName(ALCenum type)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	switch (type) {
 		case ALC_BYTE_SOFT: return "S8";
 		case ALC_UNSIGNED_BYTE_SOFT: return "U8";
@@ -454,6 +475,7 @@ static const char* TypeName(ALCenum type)
 
 void CSound::OpenLoopbackDevice(const std::string& deviceName)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(curDevice == nullptr);
 
 #ifndef ALC_SOFT_loopback
@@ -620,6 +642,7 @@ void CSound::OpenLoopbackDevice(const std::string& deviceName)
 
 void CSound::InitThread(int cfgMaxSounds)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(cfgMaxSounds > 0);
 
 	{
@@ -705,6 +728,7 @@ void CSound::InitThread(int cfgMaxSounds)
 __FORCE_ALIGN_STACK__
 void CSound::UpdateThread(int cfgMaxSounds)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	{
 		LOG("[Sound::%s][1] cfgMaxSounds=%d", __func__, cfgMaxSounds);
 
@@ -753,6 +777,7 @@ void CSound::UpdateThread(int cfgMaxSounds)
 
 void CSound::Update()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	// limit consumption-rate to prevent source starvation
@@ -771,6 +796,7 @@ void CSound::Update()
 
 size_t CSound::MakeItemFromDef(const SoundItemNameMap& itemDef)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// only callers are LoadSoundDefs{Impl} and GetSoundId which both grab this
 	// std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
@@ -793,6 +819,7 @@ size_t CSound::MakeItemFromDef(const SoundItemNameMap& itemDef)
 
 void CSound::UpdateListenerReal()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// call from sound thread, cause OpenAL calls tend to cause L2 misses and so are slow (no reason to call them from mainthread)
 	if (!updateListener)
 		return;
@@ -835,6 +862,7 @@ void CSound::UpdateListenerReal()
 
 void CSound::PrintDebugInfo()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	LOG_L(L_DEBUG, "OpenAL Sound System:");
@@ -849,6 +877,7 @@ void CSound::PrintDebugInfo()
 
 bool CSound::LoadSoundDefsImpl(LuaParser* defsParser)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// can be called from LuaUnsyncedCtrl too
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
@@ -929,6 +958,7 @@ bool CSound::LoadSoundDefsImpl(LuaParser* defsParser)
 // only used internally, locked in caller's scope
 size_t CSound::LoadSoundBuffer(const std::string& path)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const size_t id = SoundBuffer::GetId(path);
 
 	if (id > 0)
@@ -987,6 +1017,7 @@ size_t CSound::LoadSoundBuffer(const std::string& path)
 
 void CSound::NewFrame()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	Channels::General->UpdateFrame();
 	Channels::Battle->UpdateFrame();
 	Channels::UnitReply->UpdateFrame();
@@ -998,6 +1029,7 @@ void CSound::NewFrame()
 // try to get the maximum number of supported sounds; feeds into GenSources
 int CSound::GetMaxMonoSources(ALCdevice* device, int cfgMaxSounds)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	ALCint size;
 	ALCint attrs[1024 + 1];
 
@@ -1032,6 +1064,7 @@ int CSound::GetMaxMonoSources(ALCdevice* device, int cfgMaxSounds)
 
 void CSound::GenSources(int alMaxSounds)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	soundSources.clear();
 	soundSources.reserve(alMaxSounds);
 

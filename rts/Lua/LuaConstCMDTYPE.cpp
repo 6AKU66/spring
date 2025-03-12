@@ -8,6 +8,8 @@
 #include "LuaUtils.h"
 #include "Sim/Units/CommandAI/Command.h"
 
+#include <tracy/Tracy.hpp>
+
 
 /******************************************************************************
  * Command type constants
@@ -37,6 +39,7 @@
 
 bool LuaConstCMDTYPE::PushEntries(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 #define PUSH_CMDTYPE(cmd) LuaInsertDualMapPair(L, #cmd, CMDTYPE_ ## cmd)
 
 	PUSH_CMDTYPE(ICON);
