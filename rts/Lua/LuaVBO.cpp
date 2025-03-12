@@ -22,7 +22,7 @@
 
 bool LuaVBOs::PushEntries(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #if defined(__GNUG__) && defined(_DEBUG)
 	const int top = lua_gettop(L);
 #endif
@@ -79,7 +79,7 @@ bool LuaVBOs::PushEntries(lua_State* L)
 }
 
 bool LuaVBOs::CheckAndReportSupported(lua_State* L, const unsigned int target) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	#define ValStr(arg) { arg, #arg }
 	#define ValStr2(arg1, arg2) { arg1, #arg2 }
 
@@ -115,7 +115,7 @@ bool LuaVBOs::CheckAndReportSupported(lua_State* L, const unsigned int target) {
 
 LuaVBOs::~LuaVBOs()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	for (auto& lvb : luaVBOs) {
 		if (lvb.expired())
 			continue; //destroyed already
@@ -144,7 +144,7 @@ LuaVBOs::~LuaVBOs()
  */
 int LuaVBOs::GetVBO(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	unsigned int target = luaL_optint(L, 1, GL_ARRAY_BUFFER);
 	if (!LuaVBOs::CheckAndReportSupported(L, target))
 		return 0;

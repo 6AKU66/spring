@@ -58,7 +58,7 @@ CONFIG(bool, PreloadModels).defaultValue(true).description("The engine will prel
 
 void CWorldDrawer::InitPre() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LuaObjectDrawer::Init();
 
 	CColorMap::InitStatic();
@@ -82,7 +82,7 @@ void CWorldDrawer::InitPre() const
 
 void CWorldDrawer::InitPost() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	char buf[512] = {0};
 
 	CModelsLock::SetThreadSafety(true);
@@ -179,7 +179,7 @@ void CWorldDrawer::InitPost() const
 
 void CWorldDrawer::Kill()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	spring::SafeDelete(infoTextureHandler);
 
 	IWater::KillWater();
@@ -438,7 +438,7 @@ void CWorldDrawer::DrawAlphaObjects() const
 
 void CWorldDrawer::DrawMiscObjects() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 
 	{
 		// note: duplicated in CMiniMap::DrawWorldStuff()
@@ -470,7 +470,7 @@ void CWorldDrawer::DrawMiscObjects() const
 
 void CWorldDrawer::DrawBelowWaterOverlay() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 
 	if (!globalRendering->drawWater)
 		return;

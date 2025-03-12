@@ -22,7 +22,7 @@ CR_REG_METADATA(AllyTeam, (
 
 void AllyTeam::SetValue(const std::string& key, const std::string& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	switch (hashString(key.c_str())) {
 		case hashString("startrecttop"): {
 			startRectTop = std::atof(value.c_str());

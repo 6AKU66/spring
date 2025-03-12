@@ -56,7 +56,7 @@ ISound* ISound::singleton = nullptr;
 
 void ISound::Initialize(bool reload, bool forceNullSound)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #ifndef NO_SOUND
 	if (!IsNullAudio() && !forceNullSound) {
 		Channels::BGMusic       = new (audioChannelMem[0]) AudioChannel();
@@ -107,7 +107,7 @@ void ISound::Initialize(bool reload, bool forceNullSound)
 
 void ISound::Shutdown(bool reload)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// kill thread before setting singleton pointer to null
 	if (singleton != nullptr)
 		singleton->Kill();
@@ -131,14 +131,14 @@ void ISound::Shutdown(bool reload)
 
 bool ISound::IsNullAudio()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return !configHandler->GetBool("Sound");
 }
 
 
 bool ISound::ChangeOutput(bool forceNullSound)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// FIXME: on reload, sound-ids change (depends on order when they are requested, see GetSoundId()/GetSoundItem()
 	if (IsNullAudio()) {
 		LOG_L(L_ERROR, "[ISound::%s] re-enabling sound isn't supported yet!", __func__);
@@ -154,7 +154,7 @@ bool ISound::ChangeOutput(bool forceNullSound)
 
 bool ISound::LoadSoundDefs(LuaParser* defsParser)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (singleton->LoadSoundDefsImpl(defsParser));
 }
 

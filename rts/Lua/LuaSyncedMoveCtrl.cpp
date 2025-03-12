@@ -35,7 +35,7 @@
 
 bool LuaSyncedMoveCtrl::PushMoveCtrl(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	lua_pushliteral(L, "MoveCtrl");
 	lua_createtable(L, 0, 32);
 
@@ -94,7 +94,7 @@ bool LuaSyncedMoveCtrl::PushMoveCtrl(lua_State* L)
 
 static inline CUnit* ParseUnit(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = unitHandler.GetUnit(luaL_checkint(L, index));
 
 	if (unit == nullptr)
@@ -108,7 +108,7 @@ static inline CUnit* ParseUnit(lua_State* L, const char* caller, int index)
 
 static inline CScriptMoveType* ParseScriptMoveType(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, caller, index);
 
 	if (unit == nullptr)
@@ -122,7 +122,7 @@ static inline CScriptMoveType* ParseScriptMoveType(lua_State* L, const char* cal
 template<typename DerivedMoveType>
 static inline DerivedMoveType* ParseDerivedMoveType(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, caller, index);
 
 	if (unit == nullptr)
@@ -140,7 +140,7 @@ static inline DerivedMoveType* ParseDerivedMoveType(lua_State* L, const char* ca
 
 int LuaSyncedMoveCtrl::IsEnabled(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -153,7 +153,7 @@ int LuaSyncedMoveCtrl::IsEnabled(lua_State* L)
 
 int LuaSyncedMoveCtrl::Enable(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -166,7 +166,7 @@ int LuaSyncedMoveCtrl::Enable(lua_State* L)
 
 int LuaSyncedMoveCtrl::Disable(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -181,7 +181,7 @@ int LuaSyncedMoveCtrl::Disable(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetTag(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -194,7 +194,7 @@ int LuaSyncedMoveCtrl::SetTag(lua_State* L)
 
 int LuaSyncedMoveCtrl::GetTag(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -210,7 +210,7 @@ int LuaSyncedMoveCtrl::GetTag(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetProgressState(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -250,7 +250,7 @@ int LuaSyncedMoveCtrl::SetProgressState(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetExtrapolate(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -265,7 +265,7 @@ int LuaSyncedMoveCtrl::SetExtrapolate(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetPhysics(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -284,7 +284,7 @@ int LuaSyncedMoveCtrl::SetPhysics(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetPosition(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -301,7 +301,7 @@ int LuaSyncedMoveCtrl::SetPosition(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetVelocity(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -318,7 +318,7 @@ int LuaSyncedMoveCtrl::SetVelocity(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetRelativeVelocity(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -335,7 +335,7 @@ int LuaSyncedMoveCtrl::SetRelativeVelocity(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetRotation(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -359,7 +359,7 @@ int LuaSyncedMoveCtrl::SetRotationOffset(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetRotationVelocity(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -376,7 +376,7 @@ int LuaSyncedMoveCtrl::SetRotationVelocity(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetHeading(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -393,7 +393,7 @@ int LuaSyncedMoveCtrl::SetHeading(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetTrackSlope(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -406,7 +406,7 @@ int LuaSyncedMoveCtrl::SetTrackSlope(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetTrackGround(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -419,7 +419,7 @@ int LuaSyncedMoveCtrl::SetTrackGround(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetTrackLimits(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -432,7 +432,7 @@ int LuaSyncedMoveCtrl::SetTrackLimits(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetGroundOffset(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -445,7 +445,7 @@ int LuaSyncedMoveCtrl::SetGroundOffset(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetGravity(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -458,7 +458,7 @@ int LuaSyncedMoveCtrl::SetGravity(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetDrag(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -471,7 +471,7 @@ int LuaSyncedMoveCtrl::SetDrag(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetWindFactor(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -484,7 +484,7 @@ int LuaSyncedMoveCtrl::SetWindFactor(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetLimits(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -500,7 +500,7 @@ int LuaSyncedMoveCtrl::SetLimits(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetNoBlocking(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -519,7 +519,7 @@ int LuaSyncedMoveCtrl::SetSlopeStop(lua_State* L) { return 0; }
 
 int LuaSyncedMoveCtrl::SetCollideStop(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -532,7 +532,7 @@ int LuaSyncedMoveCtrl::SetCollideStop(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetLimitsStop(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CScriptMoveType* moveType = ParseScriptMoveType(L, __func__, 1);
 
 	if (moveType == nullptr)
@@ -550,14 +550,14 @@ int LuaSyncedMoveCtrl::SetLimitsStop(lua_State* L)
 template<typename ValueType>
 static bool SetMoveTypeValue(AMoveType* mt, const char* key, ValueType val)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// NOTE: only supports floats and bools, callee MUST reinterpret &val as float* or bool*
 	return (mt->SetMemberValue(spring::LiteHash(key, strlen(key), 0), &val));
 }
 
 static inline bool SetMoveTypeValue(lua_State* L, AMoveType* moveType, int keyIdx, int valIdx)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (lua_isnumber(L, valIdx))
 		return (SetMoveTypeValue<float>(moveType, lua_tostring(L, keyIdx), lua_tofloat(L, valIdx)));
 
@@ -570,7 +570,7 @@ static inline bool SetMoveTypeValue(lua_State* L, AMoveType* moveType, int keyId
 
 static int SetMoveTypeData(lua_State* L, AMoveType* moveType, const char* caller)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int numAssignedValues = 0;
 
 	if (moveType == nullptr) {
@@ -611,19 +611,19 @@ static int SetMoveTypeData(lua_State* L, AMoveType* moveType, const char* caller
 
 int LuaSyncedMoveCtrl::SetGunshipMoveTypeData(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetMoveTypeData(L, ParseDerivedMoveType<CHoverAirMoveType>(L, __func__, 1), __func__));
 }
 
 int LuaSyncedMoveCtrl::SetAirMoveTypeData(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetMoveTypeData(L, ParseDerivedMoveType<CStrafeAirMoveType>(L, __func__, 1), __func__));
 }
 
 int LuaSyncedMoveCtrl::SetGroundMoveTypeData(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetMoveTypeData(L, ParseDerivedMoveType<CGroundMoveType>(L, __func__, 1), __func__));
 }
 
@@ -634,7 +634,7 @@ int LuaSyncedMoveCtrl::SetGroundMoveTypeData(lua_State* L)
 
 int LuaSyncedMoveCtrl::SetMoveDef(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 	MoveDef* moveDef = nullptr;
 

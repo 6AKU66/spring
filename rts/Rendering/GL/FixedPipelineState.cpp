@@ -15,7 +15,7 @@ std::stack<FixedPipelineState, std::vector<FixedPipelineState>> FixedPipelineSta
 
 FixedPipelineState::FixedPipelineState()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (statesChain.empty()) { //default state
 		InferState();
 		statesChain.emplace(*this);
@@ -26,7 +26,7 @@ FixedPipelineState::FixedPipelineState()
 
 FixedPipelineState& GL::FixedPipelineState::InferState()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	{
 		PolygonMode(GL_FILL);
 	}
@@ -147,7 +147,7 @@ FixedPipelineState& GL::FixedPipelineState::InferState()
 
 void FixedPipelineState::BindUnbind(const bool bind) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!bind)
 		statesChain.pop();
 

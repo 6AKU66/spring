@@ -16,7 +16,7 @@ IInfoTextureHandler* infoTextureHandler = nullptr;
 
 void IInfoTextureHandler::Create()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (
 		globalRendering->supportNonPowerOfTwoTex &&
 		FBO::IsSupported()

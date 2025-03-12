@@ -31,7 +31,7 @@ CLineDrawer::CLineDrawer()
 
 void CLineDrawer::UpdateLineStipple()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	stippleTimer += (globalRendering->lastFrameTime * 0.001f * cmdColors.StippleSpeed());
 	stippleTimer = std::fmod(stippleTimer, (16.0f / 20.0f));
 }
@@ -39,7 +39,7 @@ void CLineDrawer::UpdateLineStipple()
 
 void CLineDrawer::SetupLineStipple()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int stipPat = (0xffff & cmdColors.StipplePattern());
 	if ((stipPat != 0x0000) && (stipPat != 0xffff)) {
 		lineStipple = true;
@@ -55,7 +55,7 @@ void CLineDrawer::SetupLineStipple()
 
 void CLineDrawer::DrawAll()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (lines.empty() && stippled.empty())
 		return;
 	

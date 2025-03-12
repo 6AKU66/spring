@@ -45,7 +45,7 @@ bool CCollisionHandler::DetectHit(
 	CollisionQuery* cq,
 	bool forceTrace
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	bool hit = false;
 
 	if (cq != nullptr)
@@ -82,7 +82,7 @@ bool CCollisionHandler::Collision(
 	const float3 p,
 	CollisionQuery* cq
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	bool hit = false;
 
 	// if <v> is a sphere, then the bounding radius is just its own radius -->
@@ -117,7 +117,7 @@ bool CCollisionHandler::Collision(
 
 bool CCollisionHandler::CollisionFootPrint(const CSolidObject* o, const float3& p)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// If the object isn't marked on blocking map, or if it is flying,
 	// effecively only the early-out sphere check  is performed (which
 	// we already passed).
@@ -141,7 +141,7 @@ bool CCollisionHandler::CollisionFootPrint(const CSolidObject* o, const float3& 
 
 bool CCollisionHandler::Collision(const CollisionVolume* v, const CMatrix44f& m, const float3& p)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	numDiscTests += 1;
 
 	// get the inverse volume transformation matrix and
@@ -264,7 +264,7 @@ bool CCollisionHandler::IntersectPiecesHelper(
 	const float3& p1,
 	CollisionQuery* cq
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CMatrix44f volMat;
 
 	float minDistSq = std::numeric_limits<float>::max();
@@ -315,7 +315,7 @@ bool CCollisionHandler::IntersectPieceTree(
 	const float3& p1,
 	CollisionQuery* cq
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const LocalModel& lm = o->localModel;
 	const CollisionVolume* bv = lm.GetBoundingVolume();
 
@@ -338,7 +338,7 @@ inline bool CCollisionHandler::Intersect(
 	CollisionQuery* cq,
 	float s
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// transform into midpos-relative space where the CV is
 	// positioned; we have to translate by relMidPos to get
 	// to midPos because GetTransformMatrix() only uses pos
@@ -354,7 +354,7 @@ inline bool CCollisionHandler::Intersect(
 
 bool CCollisionHandler::Intersect(const CollisionVolume* v, const CMatrix44f& m, const float3& p0, const float3& p1, CollisionQuery* q)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	numContTests += 1;
 
 	const CMatrix44f mInv = m.InvertAffine();
@@ -406,7 +406,7 @@ bool CCollisionHandler::Intersect(const CollisionVolume* v, const CMatrix44f& m,
 
 bool CCollisionHandler::IntersectEllipsoid(const CollisionVolume* v, const float3& pi0, const float3& pi1, CollisionQuery* q)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// transform the volume-space points into (unit) sphere-space; requires fewer
 	// float-ops than solving the surface equation for arbitrary ellipsoid volumes
 	const float3 upi0 = pi0 * v->GetHIScales();
@@ -503,7 +503,7 @@ bool CCollisionHandler::IntersectEllipsoid(const CollisionVolume* v, const float
 
 bool CCollisionHandler::IntersectCylinder(const CollisionVolume* v, const float3& pi0, const float3& pi1, CollisionQuery* q)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int pAx = v->GetPrimaryAxis();
 	const int sAx0 = v->GetSecondaryAxis(0);
 	const int sAx1 = v->GetSecondaryAxis(1);
@@ -691,7 +691,7 @@ bool CCollisionHandler::IntersectCylinder(const CollisionVolume* v, const float3
 
 bool CCollisionHandler::IntersectBox(const CollisionVolume* v, const float3& pi0, const float3& pi1, CollisionQuery* q)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const float3& ahs = v->GetHScales();
 
 	const bool ba = (math::fabs(pi0.x) < ahs.x);

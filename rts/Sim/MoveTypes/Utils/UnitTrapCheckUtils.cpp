@@ -14,7 +14,7 @@
 using namespace MoveTypes;
 
 void MoveTypes::RegisterFeatureForUnitTrapCheck(CFeature* object) {
-    //ZoneScoped;
+    RECOIL_DETAILED_TRACY_ZONE;
     if (gs->frameNum < 0)
         return;
 

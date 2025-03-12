@@ -11,7 +11,7 @@ CR_REG_METADATA(CMeleeWeapon, )
 
 void CMeleeWeapon::FireImpl(const bool scriptCall)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (currentTarget.type != Target_Unit)
 		return;
 

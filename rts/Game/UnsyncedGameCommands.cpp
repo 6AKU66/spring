@@ -163,7 +163,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		return innerExecutor->ExecuteAction(action);
 	}
 
@@ -195,7 +195,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		for (IUnsyncedActionExecutor* e: innerExecutors) {
 			e->ExecuteAction(action);
 		}
@@ -215,7 +215,7 @@ public:
 	} // TODO
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		selectionKeys.DoSelection(action.GetArgs()); //TODO give it a return argument?
 		return true;
 	}
@@ -227,7 +227,7 @@ public:
 	} // TODO
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		selectedUnitsHandler.SelectUnits(action.GetArgs()); //TODO give it a return argument?
 		return true;
 	}
@@ -239,7 +239,7 @@ public:
 	} // TODO
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		selectedUnitsHandler.SelectCycle(action.GetArgs()); //TODO give it a return argument?
 		return true;
 	}
@@ -251,7 +251,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		selectedUnitsHandler.ClearSelected();
 		return true;
 	}
@@ -265,7 +265,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		CSMFGroundDrawer* smfDrawer = dynamic_cast<CSMFGroundDrawer*>(readMap->GetGroundDrawer());
 
 		if (smfDrawer == nullptr)
@@ -298,7 +298,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		CSMFGroundDrawer* smfGD = dynamic_cast<CSMFGroundDrawer*>(readMap->GetGroundDrawer());
 
 		if (smfGD == nullptr)
@@ -336,7 +336,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		if (shadowHandler.shadowConfig < 0) {
 			LOG_L(L_WARNING, "Shadows are disabled; change your configuration and restart to use them");
 			return true;
@@ -361,7 +361,7 @@ public:
 	{}
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		shadowHandler.SaveShadowMapTextures();
 		return true;
 	}
@@ -373,7 +373,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		auto args = CSimpleParser::Tokenize(action.GetArgs());
 
 		float& pofs = (readMap->GetGroundDrawer())->spPolygonOffsetScale;
@@ -404,7 +404,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		bool parseFailure;
 		int nextWaterRendererMode = StringToInt(action.GetArgs(), &parseFailure);
 
@@ -428,7 +428,7 @@ public:
 			}) {}
 
 	bool Execute(const UnsyncedAction& action) const {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		static bool canUseShaders = unitDrawer->UseAdvShading();
 
 		if (!canUseShaders)
@@ -471,7 +471,7 @@ public:
 		"Forces particular Unit drawer type") {}
 
 	bool Execute(const UnsyncedAction& action) const {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		auto args = CSimpleParser::Tokenize(action.GetArgs());
 		bool parseFailure;
 
@@ -504,7 +504,7 @@ public:
 		"Forces particular Feature drawer type") {}
 
 	bool Execute(const UnsyncedAction& action) const {
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		auto args = CSimpleParser::Tokenize(action.GetArgs());
 		bool parseFailure;
 
@@ -538,7 +538,7 @@ public:
 			"Say something in (public) chat") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		game->SendNetChat(action.GetArgs());
 		return true;
 	}
@@ -552,7 +552,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		auto args = CSimpleParser::Tokenize(action.GetArgs(), 1);
 
 		if (args.size() == 0) {
@@ -581,7 +581,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		auto args = CSimpleParser::Tokenize(action.GetArgs(), 1);
 
 		if (args.size() == 0) {
@@ -616,7 +616,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		LOG("%s", action.GetArgs().c_str());
 		return true;
 	}
@@ -631,7 +631,7 @@ public:
 		overlay(overlay_) {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		auto args = CSimpleParser::Tokenize(action.GetArgs(), 1);
 
 		if (args.size() != 2) {
@@ -654,7 +654,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		inMapDrawer->SetDrawMode(true);
 		return true;
 	}
@@ -668,7 +668,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		float3 pos;
 
 		if (minimap != nullptr && minimap->IsInside(mouse->lastx, mouse->lasty)) {
@@ -700,7 +700,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (!action.IsRepeat())
 			mouse->MousePress(mouse->lastx, mouse->lasty, button);
 
@@ -717,7 +717,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		// MouseHandler::MouseRelease checks LMB movement against drag-selection threshold
 		mouse->CancelButtonMovement(SDL_BUTTON_LEFT);
 		return true;
@@ -735,7 +735,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const auto& selUnits = selectedUnitsHandler.selectedUnits;
 
 		if (selUnits.empty())
@@ -768,7 +768,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		camera->SetMovState(moveStateIdx, true);
 
 		return halt;
@@ -812,7 +812,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const CPlayer* fromPlayer     = playerHandler.Player(gu->myPlayerNum);
 		const int      fromTeamId     = (fromPlayer != nullptr) ? fromPlayer->team : -1;
 
@@ -932,7 +932,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		bool badArgs = false;
 
 		const CPlayer* fromPlayer     = playerHandler.Player(gu->myPlayerNum);
@@ -1044,7 +1044,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const auto& ais = skirmishAIHandler.GetAllSkirmishAIs();
 
 		if (ais.empty()) {
@@ -1092,7 +1092,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		bool parseFailure;
 		const int teamId = StringToInt(action.GetArgs(), &parseFailure);
 
@@ -1117,7 +1117,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (gu->spectating)
 			return false;
 
@@ -1137,7 +1137,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (!gu->spectating)
 			return false;
 
@@ -1181,7 +1181,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (!gu->spectating)
 			return false;
 
@@ -1232,7 +1232,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (gu->spectating)
 			return false;
 
@@ -1287,7 +1287,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (action.IsRepeat())
 			return false;
 
@@ -1346,7 +1346,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (action.IsRepeat())
 			return false;
 
@@ -1368,7 +1368,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (infoConsole->GetMsgPosCount() == 0)
 			return false;
 
@@ -1397,7 +1397,7 @@ public:
 
 public:
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		SDL_StartTextInput();
 
 		gameTextInput.PromptInput(setUserInputPrefix? &userInputPrefix: nullptr);
@@ -1421,7 +1421,7 @@ public:
 			}) {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		auto args = CSimpleParser::Tokenize(action.GetArgs());
 		bool enableTracking = unitTracker.Enabled();
 		std::vector<int> unitIDs = {};
@@ -1456,7 +1456,7 @@ public:
 			"Shift through different ways of following selected unit(s)") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		unitTracker.IncMode();
 		return true;
 	}
@@ -1474,7 +1474,7 @@ public:
 			}) {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		// disallow pausing prior to start of game proper
 		if (!game->playing)
 			return false;
@@ -1495,7 +1495,7 @@ public:
 	DebugActionExecutor() : IUnsyncedActionExecutor("Debug", "Enable/Disable debug rendering mode") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		auto& profiler = CTimeProfiler::GetInstance();
 		bool drawDebug = false;
 		bool draw4Real = false;
@@ -1587,7 +1587,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		globalRendering->drawDebugCubeMap = !globalRendering->drawDebugCubeMap;
 		ISky::SetSky();
 		return true;
@@ -1600,7 +1600,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		globalRendering->drawSky = !globalRendering->drawSky;
 		return true;
 	}
@@ -1611,7 +1611,7 @@ public:
 	DebugGLActionExecutor() : IUnsyncedActionExecutor("DebugGL", "Enable/Disable OpenGL debug-context output") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		bool enabled = !globalRendering->glDebug;
 		uint32_t msgSrceIdx = 0;
 		uint32_t msgTypeIdx = 0;
@@ -1641,7 +1641,7 @@ public:
 	DebugGLErrorsActionExecutor() : IUnsyncedActionExecutor("DebugGLErrors", "Enable/Disable OpenGL debug-errors") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		LogSystemStatus("GL debug-errors", globalRendering->glDebugErrors = !globalRendering->glDebugErrors);
 		return true;
 	}
@@ -1653,7 +1653,7 @@ public:
 	MuteActionExecutor() : IUnsyncedActionExecutor("MuteSound", "Mute/Unmute the current sound system") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		// toggle
 		sound->Mute();
 		LogSystemStatus("Mute", sound->IsMuted());
@@ -1667,7 +1667,7 @@ public:
 			"Switch the sound output system (currently only OpenAL / NullAudio)") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		// toggle
 		LogSystemStatus("Sound", !sound->ChangeOutput());
 		return true;
@@ -1685,7 +1685,7 @@ public:
 	) {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		auto args = CSimpleParser::Tokenize(action.GetArgs());
 
 		if (args.size() < 2) {
@@ -1721,7 +1721,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		// toggle
 		videoCapturing->SetCapturing(!videoCapturing->IsCapturing());
 		LogSystemStatus("Video capturing", videoCapturing->IsCapturing());
@@ -1735,7 +1735,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		// tag=0 if no args
 		clientNet->Send(CBaseNetProtocol::Get().SendPing(gu->myPlayerNum, StringToInt(action.GetArgs()), spring_tomsecs(spring_now())));
 		return true;
@@ -1751,7 +1751,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const char* fmt = "net-message smoothing %s";
 		const char* strs[] = {"disabled", "enabled"};
 
@@ -1769,7 +1769,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (gameServer == nullptr)
 			return false;
 
@@ -1798,7 +1798,7 @@ public:
 	) {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		constexpr const char* strs[] = {"1/f", "30/s"};
 
 		const std::string& args = action.GetArgs();
@@ -1822,7 +1822,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (!action.IsRepeat()) {
 			if (!CGameInfo::IsActive()) {
 				CGameInfo::Enable();
@@ -1843,7 +1843,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		InverseOrSetBool(game->hideInterface, action.GetArgs());
 		return true;
 	}
@@ -1857,7 +1857,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const bool enable = StringToBool(action.GetArgs());
 		mouse->ToggleHwCursor(enable);
 		configHandler->Set("HardwareCursor", enable);
@@ -1874,7 +1874,7 @@ public:
 			"Switches fullscreen mode") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		bool b = globalRendering->fullScreen;
 		InverseOrSetBool(b, action.GetArgs());
 
@@ -1889,7 +1889,7 @@ public:
 		"Switches borderless/decorated mode") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		bool b = globalRendering->borderless;
 		InverseOrSetBool(b, action.GetArgs());
 
@@ -1907,7 +1907,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		readMap->GetGroundDrawer()->IncreaseDetail();
 		return true;
 	}
@@ -1919,7 +1919,7 @@ public:
 			"Decrease the view radius (higher performance, uglier view)") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		readMap->GetGroundDrawer()->DecreaseDetail();
 		return true;
 	}
@@ -1933,7 +1933,7 @@ public:
 			"Set the level of ground detail") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		int detail;
 		if (action.GetArgs().empty()) {
 			LOG_L(L_WARNING, "/%s: missing argument", GetCommand().c_str());
@@ -1955,7 +1955,7 @@ public:
 			"Increases the density of clouds (lower performance)") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		ISky::GetSky()->IncreaseCloudDensity();
 		ReportCloudDensity();
 		return true;
@@ -1973,7 +1973,7 @@ public:
 			"Decreases the density of clouds (higher performance)") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		ISky::GetSky()->DecreaseCloudDensity();
 		MoreCloudsActionExecutor::ReportCloudDensity();
 		return true;
@@ -1986,7 +1986,7 @@ public:
 	FeatureFadeDistActionExecutor(): IUnsyncedActionExecutor("FeatureFadeDistance", "") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		featureDrawer->ConfigNotify(action.GetCmd(), action.GetArgs());
 		return true;
 	}
@@ -1997,7 +1997,7 @@ public:
 	FeatureDrawDistActionExecutor(): IUnsyncedActionExecutor("FeatureDrawDistance", "") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		featureDrawer->ConfigNotify(action.GetCmd(), action.GetArgs());
 		return true;
 	}
@@ -2011,7 +2011,7 @@ public:
 			" The engine will try to simulate more frames per second") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		float speed = gs->wantedSpeedFactor;
 		if (speed < 5) {
 			speed += (speed < 2) ? 0.1f : 0.2f;
@@ -2038,7 +2038,7 @@ public:
 	) {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		int index = 0;
 
 		float speed = gs->wantedSpeedFactor;
@@ -2066,7 +2066,7 @@ public:
 	) {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if ((action.GetArgs()).empty())
 			return false;
 
@@ -2087,7 +2087,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (gu->spectating)
 			return false;
 
@@ -2394,7 +2394,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		auto args = CSimpleParser::Tokenize(action.GetArgs());
 
 		if (args.size() == 0) {
@@ -2417,7 +2417,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const std::string& args = action.GetArgs();
 
 		if (mouse->offscreen)
@@ -2446,7 +2446,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		InverseOrSetBool(game->showClock, action.GetArgs());
 		configHandler->Set("ShowClock", game->showClock ? 1 : 0);
 		LogSystemStatus("small digital clock", game->showClock);
@@ -2466,7 +2466,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (action.GetArgs().empty()) {
 			if (mouse->crossSize > 0.0f) {
 				mouse->crossSize = -mouse->crossSize;
@@ -2503,7 +2503,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		InverseOrSetBool(game->showFPS, action.GetArgs());
 		configHandler->Set("ShowFPS", game->showFPS ? 1 : 0);
 		LogSystemStatus("frames-per-second indicator", game->showFPS);
@@ -2519,7 +2519,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		InverseOrSetBool(game->showSpeed, action.GetArgs());
 		configHandler->Set("ShowSpeed", game->showSpeed ? 1 : 0);
 		LogSystemStatus("simulation speed indicator", game->showSpeed);
@@ -2534,7 +2534,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (action.GetArgs().empty()) {
 			globalConfig.teamHighlight = abs(globalConfig.teamHighlight + 1) % CTeamHighlight::HIGHLIGHT_SIZE;
 		} else {
@@ -2559,7 +2559,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (action.GetArgs().empty()) {
 			if (playerRoster.GetSortType() == PlayerRoster::Disabled) {
 				playerRoster.SetSortTypeByCode(PlayerRoster::Allies);
@@ -2586,7 +2586,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const std::string& fileName = action.GetArgs().empty() ? "cmdcolors.txt" : action.GetArgs();
 		cmdColors.LoadConfigFromFile(fileName);
 		LOG("Reloaded cmdcolors from file: %s", fileName.c_str());
@@ -2602,7 +2602,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		guihandler->ReloadConfigFromFile(action.GetArgs());
 		return true;
 	}
@@ -2616,7 +2616,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		// FIXME: same file for both?
 		CglFont::LoadCustomFonts(action.GetArgs(), action.GetArgs());
 		return true;
@@ -2631,7 +2631,7 @@ public:
 			"Enables/Disables vertical-sync (Graphics setting)") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (action.GetArgs().empty()) {
 			verticalSync->Toggle();
 		} else {
@@ -2650,7 +2650,7 @@ public:
 			"Enables/Disables OpenGL safe-mode") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		bool safeMode = LuaOpenGL::GetSafeMode();
 		InverseOrSetBool(safeMode, action.GetArgs());
 		LuaOpenGL::SetSafeMode(safeMode);
@@ -2667,7 +2667,7 @@ public:
 			"Shows/Hides team resource storage indicator bar") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (resourceBar == nullptr)
 			return false;
 
@@ -2687,7 +2687,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (tooltip == nullptr)
 			return false;
 
@@ -2717,7 +2717,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const auto& args = action.GetArgs();
 
 		const char* fmt = "EndGame Graph %s";
@@ -2742,7 +2742,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 
 		bool drawHUD = hudDrawer->GetDraw();
 		InverseOrSetBool(drawHUD, action.GetArgs());
@@ -2776,7 +2776,7 @@ public:
 			"Enables/Disables map marks rendering") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 
 		InverseOrSetBool(globalRendering->drawMapMarks, action.GetArgs());
 		LogSystemStatus("map marks rendering", globalRendering->drawMapMarks);
@@ -2792,7 +2792,7 @@ public:
 			"Show/Hide all map marks drawn so far", true) {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 
 		bool allMarksVisible = inMapDrawerModel->GetAllMarksVisible();
 		InverseOrSetBool(allMarksVisible, action.GetArgs());
@@ -2809,7 +2809,7 @@ public:
 			"Remove all map marks drawn so far") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		inMapDrawerModel->EraseAll();
 		return true;
 	}
@@ -2824,7 +2824,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		bool luaMapDrawingAllowed = inMapDrawer->GetLuaMapDrawingAllowed();
 		InverseOrSetBool(luaMapDrawingAllowed, action.GetArgs());
 		inMapDrawer->SetLuaMapDrawingAllowed(luaMapDrawingAllowed);
@@ -2841,7 +2841,7 @@ public:
 			" a chat message to LuaUI") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (guihandler == nullptr)
 			return false;
 
@@ -2872,7 +2872,7 @@ public:
 		" a chat message to LuaMenu") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const std::string& command = action.GetArgs();
 
 		if (command == "reload" || command == "enable") {
@@ -2899,7 +2899,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (minimap == nullptr)
 			return false;
 
@@ -2919,7 +2919,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		bool drawDecals = IGroundDecalDrawer::GetDrawDecals();
 
 		InverseOrSetBool(drawDecals, action.GetArgs());
@@ -2941,7 +2941,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const auto& args = action.GetArgs();
 
 		const char* fmt = "ProjectileDrawer distance-sorting %s";
@@ -2965,7 +2965,7 @@ public:
 	) { }
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const auto& args = action.GetArgs();
 
 		const char* fmt = "ProjectileDrawer particles-softening %s";
@@ -2990,7 +2990,7 @@ public:
 	) { }
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const auto& args = action.GetArgs();
 
 		const char* fmt = "ProjectileDrawer draw order %s";
@@ -3016,7 +3016,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const auto& args = action.GetArgs();
 
 		if (!args.empty()) {
@@ -3039,7 +3039,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const auto& args = action.GetArgs();
 
 		if (!args.empty()) {
@@ -3061,7 +3061,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const std::string& args = action.GetArgs();
 
 		if (args.empty())
@@ -3078,7 +3078,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const std::string& args = action.GetArgs();
 
 		if (args.empty())
@@ -3097,7 +3097,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (guihandler == nullptr)
 			return false;
 
@@ -3120,7 +3120,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		return (gameTextInput.CheckHandlePasteCommand(action.GetInnerAction().rawline));
 	}
 };
@@ -3131,7 +3131,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		// we cannot use extra commands because tokenization strips multiple
 		// spaces or even trailing spaces, the text should be copied verbatim
 		const std::string bufferCmd = "buffertext ";
@@ -3158,7 +3158,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (!action.GetArgs().empty()) {
 			game->ParseInputTextGeometry(action.GetArgs());
 		} else {
@@ -3178,7 +3178,7 @@ public:
 			" into icons (Graphic setting)") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (!action.GetArgs().empty()) {
 			const int iconDist = StringToInt(action.GetArgs());
 			CUnitDrawer::SetUnitIconDist(static_cast<float>(iconDist));
@@ -3198,7 +3198,7 @@ public:
 			"Set whether unit icons are drawn as an UI element (true) or old LOD-like style (false, default).") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		InverseOrSetBool(CUnitDrawer::UseScreenIcons(), action.GetArgs());
 		configHandler->Set("UnitIconsAsUI", CUnitDrawer::UseScreenIcons() ? 1 : 0);
 		LogSystemStatus("Draw unit icons as UI: ", CUnitDrawer::UseScreenIcons());
@@ -3213,7 +3213,7 @@ public:
 
 	bool Execute(const UnsyncedAction& action) const final
 	{
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (!action.GetArgs().empty()) {
 			const float iconScale = StringToInt<float>(action.GetArgs());
 			unitDrawer->SetUnitIconScaleUI(iconScale);
@@ -3234,7 +3234,7 @@ public:
 
 	bool Execute(const UnsyncedAction& action) const final
 	{
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (!action.GetArgs().empty())
 		{
 			const float iconFadeStart = StringToInt<float>(action.GetArgs());
@@ -3256,7 +3256,7 @@ public:
 
 	bool Execute(const UnsyncedAction& action) const final
 	{
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (!action.GetArgs().empty())
 		{
 			const float iconFadeVanish = StringToInt<float>(action.GetArgs());
@@ -3277,7 +3277,7 @@ public:
 			"Set whether unit icons are hidden when UI is hidden.") {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		InverseOrSetBool(CUnitDrawer::IconHideWithUI(), action.GetArgs());
 		configHandler->Set("IconsHideWithUI", CUnitDrawer::IconHideWithUI() ? 1 : 0);
 		LogSystemStatus("Hide unit icons with UI: ", CUnitDrawer::IconHideWithUI());
@@ -3294,7 +3294,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (action.GetArgs().empty()) {
 			LOG_L(L_WARNING, "/%s: wrong syntax", GetCommand().c_str());
 			return true;
@@ -3338,7 +3338,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		InverseOrSetBool(smoothHeightMeshDrawer->DrawEnabled(), action.GetArgs());
 		LogSystemStatus("smooth air-mesh map overlay", smoothHeightMeshDrawer->DrawEnabled());
 		return true;
@@ -3352,7 +3352,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		// note: affects feature and projectile render-state for free
 		LogSystemStatus("wireframe model-drawing mode", unitDrawer->WireFrameModeRef() = !unitDrawer->WireFrameModeRef());
 		return true;
@@ -3365,7 +3365,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		CBaseGroundDrawer* gd = readMap->GetGroundDrawer();
 
 		LogSystemStatus("wireframe map-drawing mode", gd->WireFrameModeRef() = !gd->WireFrameModeRef());
@@ -3379,7 +3379,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const auto& sky = ISky::GetSky();
 		LogSystemStatus("wireframe sky-drawing mode", sky->WireFrameModeRef() = !sky->WireFrameModeRef());
 		return true;
@@ -3392,7 +3392,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const auto& water = IWater::GetWater();
 		LogSystemStatus("wireframe water-drawing mode", water->WireFrameModeRef() = !water->WireFrameModeRef());
 		return true;
@@ -3407,7 +3407,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		InverseOrSetBool(DebugColVolDrawer::enable, action.GetArgs());
 		return true;
 	}
@@ -3420,7 +3420,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		InverseOrSetBool(DebugVisibilityDrawer::enable, action.GetArgs());
 		return true;
 	}
@@ -3433,7 +3433,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		LogSystemStatus("path-debug rendering mode", pathDrawer->ToggleEnabled());
 		return true;
 	}
@@ -3446,7 +3446,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		LogSystemStatus("traceray debug rendering mode", globalRendering->drawDebugTraceRay = !globalRendering->drawDebugTraceRay);
 		return true;
 	}
@@ -3458,7 +3458,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		InverseOrSetBool(shadowHandler.DebugFrustumRef(), action.GetArgs());
 		LogSystemStatus("shadow frustum debug rendering mode", shadowHandler.DebugFrustumRef());
 		return true;
@@ -3471,7 +3471,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		std::abort();
 		return true;
 	}
@@ -3483,7 +3483,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const std::string& args = action.GetArgs();
 
 		const spring_time t0 = spring_now();
@@ -3504,7 +3504,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		throw std::runtime_error("Exception test");
 		return true;
 	}
@@ -3516,7 +3516,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		float a = 0.0f; //can't be constexpr since MSVC dies
 		LOG("Result: %f", 1.0f / a);
 		return true;
@@ -3534,7 +3534,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (action.GetArgs().find('@') == string::npos) {
 			CInputReceiver* ir = nullptr;
 
@@ -3577,7 +3577,7 @@ public:
 		: IUnsyncedActionExecutor(command, description, true) {}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (selectedUnitsHandler.selectedUnits.empty()) {
 			return false;
 		}
@@ -3627,7 +3627,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		std::vector<std::string> args = CSimpleParser::Tokenize(action.GetArgs());
 
 		switch (args.size()) {
@@ -3650,7 +3650,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		std::vector<std::string> args = CSimpleParser::Tokenize(action.GetArgs());
 
 		switch (args.size()) {
@@ -3678,7 +3678,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		std::vector<std::string> args = CSimpleParser::Tokenize(action.GetArgs());
 
 		switch (args.size()) {
@@ -3701,7 +3701,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		LOG("Reloading all engine shaders");
 		//FIXME make threadsafe!
 		shaderHandler->ReloadAll();
@@ -3715,7 +3715,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		auto luaFunc = []() {
 			LOG("Reloading Lua textures");
 			CNamedTextures::Reload();
@@ -3760,7 +3760,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		auto projFunc = []() {
 			LOG("Dumping projectile textures");
 			projectileDrawer->textureAtlas->DumpTexture("TextureAtlas");
@@ -3797,7 +3797,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		const std::string& args = action.GetArgs();
 
 		switch (hashString(args.c_str())) {
@@ -3830,7 +3830,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		// redirect as a synced command
 		CommandMessage pckt(action.GetInnerAction(), gu->myPlayerNum);
 		clientNet->Send(pckt.Pack());
@@ -3849,7 +3849,7 @@ public:
 	}
 
 	bool Execute(const UnsyncedAction& action) const final {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		LOG("Chat commands plus description");
 		LOG("==============================");
 
@@ -3929,7 +3929,7 @@ private:
 // TODO CGame stuff in UnsyncedGameCommands: refactor (or move)
 bool CGame::ActionReleased(const Action& action)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	switch (hashString(action.command.c_str())) {
 		case hashString("drawinmap"): {
 			inMapDrawer->SetDrawMode(false);
@@ -4224,7 +4224,7 @@ void UnsyncedGameCommands::AddDefaultActionExecutors()
 alignas(UnsyncedGameCommands) static std::byte ugcSingletonMem[sizeof(UnsyncedGameCommands)];
 
 void UnsyncedGameCommands::CreateInstance() {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	UnsyncedGameCommands*& singleton = GetInstance();
 
 	if (singleton != nullptr)
@@ -4234,7 +4234,7 @@ void UnsyncedGameCommands::CreateInstance() {
 }
 
 void UnsyncedGameCommands::DestroyInstance(bool reload) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	UnsyncedGameCommands*& singleton = GetInstance();
 
 	// executors should be inaccessible in between reloads

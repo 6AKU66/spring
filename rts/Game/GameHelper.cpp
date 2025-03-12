@@ -47,7 +47,7 @@ CGameHelper* helper = &gGameHelper;
 
 void CGameHelper::Init()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	for (auto& wdVec: waitingDamages) {
 		wdVec.clear();
 		wdVec.reserve(32);
@@ -60,7 +60,7 @@ void CGameHelper::Kill()
 
 void CGameHelper::Update()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int wdIdx = gs->frameNum & (waitingDamages.size() - 1);
 
 	// need to use explicit indexing because CUnit::DoDamage
@@ -115,7 +115,7 @@ void CGameHelper::DoExplosionDamage(
 	const int weaponDefID,
 	const int projectileID
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(unit != nullptr);
 
 	if (ignoreOwner && (unit == owner))
@@ -180,7 +180,7 @@ void CGameHelper::DoExplosionDamage(
 	const int weaponDefID,
 	const int projectileID
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(feature != nullptr);
 
 	const LocalModelPiece* lhp = feature->GetLastHitPiece(gs->frameNum);
@@ -216,7 +216,7 @@ void CGameHelper::DamageObjectsInExplosionRadius(
 	const float expRad,
 	const int weaponDefID
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static std::vector<CUnit*> unitCache;
 	static std::vector<CFeature*> featureCache;
 
@@ -247,7 +247,7 @@ void CGameHelper::DamageObjectsInExplosionRadius(
 }
 
 void CGameHelper::Explosion(const CExplosionParams& params) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const DamageArray& damages = params.damages;
 
 	// if weaponDef is NULL, this is a piece-explosion
@@ -332,7 +332,7 @@ void CGameHelper::Explosion(const CExplosionParams& params) {
 	CExplosionCreator::FireExplosionEvent(params);
 
 	{
-		//ZoneScoped;
+		RECOIL_DETAILED_TRACY_ZONE;
 		if (weaponDef == nullptr)
 			return;
 
@@ -377,7 +377,7 @@ void CGameHelper::Explosion(const CExplosionParams& params) {
 template<typename TFilter, typename TQuery>
 static inline void QueryUnits(TFilter filter, TQuery& query)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	QuadFieldQuery qfQuery;
 	quadField.GetQuads(qfQuery, query.pos, query.radius);
 	const int tempNum = gs->GetTempNum();
@@ -535,7 +535,7 @@ namespace {
 				Base(pos, searchRadius), closeSqDist(sqRadius), closeUnit(nullptr) {}
 
 			void AddUnit(CUnit* u) {
-				//ZoneScoped;
+				RECOIL_DETAILED_TRACY_ZONE;
 				const float sqDist = (pos - u->midPos).SqLength2D();
 				if (sqDist <= closeSqDist) {
 					closeSqDist = sqDist;
@@ -558,7 +558,7 @@ namespace {
 				ClosestUnit(pos, searchRadius) {}
 
 			void AddUnit(CUnit* u) {
-				//ZoneScoped;
+				RECOIL_DETAILED_TRACY_ZONE;
 				float3 unitPos;
 				if (gu->spectatingFullView) {
 					unitPos = u->midPos;
@@ -596,7 +596,7 @@ namespace {
 				closeDist(searchRadius), closeUnit(nullptr), checkSightDist(checkSightDistance) {}
 
 			void AddUnit(CUnit* u) {
-				//ZoneScoped;
+				RECOIL_DETAILED_TRACY_ZONE;
 				// FIXME: use volumeBoundingRadius?
 				// (more for consistency than need)
 				const float dist = pos.distance(u->midPos) - u->radius;
@@ -646,7 +646,7 @@ namespace {
 				Base(pos, searchRadius), found(found) {}
 
 			void AddUnit(CUnit* u) {
-				//ZoneScoped;
+				RECOIL_DETAILED_TRACY_ZONE;
 				if ((pos - u->midPos).SqLength2D() <= sqRadius) {
 					found.push_back(u->id);
 				}
@@ -660,7 +660,7 @@ namespace {
 
 size_t CGameHelper::GenerateWeaponTargets(const CWeapon* weapon, const CUnit* avoidUnit, std::vector<std::pair<float, CUnit*>>& targets)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const CUnit*  weaponOwner = weapon->owner;
 	const CUnit* lastAttacker = ((weaponOwner->lastAttackFrame + 200) <= gs->frameNum) ? weaponOwner->lastAttacker : nullptr;
 
@@ -794,7 +794,7 @@ size_t CGameHelper::GenerateWeaponTargets(const CWeapon* weapon, const CUnit* av
 
 CUnit* CGameHelper::GetClosestUnit(const float3& pos, float searchRadius)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Query::ClosestUnit_ErrorPos_NOT_SYNCED q(pos, searchRadius);
 	QueryUnits(Filter::Friendly_All_Plus_Enemy_InLos_NOT_SYNCED(), q);
 	return q.GetClosestUnit();
@@ -802,7 +802,7 @@ CUnit* CGameHelper::GetClosestUnit(const float3& pos, float searchRadius)
 
 CUnit* CGameHelper::GetClosestEnemyUnit(const CUnit* excludeUnit, const float3& pos, float searchRadius, int searchAllyteam)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Query::ClosestUnit q(pos, searchRadius);
 	QueryUnits(Filter::Enemy_InLos(excludeUnit, searchAllyteam), q);
 	return q.GetClosestUnit();
@@ -810,7 +810,7 @@ CUnit* CGameHelper::GetClosestEnemyUnit(const CUnit* excludeUnit, const float3& 
 
 CUnit* CGameHelper::GetClosestValidTarget(const float3& pos, float searchRadius, int searchAllyteam, const CMobileCAI* cai)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Query::ClosestUnit q(pos, searchRadius);
 	QueryUnits(Filter::Enemy_InLos_ValidTarget(searchAllyteam, cai), q);
 	return q.GetClosestUnit();
@@ -824,7 +824,7 @@ CUnit* CGameHelper::GetClosestEnemyUnitNoLosTest(
 	bool sphereDistTest,
 	bool checkSightDist
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* closestUnit = nullptr;
 
 	if (sphereDistTest) {
@@ -844,7 +844,7 @@ CUnit* CGameHelper::GetClosestEnemyUnitNoLosTest(
 
 CUnit* CGameHelper::GetClosestFriendlyUnit(const CUnit* excludeUnit, const float3& pos, float searchRadius, int searchAllyteam)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Query::ClosestUnit q(pos, searchRadius);
 	QueryUnits(Filter::Friendly(excludeUnit, searchAllyteam), q);
 	return q.GetClosestUnit();
@@ -852,7 +852,7 @@ CUnit* CGameHelper::GetClosestFriendlyUnit(const CUnit* excludeUnit, const float
 
 CUnit* CGameHelper::GetClosestEnemyAircraft(const CUnit* excludeUnit, const float3& pos, float searchRadius, int searchAllyteam)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Query::ClosestUnit q(pos, searchRadius);
 	QueryUnits(Filter::EnemyAircraft(excludeUnit, searchAllyteam), q);
 	return q.GetClosestUnit();
@@ -860,7 +860,7 @@ CUnit* CGameHelper::GetClosestEnemyAircraft(const CUnit* excludeUnit, const floa
 
 size_t CGameHelper::GetEnemyUnits(const float3& pos, float searchRadius, int searchAllyteam, std::vector<int>& found)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	found.clear();
 	found.reserve(128);
 
@@ -872,7 +872,7 @@ size_t CGameHelper::GetEnemyUnits(const float3& pos, float searchRadius, int sea
 
 size_t CGameHelper::GetEnemyUnitsNoLosTest(const float3& pos, float searchRadius, int searchAllyteam, std::vector<int>& found)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	found.clear();
 	found.reserve(128);
 
@@ -891,7 +891,7 @@ namespace {
 	template <typename ExcludeCallable>
 	void BuggerOffImpl(const float3& pos, float radius, bool spherical, bool forced, int teamId, ExcludeCallable test)
 	{
-	//ZoneScoped;		
+	RECOIL_DETAILED_TRACY_ZONE;		
 		// copy on purpose since BuggerOff can call risky stuff
 		QuadFieldQuery qfQuery;
 		quadField.GetUnitsExact(qfQuery, pos, radius + SQUARE_SIZE, spherical);
@@ -914,7 +914,7 @@ namespace {
 
 void CGameHelper::BuggerOff(const float3& pos, float radius, bool spherical, bool forced, int teamId, const CUnit* excludeUnit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto testPredicate = [excludeUnit](const CUnit* u) { return u == excludeUnit; };
 
 	::BuggerOffImpl(pos, radius, spherical, forced, teamId, testPredicate);
@@ -924,7 +924,7 @@ void CGameHelper::BuggerOff(const float3& pos, float radius, bool spherical, boo
 // used to check for square testing for building other units.
 void CGameHelper::BuggerOffRectangle(const float3& mins, const float3& maxs, bool forced, int teamId, const CUnit* excludeUnit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int bufferSize = (moveDefHandler.GetLargestFootPrintSizeH() + 1) * SQUARE_SIZE;
 	const float3 min((mins.x - bufferSize), 0.f, (mins.z - bufferSize));
 	const float3 max((maxs.x + bufferSize), 0.f, (maxs.z + bufferSize));
@@ -967,7 +967,7 @@ void CGameHelper::BuggerOffRectangle(const float3& mins, const float3& maxs, boo
 
 void CGameHelper::BuggerOff(const float3& pos, float radius, bool spherical, bool forced, int teamId, const CUnit* excludeUnit, const std::vector<const UnitDef*> excludeUnitDefs)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto testPredicate = [excludeUnit, &excludeUnitDefs](const CUnit* u) {
 		if (u == excludeUnit)
 			return true;
@@ -985,7 +985,7 @@ void CGameHelper::BuggerOff(const float3& pos, float radius, bool spherical, boo
 
 float3 CGameHelper::Pos2BuildPos(const BuildInfo& buildInfo, bool synced)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float3 pos;
 
 	// snap build-positions to 16-elmo grid
@@ -1005,7 +1005,7 @@ float3 CGameHelper::Pos2BuildPos(const BuildInfo& buildInfo, bool synced)
 
 float4 CGameHelper::BuildPosToRect(const float3& midPoint, int facing, int xsize, int zsize)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto xs = ((facing & 1) == 0) ? xsize : zsize;
 	const auto zs = ((facing & 1) == 1) ? xsize : zsize;
 
@@ -1019,7 +1019,7 @@ float4 CGameHelper::BuildPosToRect(const float3& midPoint, int facing, int xsize
 
 int CGameHelper::GetYardMapIndex(int buildFacing, const int2& yardPos, const int2& xrange, const int2& zrange)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int yardX = yardPos.x - xrange.x;
 	int yardZ = yardPos.y - zrange.x;
 	int yardXR = xrange.y - xrange.x;
@@ -1059,7 +1059,7 @@ struct SearchOffset {
 
 static const std::vector<SearchOffset>& GetSearchOffsetTable(int radius)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(radius >= 0);
 
 	static std::vector<SearchOffset> searchOffsets;
@@ -1099,7 +1099,7 @@ float3 CGameHelper::ClosestBuildPos(
 	int buildFacing,
 	bool synced
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (unitDef == nullptr)
 		return -RgtVector;
 
@@ -1185,7 +1185,7 @@ float3 CGameHelper::ClosestBuildPos(
 // against which to compare all footprint squares
 float CGameHelper::GetBuildHeight(const float3& pos, const UnitDef* unitdef, bool synced)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// we are not going to terraform the ground for mobile units
 	// (so we do not care about maxHeightDif constraints either)
 	// TODO: maybe respect waterline if <pos> is in water
@@ -1269,7 +1269,7 @@ CGameHelper::BuildSquareStatus CGameHelper::TestUnitBuildSquare(
 	const std::vector<Command>* commands,
 	int threadOwner
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	feature = nullptr;
 
 	const int xsize = buildInfo.GetXSize();
@@ -1424,7 +1424,7 @@ CGameHelper::BuildSquareStatus CGameHelper::TestBuildSquare(
 	int allyteam,
 	bool synced
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(pos.IsInBounds());
 
 	const int sqx = unsigned(pos.x) / SQUARE_SIZE;
@@ -1517,7 +1517,7 @@ bool CGameHelper::TestBlockSquareForBuildOnly(
 	const int2 yardpos
 )
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	bool ret = false;
 	auto so = blockingObject;
 	
@@ -1578,7 +1578,7 @@ bool CGameHelper::CheckTerrainConstraints(
 	float groundSlope,
 	float* clampedHeight
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	bool depthCheck =  true;
 	bool slopeCheck = false;
 

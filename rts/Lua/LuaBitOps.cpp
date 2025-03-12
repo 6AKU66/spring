@@ -39,7 +39,7 @@ const int mask = 0x00FFFFFF; // 2^24
 
 bool LuaBitOps::PushEntries(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LuaPushNamedCFunc(L, "bit_or",   bit_or);
 	LuaPushNamedCFunc(L, "bit_and",  bit_and);
 	LuaPushNamedCFunc(L, "bit_xor",  bit_xor);
@@ -54,7 +54,7 @@ bool LuaBitOps::PushEntries(lua_State* L)
 
 static inline unsigned int luaL_checkuint(lua_State* L, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (unsigned int)luaL_checkint(L, index);
 }
 
@@ -70,7 +70,7 @@ static inline unsigned int luaL_checkuint(lua_State* L, int index)
  */
 int LuaBitOps::bit_or(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	unsigned int result = 0x00000000;
 	for (int i = 1; !lua_isnone(L, i); i++) {
 		result = result | luaL_checkuint(L, i);
@@ -91,7 +91,7 @@ int LuaBitOps::bit_or(lua_State* L)
  */
 int LuaBitOps::bit_and(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	unsigned int result = 0xFFFFFFFF;
 	for (int i = 1; !lua_isnone(L, i); i++) {
 		result = result & luaL_checkuint(L, i);
@@ -112,7 +112,7 @@ int LuaBitOps::bit_and(lua_State* L)
  */
 int LuaBitOps::bit_xor(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	unsigned int result = 0x00000000;
 	for (int i = 1; !lua_isnone(L, i); i++) {
 		result = result ^ luaL_checkuint(L, i);
@@ -130,7 +130,7 @@ int LuaBitOps::bit_xor(lua_State* L)
  */
 int LuaBitOps::bit_inv(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int result = ~luaL_checkuint(L, 1);
 	lua_pushnumber(L, result & mask);
 	return 1;
@@ -148,7 +148,7 @@ int LuaBitOps::bit_inv(lua_State* L)
  */
 int LuaBitOps::bit_bits(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	unsigned int result = 0x00000000;
 	for (int i = 1; !lua_isnone(L, i); i++) {
 		const int bit = (unsigned int)luaL_checkint(L, i);

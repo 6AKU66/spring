@@ -26,14 +26,14 @@ using namespace GL::State;
 
 HUDDrawer* HUDDrawer::GetInstance()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static HUDDrawer hud;
 	return &hud;
 }
 
 void HUDDrawer::PushMatrices()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glPushMatrix();
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -45,7 +45,7 @@ void HUDDrawer::PushMatrices()
 }
 void HUDDrawer::PopMatrices()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
@@ -55,7 +55,7 @@ void HUDDrawer::PopMatrices()
 
 void HUDDrawer::DrawModel(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glPushMatrix();
 		glMatrixMode(GL_PROJECTION);
 			glTranslatef(-0.8f, -0.4f, 0.0f);
@@ -83,7 +83,7 @@ void HUDDrawer::DrawModel(const CUnit* unit)
 
 void HUDDrawer::DrawUnitDirectionArrow(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glDisable(GL_TEXTURE_2D);
 
 	if (unit->moveType->UseHeading()) {
@@ -106,7 +106,7 @@ void HUDDrawer::DrawUnitDirectionArrow(const CUnit* unit)
 }
 void HUDDrawer::DrawCameraDirectionArrow(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glDisable(GL_TEXTURE_2D);
 
 	if (unit->moveType->UseHeading()) {
@@ -135,7 +135,7 @@ void HUDDrawer::DrawCameraDirectionArrow(const CUnit* unit)
 
 void HUDDrawer::DrawWeaponStates(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
@@ -198,7 +198,7 @@ void HUDDrawer::DrawWeaponStates(const CUnit* unit)
 
 void HUDDrawer::DrawTargetReticle(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glDisable(GL_TEXTURE_2D);
 
 	// draw the reticle in world coordinates
@@ -287,7 +287,7 @@ void HUDDrawer::DrawTargetReticle(const CUnit* unit)
 
 void HUDDrawer::Draw(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (unit == nullptr || !draw)
 		return;
 

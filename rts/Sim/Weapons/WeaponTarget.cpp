@@ -72,7 +72,7 @@ SWeaponTarget::SWeaponTarget(const CUnit* u, float3 p, bool userTarget, bool aut
 
 bool SWeaponTarget::operator!=(const SWeaponTarget& other) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (type != other.type) return true;
 	if (isUserTarget != other.isUserTarget) return true;
 	if (isAutoTarget != other.isAutoTarget) return true;

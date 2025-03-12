@@ -7,12 +7,12 @@
 #include <tracy/Tracy.hpp>
 
 ISkyLight::ISkyLight() {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SetLightDir(mapInfo->light.sunDir);
 }
 
 float3& ISkyLight::CalcPolarLightDir() {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	lightDirZ = lightDir;
 	lightDirZ.y = 0.0f;
 

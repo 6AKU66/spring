@@ -28,7 +28,7 @@ ClientSetup::ClientSetup()
 
 void ClientSetup::SanityCheck()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (myPlayerName.empty())
 		myPlayerName = UnnamedPlayerName;
 
@@ -38,7 +38,7 @@ void ClientSetup::SanityCheck()
 
 void ClientSetup::LoadFromStartScript(const std::string& setup)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	TdfParser file(setup.c_str(), setup.length());
 
 	if (!file.SectionExist("GAME")) {

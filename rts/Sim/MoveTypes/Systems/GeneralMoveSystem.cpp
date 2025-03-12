@@ -20,7 +20,7 @@
 using namespace MoveTypes;
 
 void GeneralMoveSystem::Init() {
-    //ZoneScoped;
+    RECOIL_DETAILED_TRACY_ZONE;
     CMoveMath::InitRangeIsBlockedHashes();
 }
 

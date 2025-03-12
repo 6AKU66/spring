@@ -41,7 +41,7 @@ namespace Impl {
 
 std::string LuaTextures::Create(const Texture& tex)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	GLenum query = 0;
 	if (Impl::IsValidLuaTextureTarget(tex.target)) {
 		query = GL::GetBindingQueryFromTarget(tex.target);
@@ -169,7 +169,7 @@ std::string LuaTextures::Create(const Texture& tex)
 
 bool LuaTextures::Bind(const std::string& name) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto it = textureMap.find(name);
 
 	if (it != textureMap.end()) {
@@ -184,7 +184,7 @@ bool LuaTextures::Bind(const std::string& name) const
 
 bool LuaTextures::Free(const std::string& name)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto it = textureMap.find(name);
 
 	if (it != textureMap.end()) {
@@ -207,7 +207,7 @@ bool LuaTextures::Free(const std::string& name)
 
 bool LuaTextures::FreeFBO(const std::string& name)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!FBO::IsSupported())
 		return false;
 
@@ -229,7 +229,7 @@ bool LuaTextures::FreeFBO(const std::string& name)
 
 void LuaTextures::FreeAll()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	for (const auto& item: textureMap) {
 		const Texture& tex = textureVec[item.second];
 		glDeleteTextures(1, &tex.id);
@@ -248,7 +248,7 @@ void LuaTextures::FreeAll()
 
 void LuaTextures::ApplyParams(const Texture& tex) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glTexParameteri(tex.target, GL_TEXTURE_WRAP_S, tex.wrap_s);
 	glTexParameteri(tex.target, GL_TEXTURE_WRAP_T, tex.wrap_t);
 	glTexParameteri(tex.target, GL_TEXTURE_WRAP_R, tex.wrap_r);
@@ -272,7 +272,7 @@ void LuaTextures::ApplyParams(const Texture& tex) const
 
 void LuaTextures::ChangeParams(const Texture& tex)  const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto texBind = GL::TexBind(tex.target, tex.id);
 	ApplyParams(tex);
 }
@@ -280,7 +280,7 @@ void LuaTextures::ChangeParams(const Texture& tex)  const
 
 size_t LuaTextures::GetIdx(const std::string& name) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto it = textureMap.find(name);
 
 	if (it != textureMap.end())

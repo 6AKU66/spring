@@ -19,7 +19,7 @@ CR_REG_METADATA(CEmgCannon, )
 
 void CEmgCannon::FireImpl(const bool scriptCall)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float3 dir = currentTargetPos - weaponMuzzlePos;
 	const float dist = dir.LengthNormalize();
 

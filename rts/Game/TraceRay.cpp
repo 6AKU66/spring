@@ -40,7 +40,7 @@ inline static bool TestConeHelper(
 	const float spread,
 	const CSolidObject* obj
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const CollisionVolume* cv = &obj->collisionVolume;
 
 	const float3 cvRelVec = cv->GetWorldSpacePos(obj) - tstPos;
@@ -93,7 +93,7 @@ inline static bool TestTrajectoryConeHelper(
 	float baseSize,
 	const CSolidObject* obj
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// trajectory is a parabola f(x)=a*x*x + b*x with
 	// parameters a = quadratic, b = linear, and c = 0
 	// (x = objDst1D, negative values represent objects
@@ -194,7 +194,7 @@ namespace TraceRay {
 // called by {CRifle, CBeamLaser, CLightningCannon}::Fire(), CWeapon::HaveFreeLineOfFire(), and Skirmish AIs
 float TraceRay(const float3& p, const float3& d, float l, int f, const CUnit* o, CUnit*& hu, CFeature*& hf, CollisionQuery* cq)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(o != nullptr);
 	return (TraceRay(p, d, l, f, o->allyteam, o, hu, hf, cq));
 }
@@ -210,7 +210,7 @@ float TraceRay(
 	CFeature*& hitFeature,
 	CollisionQuery* hitColQuery
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// NOTE:
 	//   the bits here and in Test*Cone are interpreted as "do not scan for {enemy,friendly,...}
 	//   objects in quads" rather than "return false if ray hits an {enemy,friendly,...} object"
@@ -338,7 +338,7 @@ void TraceRayShields(
 	float length,
 	std::vector<SShieldDist>& hitShields
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CollisionQuery cq;
 
 	QuadFieldQuery qfQuery;
@@ -381,7 +381,7 @@ float GuiTraceRay(
 	bool groundOnly,
 	bool ignoreWater
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	hitUnit = nullptr;
 	hitFeature = nullptr;
 
@@ -516,7 +516,7 @@ bool TestCone(
 	int traceFlags,
 	CUnit* owner
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	QuadFieldQuery qfQuery;
 	quadField.GetQuadsOnRay(qfQuery, from, dir, length);
 
@@ -583,7 +583,7 @@ bool TestTrajectoryCone(
 	int traceFlags,
 	CUnit* owner
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	QuadFieldQuery qfQuery;
 	quadField.GetQuadsOnRay(qfQuery, from, dir, length);
 

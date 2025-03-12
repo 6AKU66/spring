@@ -49,7 +49,7 @@ CEFX efx;
 
 
 void CEFX::Init(ALCdevice* device) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SetAirAbsorptionFactor(configHandler->GetFloat("snd_airAbsorption"));
 
 	const bool hasExtension = alcIsExtensionPresent(device, "ALC_EXT_EFX");
@@ -176,7 +176,7 @@ void CEFX::Init(ALCdevice* device) {
 
 void CEFX::Kill()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	configHandler->RemoveObserver(this);
 
 	if (supported) {
@@ -190,7 +190,7 @@ void CEFX::Kill()
 
 void CEFX::Enable()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (supported && !enabled) {
 		enabled = true;
 		CommitEffects();
@@ -200,7 +200,7 @@ void CEFX::Enable()
 
 void CEFX::Disable()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (enabled) {
 		enabled = false;
 		alAuxiliaryEffectSloti(sfxSlot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
@@ -211,7 +211,7 @@ void CEFX::Disable()
 
 void CEFX::SetPreset(const std::string& name, bool verbose, bool commit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!supported)
 		return;
 
@@ -231,7 +231,7 @@ void CEFX::SetPreset(const std::string& name, bool verbose, bool commit)
 
 void CEFX::SetHeightRolloffModifer(float mod)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	heightRolloffModifier = mod;
 
 	if (!supported)
@@ -244,7 +244,7 @@ void CEFX::SetHeightRolloffModifer(float mod)
 
 void CEFX::CommitEffects(const EAXSfxProps* sfxProps)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!supported)
 		return;
 	if (sfxProps != nullptr)
@@ -267,12 +267,12 @@ void CEFX::CommitEffects(const EAXSfxProps* sfxProps)
 
 void CEFX::SetAirAbsorptionFactor(ALfloat value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	airAbsorptionFactor = std::clamp(value, AL_MIN_AIR_ABSORPTION_FACTOR, AL_MAX_AIR_ABSORPTION_FACTOR);
 }
 
 void CEFX::ConfigNotify(const std::string& key, const std::string& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SetAirAbsorptionFactor(configHandler->GetFloat("snd_airAbsorption"));
 }

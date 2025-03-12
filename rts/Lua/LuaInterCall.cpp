@@ -22,7 +22,7 @@ enum {
 
 static CLuaHandle* GetLuaHandle(lua_State* L, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int* addr = (const int*) lua_touserdata(L, index);
 
 	if (addr == nullptr) {
@@ -60,7 +60,7 @@ static CLuaHandle* GetLuaHandle(lua_State* L, int index)
 
 static int HandleXCall(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int addrIndex = lua_upvalueindex(1);
 	const int nameIndex = lua_upvalueindex(2);
 
@@ -76,7 +76,7 @@ static int HandleXCall(lua_State* L)
 
 static int IndexHook(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_israwstring(L, -1))
 		return luaL_error(L, "Script.XYZ: only strings allowed got ", lua_typename(L, -1));
 
@@ -89,7 +89,7 @@ static int IndexHook(lua_State* L)
 
 static int CallHook(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int addrIndex = lua_upvalueindex(1);
 	const CLuaHandle* lh = GetLuaHandle(L, addrIndex);
 
@@ -110,7 +110,7 @@ static int CallHook(lua_State* L)
 
 static int PushCallHandler(lua_State* L, int luaInstance, const string& name)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	lua_pushsstring(L, name);
 	int* ptr = (int*) lua_newuserdata(L, sizeof(int));
 	*ptr = luaInstance;
@@ -137,7 +137,7 @@ static int PushCallHandler(lua_State* L, int luaInstance, const string& name)
 
 bool LuaInterCall::PushEntriesSynced(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	PushCallHandler(L, LUA_GAIA,  "LuaGaia");
 	PushCallHandler(L, LUA_RULES, "LuaRules");
 	return true;
@@ -146,7 +146,7 @@ bool LuaInterCall::PushEntriesSynced(lua_State* L)
 
 bool LuaInterCall::PushEntriesUnsynced(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	PushCallHandler(L, LUA_GAIA,  "LuaGaia");
 	PushCallHandler(L, LUA_RULES, "LuaRules");
 	PushCallHandler(L, LUA_UI,    "LuaUI");
@@ -155,7 +155,7 @@ bool LuaInterCall::PushEntriesUnsynced(lua_State* L)
 
 bool LuaInterCall::PushEntriesLuaUI(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	PushCallHandler(L, LUA_UI,    "LuaUI");
 	return true;
 }

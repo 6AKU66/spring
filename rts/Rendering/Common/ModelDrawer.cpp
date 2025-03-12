@@ -10,7 +10,7 @@
 
 void CModelDrawerConcept::InitStatic()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (initialized)
 		return;
 
@@ -33,7 +33,7 @@ void CModelDrawerConcept::InitStatic()
 
 void CModelDrawerConcept::KillStatic(bool reload)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!initialized)
 		return;
 

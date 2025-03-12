@@ -159,7 +159,7 @@ CGameServer::~CGameServer()
 
 void CGameServer::Initialize()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// configs
 	curSpeedCtrl = configHandler->GetInt("SpeedControl");
 	allowSpecJoin = configHandler->GetBool("AllowSpectatorJoin") || myGameSetup->onlyLocal; ///!!! mantis #4418
@@ -283,7 +283,7 @@ void CGameServer::Initialize()
 
 void CGameServer::PostLoad(int newServerFrameNum)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> scoped_lock(gameServerMutex);
 	serverFrameNum = newServerFrameNum;
 
@@ -298,7 +298,7 @@ void CGameServer::PostLoad(int newServerFrameNum)
 
 void CGameServer::Reload(const std::shared_ptr<const CGameSetup> newGameSetup)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::shared_ptr<const ClientSetup> clientSetup = gameServer->GetClientSetup();
 	const std::shared_ptr<const    GameData>    gameData = gameServer->GetGameData();
 
@@ -311,7 +311,7 @@ void CGameServer::Reload(const std::shared_ptr<const CGameSetup> newGameSetup)
 
 void CGameServer::WriteDemoData()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (demoRecorder == nullptr)
 		return;
 
@@ -343,7 +343,7 @@ void CGameServer::WriteDemoData()
 
 void CGameServer::StripGameSetupText(GameData* gameData)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	TdfParser parser((gameData->GetSetupText()).c_str(), (gameData->GetSetupText()).length());
 
 	TdfParser::TdfSection* rootSec = parser.GetRootSection();
@@ -366,7 +366,7 @@ void CGameServer::StripGameSetupText(GameData* gameData)
 
 void CGameServer::AddLocalClient(const std::string& myName, const std::string& myVersion, const std::string& myPlatform)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> scoped_lock(gameServerMutex);
 	assert(!HasLocalClient());
 
@@ -375,7 +375,7 @@ void CGameServer::AddLocalClient(const std::string& myName, const std::string& m
 
 void CGameServer::AddAutohostInterface(const std::string& autohostIP, const int autohostPort)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (autohostPort <= 0)
 		return;
 
@@ -409,7 +409,7 @@ void CGameServer::AddAutohostInterface(const std::string& autohostIP, const int 
 
 void CGameServer::SkipTo(int targetFrameNum)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const bool wasPaused = isPaused;
 
 	if (!gameHasStarted) { return; }
@@ -446,7 +446,7 @@ void CGameServer::SkipTo(int targetFrameNum)
 
 std::string CGameServer::GetPlayerNames(const std::vector<int>& indices) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::string playerstring;
 	for (int id: indices) {
 		if (!playerstring.empty())
@@ -459,7 +459,7 @@ std::string CGameServer::GetPlayerNames(const std::vector<int>& indices) const
 
 bool CGameServer::SendDemoData(int targetFrameNum)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	bool ret = false;
 	netcode::RawPacket* buf = nullptr;
 
@@ -559,7 +559,7 @@ bool CGameServer::SendDemoData(int targetFrameNum)
 
 void CGameServer::Broadcast(std::shared_ptr<const netcode::RawPacket> packet)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	for (GameParticipant& p: players) {
 		p.SendData(packet);
 	}
@@ -573,7 +573,7 @@ void CGameServer::Broadcast(std::shared_ptr<const netcode::RawPacket> packet)
 
 void CGameServer::Message(const std::string& message, bool broadcast, bool internal)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!internal) {
 		if (broadcast) {
 			Broadcast(CBaseNetProtocol::Get().SendSystemMessage(SERVER_PLAYER, message));
@@ -592,7 +592,7 @@ void CGameServer::Message(const std::string& message, bool broadcast, bool inter
 }
 
 void CGameServer::PrivateMessage(int playerNum, const std::string& message) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	players[playerNum].SendData(CBaseNetProtocol::Get().SendSystemMessage(SERVER_PLAYER, message));
 }
 
@@ -600,7 +600,7 @@ void CGameServer::PrivateMessage(int playerNum, const std::string& message) {
 
 void CGameServer::CheckSync()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #ifdef SYNCCHECK
 	std::vector< std::pair<unsigned, unsigned> > checksums; // <response checkum, #clients matching checksum>
 	std::vector<int> noSyncResponsePlayers;
@@ -802,7 +802,7 @@ void CGameServer::CheckSync()
 
 
 float CGameServer::GetDemoTime() const {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!gameHasStarted) return gameTime;
 	return (startTime + serverFrameNum / float(GAME_SPEED));
 }
@@ -810,7 +810,7 @@ float CGameServer::GetDemoTime() const {
 
 void CGameServer::Update()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const float tdif = spring_tomsecs(spring_gettime() - lastUpdate) * 0.001f;
 
 	gameTime += tdif;
@@ -896,7 +896,7 @@ void CGameServer::Update()
 
 void CGameServer::LagProtection()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::vector<float> cpu;
 	std::vector<int> ping;
 	cpu.reserve(players.size());
@@ -987,7 +987,7 @@ void CGameServer::LagProtection()
 /// has to be consistent with Game.cpp/CPlayerHandler
 static std::vector<int> getPlayersInTeam(const std::vector<GameParticipant>& players, const int teamId)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::vector<int> playersInTeam;
 	for (const GameParticipant& p: players) {
 		// do not count spectators, or demos will desync
@@ -1014,7 +1014,7 @@ static std::vector<uint8_t> getSkirmishAIIds(
 	const int teamId,
 	const int hostPlayerId = -2
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::vector<uint8_t> ids;
 
 	if (freeAIs.size() < MAX_AIS) {
@@ -1050,14 +1050,14 @@ static int countNumSkirmishAIsInTeam(
 	const std::vector<uint8_t>& freeAIs,
 	const int teamId
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return getSkirmishAIIds(skirmAIs, freeAIs, teamId).size();
 }
 
 
 void CGameServer::ProcessPacket(const unsigned playerNum, std::shared_ptr<const netcode::RawPacket> packet)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::uint8_t* inbuf = packet->data;
 
 	const unsigned a = playerNum;
@@ -1886,7 +1886,7 @@ void CGameServer::ProcessPacket(const unsigned playerNum, std::shared_ptr<const 
 
 void CGameServer::HandleConnectionAttempts()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	while (udpListener != nullptr && udpListener->HasIncomingConnections()) {
 		std::shared_ptr<netcode::UDPConnection> prev = udpListener->PreviewConnection().lock();
 		std::shared_ptr<const RawPacket> packet = prev->GetData();
@@ -1964,7 +1964,7 @@ void CGameServer::HandleConnectionAttempts()
 
 void CGameServer::ServerReadNet()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// handle new connections
 	HandleConnectionAttempts();
 
@@ -2110,7 +2110,7 @@ void CGameServer::ServerReadNet()
 
 void CGameServer::GenerateAndSendGameID()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// First and second dword are time based (current time and load time).
 	gameID.intArray[0] = (unsigned) time(nullptr);
 	for (int i = 4; i < 12; ++i)
@@ -2158,7 +2158,7 @@ void CGameServer::GenerateAndSendGameID()
 
 void CGameServer::CheckForGameStart(bool forced)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(!gameHasStarted);
 	bool allReady = true;
 
@@ -2198,7 +2198,7 @@ void CGameServer::CheckForGameStart(bool forced)
 
 void CGameServer::StartGame(bool forced)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(!gameHasStarted);
 	gameHasStarted = true;
 	startTime = gameTime;
@@ -2288,13 +2288,13 @@ void CGameServer::StartGame(bool forced)
 
 void CGameServer::SetGamePausable(const bool arg)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	gamePausable = arg;
 }
 
 void CGameServer::PushAction(const Action& action, bool fromAutoHost)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	switch (hashString(action.command.c_str())) {
 		case hashString("kickbynum"): {
 			if (action.extra.empty())
@@ -2594,13 +2594,13 @@ void CGameServer::PushAction(const Action& action, bool fromAutoHost)
 
 bool CGameServer::HasFinished() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return quitServer;
 }
 
 void CGameServer::CreateNewFrame(bool fromServerThread, bool fixedFrameTime)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (demoReader != nullptr) {
 		CheckSync();
 		SendDemoData(-1);
@@ -2715,7 +2715,7 @@ void CGameServer::CreateNewFrame(bool fromServerThread, bool fixedFrameTime)
 
 void CGameServer::UpdateSpeedControl(int speedCtrl)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (speedCtrl != curSpeedCtrl) {
 		Message(spring::format("Server speed control: %s", (SpeedControlToString(speedCtrl).c_str())));
 		curSpeedCtrl = speedCtrl;
@@ -2725,7 +2725,7 @@ void CGameServer::UpdateSpeedControl(int speedCtrl)
 
 std::string CGameServer::SpeedControlToString(int speedCtrl)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::string desc = "<invalid>";
 	if (speedCtrl == 0) {
 		desc = "Maximum CPU";
@@ -2739,7 +2739,7 @@ std::string CGameServer::SpeedControlToString(int speedCtrl)
 __FORCE_ALIGN_STACK__
 void CGameServer::UpdateLoop()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	try {
 		Threading::SetThreadName("netcode");
 		Threading::SetAffinity(~0);
@@ -2781,7 +2781,7 @@ void CGameServer::UpdateLoop()
 
 void CGameServer::KickPlayer(int playerNum)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// only kick connected players
 	if (players[playerNum].clientLink == nullptr || players[playerNum].myState == GameParticipant::State::DISCONNECTING) {
 		Message(spring::format("Attempt to kick user %d who is not connected", playerNum));
@@ -2800,7 +2800,7 @@ void CGameServer::KickPlayer(int playerNum)
 
 void CGameServer::MutePlayer(int playerNum, bool muteChat, bool muteDraw)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (playerNum >= players.size()) {
 		LOG_L(L_WARNING, "[%s] invalid playerNum %d", __func__, playerNum);
 		return;
@@ -2813,7 +2813,7 @@ void CGameServer::MutePlayer(int playerNum, bool muteChat, bool muteDraw)
 
 void CGameServer::SpecPlayer(int player)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (players[player].clientLink == nullptr || players[player].myState == GameParticipant::State::DISCONNECTING) {
 		Message(spring::format("Attempt to spec user %d who is not connected", player));
 		return;
@@ -2830,7 +2830,7 @@ void CGameServer::SpecPlayer(int player)
 
 void CGameServer::ResignPlayer(const int player)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Broadcast(CBaseNetProtocol::Get().SendResign(player));
 
 	//players[player].team = 0;
@@ -2864,7 +2864,7 @@ void CGameServer::ResignPlayer(const int player)
 
 bool CGameServer::CheckPlayerPassword(const int playerNum, const std::string& pw) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (playerNum >= players.size()) // new player
 		return true;
 
@@ -2877,7 +2877,7 @@ bool CGameServer::CheckPlayerPassword(const int playerNum, const std::string& pw
 
 void CGameServer::AddAdditionalUser(const std::string& name, const std::string& passwd, bool fromDemo, bool spectator, int team, int playerNum)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (playerNum < 0)
 		playerNum = players.size();
 	if (playerNum >= players.size())
@@ -2913,7 +2913,7 @@ unsigned CGameServer::BindConnection(
 	int netloss
 ) {
 	
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Message(spring::format("%s attempt from %s", (reconnect ? "Reconnection" : "Connection"), clientName.c_str()));
 	Message(spring::format(" -> Version: %s [%s]", clientVersion.c_str(), clientPlatform.c_str()));
 	Message(spring::format(" -> Address: %s", clientLink->GetFullAddress().c_str()), false);
@@ -3088,7 +3088,7 @@ unsigned CGameServer::BindConnection(
 
 void CGameServer::GotChatMessage(const ChatMessage& msg)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// silently drop empty chat messages
 	if (msg.msg.empty())
 		return;
@@ -3108,7 +3108,7 @@ void CGameServer::GotChatMessage(const ChatMessage& msg)
 
 void CGameServer::InternalSpeedChange(float newSpeed)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (internalSpeed == newSpeed)
 		return;
 
@@ -3117,7 +3117,7 @@ void CGameServer::InternalSpeedChange(float newSpeed)
 
 void CGameServer::UserSpeedChange(float newSpeed, int player)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (userSpeedFactor == (newSpeed = std::clamp(newSpeed, minUserSpeed, maxUserSpeed)))
 		return;
 
@@ -3131,7 +3131,7 @@ void CGameServer::UserSpeedChange(float newSpeed, int player)
 uint8_t CGameServer::ReserveSkirmishAIId()
 {
 	
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (freeSkirmishAIs.empty())
 		return MAX_AIS;
 

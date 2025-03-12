@@ -40,20 +40,20 @@ MusicStream::MusicStream(ALuint _source)
 	, lastTick(spring_nulltime)
 	, totalTime(0.0f)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::fill(buffers.begin(), buffers.end(), 0);
 }
 
 MusicStream::~MusicStream()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Stop();
 }
 
 
 MusicStream& MusicStream::operator=(MusicStream&& rhs) noexcept
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (this != &rhs) {
 		std::swap(pcmDecodeBuffer, rhs.pcmDecodeBuffer);
 
@@ -78,7 +78,7 @@ MusicStream& MusicStream::operator=(MusicStream&& rhs) noexcept
 // open a music stream from a given file and start playing it
 void MusicStream::Play(const std::string& path, float volume)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// we're already playing another stream
 	if (!stopped)
 		return;
@@ -138,7 +138,7 @@ void MusicStream::Play(const std::string& path, float volume)
 // stops the currently playing stream
 void MusicStream::Stop()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (stopped)
 		return;
 
@@ -157,7 +157,7 @@ void MusicStream::Stop()
 // clean up the OpenAL resources
 void MusicStream::ReleaseBuffers()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	stopped = true;
 	paused = false;
 
@@ -182,7 +182,7 @@ void MusicStream::ReleaseBuffers()
 // filled with data from the stream
 bool MusicStream::StartPlaying()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	msecsPlayed = spring_nulltime;
 	lastTick = spring_gettime();
 
@@ -205,7 +205,7 @@ bool MusicStream::StartPlaying()
 // returns true if we're still playing
 bool MusicStream::IsPlaying()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	ALenum state = 0;
 	alGetSourcei(source, AL_SOURCE_STATE, &state);
 
@@ -214,7 +214,7 @@ bool MusicStream::IsPlaying()
 
 bool MusicStream::TogglePause()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!stopped)
 		paused = !paused;
 
@@ -226,7 +226,7 @@ bool MusicStream::TogglePause()
 // refill them, and push them back in line
 bool MusicStream::UpdateBuffers()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int buffersProcessed = 0;
 	bool active = true;
 
@@ -251,7 +251,7 @@ bool MusicStream::UpdateBuffers()
 
 void MusicStream::Update()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (stopped)
 		return;
 
@@ -274,7 +274,7 @@ void MusicStream::Update()
 // read decoded data from audio stream into PCM buffer
 bool MusicStream::DecodeStream(ALuint buffer)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	pcmDecodeBuffer.resize(DECODE_BUFFER_SIZE);
 
 	int size = 0;
@@ -311,7 +311,7 @@ bool MusicStream::DecodeStream(ALuint buffer)
 // dequeue any buffers pending on source (unused, see ReleaseBuffers)
 void MusicStream::EmptyBuffers()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(source != 0);
 
 #if 1

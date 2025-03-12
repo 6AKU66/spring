@@ -26,7 +26,7 @@ CR_REG_METADATA(CMissileLauncher, )
 
 void CMissileLauncher::UpdateWantedDir()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CWeapon::UpdateWantedDir();
 
 	if (weaponDef->trajectoryHeight > 0.0f) {
@@ -37,7 +37,7 @@ void CMissileLauncher::UpdateWantedDir()
 
 void CMissileLauncher::FireImpl(const bool scriptCall)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float3 targetVec = currentTargetPos - weaponMuzzlePos;
 	const float targetDist = targetVec.LengthNormalize();
 
@@ -69,7 +69,7 @@ void CMissileLauncher::FireImpl(const bool scriptCall)
 
 bool CMissileLauncher::HaveFreeLineOfFire(const float3 srcPos, const float3 tgtPos, const SWeaponTarget& trg) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// high-trajectory missiles use curved path rather than linear ground intersection
 	if (weaponDef->trajectoryHeight <= 0.0f)
 		return (CWeapon::HaveFreeLineOfFire(srcPos, tgtPos, trg));

@@ -26,7 +26,7 @@
 
 bool LuaConstEngine::PushEntries(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LuaPushNamedString(L, "version"        ,                                    SpringVersion::GetSync()          );
 	LuaPushNamedString(L, "versionFull"    , (!CLuaHandle::GetHandleSynced(L))? SpringVersion::GetFull()      : "");
 	LuaPushNamedString(L, "versionPatchSet", (!CLuaHandle::GetHandleSynced(L))? SpringVersion::GetPatchSet()  : "");

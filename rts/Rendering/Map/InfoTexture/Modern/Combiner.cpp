@@ -66,14 +66,14 @@ CInfoTextureCombiner::CInfoTextureCombiner()
 
 CInfoTextureCombiner::~CInfoTextureCombiner()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	shaderHandler->ReleaseProgramObject("[CInfoTextureCombiner]", "CInfoTextureCombiner");
 }
 
 
 void CInfoTextureCombiner::SwitchMode(const std::string& name)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (name.empty()) {
 		disabled = true;
 
@@ -97,7 +97,7 @@ void CInfoTextureCombiner::SwitchMode(const std::string& name)
 
 bool CInfoTextureCombiner::CreateShader(const std::string& filename, const bool clear, const float4 clearColor)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (clear) {
 		// clear
 		fbo.Bind();
@@ -120,7 +120,7 @@ bool CInfoTextureCombiner::CreateShader(const std::string& filename, const bool 
 
 void CInfoTextureCombiner::Update()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	shader->Enable();
 	fbo.Bind();
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);

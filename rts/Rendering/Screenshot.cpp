@@ -32,7 +32,7 @@ struct FunctionArgs
 
 void TakeScreenshot(std::string type, unsigned quality)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (type.empty())
 		type = "png";
 

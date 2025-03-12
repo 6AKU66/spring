@@ -25,7 +25,7 @@
 using namespace MoveTypes;
 
 void UnitTrapCheckSystem::Init() {
-    //ZoneScoped;
+    RECOIL_DETAILED_TRACY_ZONE;
     auto& comp = Sim::systemGlobals.CreateSystemComponent<YardmapTrapCheckSystemSystemComponent>();
 
     // std::for_each(comp.trappedUnitLists.begin(), comp.trappedUnitLists.end(), [](auto& list){
@@ -36,7 +36,7 @@ void UnitTrapCheckSystem::Init() {
 }
 
 void TagUnitsThatMayBeStuck(std::vector<CUnit*> &curList, const CSolidObject* collidee, int curThread) {
-    //ZoneScoped;
+    RECOIL_DETAILED_TRACY_ZONE;
     const int largestMoveTypSizeH = moveDefHandler.GetLargestFootPrintSizeH() + 1;
     const int bufferSize = SQUARE_SIZE * modInfo.unitQuadPositionUpdateRate * 2 + largestMoveTypSizeH + 1;
 

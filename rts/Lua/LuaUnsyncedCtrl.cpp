@@ -343,7 +343,7 @@ bool LuaUnsyncedCtrl::PushEntries(lua_State* L)
 
 static inline CProjectile* ParseRawProjectile(lua_State* L, const char* caller, int index, bool synced)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_isnumber(L, index)) {
 		luaL_error(L, "[%s] projectile ID parameter in %s() not a number\n", __func__, caller);
 		return nullptr;
@@ -363,7 +363,7 @@ static inline CProjectile* ParseRawProjectile(lua_State* L, const char* caller, 
 
 static inline CUnit* ParseRawUnit(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_isnumber(L, index)) {
 		luaL_error(L, "[%s] ID parameter in %s() not a number\n", __func__, caller);
 		return nullptr;
@@ -374,7 +374,7 @@ static inline CUnit* ParseRawUnit(lua_State* L, const char* caller, int index)
 
 static inline CFeature* ParseRawFeature(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_isnumber(L, index)) {
 		luaL_error(L, "[%s] ID parameter in %s() not a number\n", __func__, caller);
 		return nullptr;
@@ -386,7 +386,7 @@ static inline CFeature* ParseRawFeature(lua_State* L, const char* caller, int in
 
 static inline CUnit* ParseAllyUnit(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseRawUnit(L, caller, index);
 
 	if (unit == nullptr)
@@ -404,7 +404,7 @@ static inline CUnit* ParseAllyUnit(lua_State* L, const char* caller, int index)
 
 static inline CUnit* ParseCtrlUnit(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseRawUnit(L, caller, index);
 
 	if (unit == nullptr)
@@ -418,7 +418,7 @@ static inline CUnit* ParseCtrlUnit(lua_State* L, const char* caller, int index)
 
 static inline CFeature* ParseCtrlFeature(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseRawFeature(L, caller, index);
 
 	if (feature == nullptr)
@@ -433,7 +433,7 @@ static inline CFeature* ParseCtrlFeature(lua_State* L, const char* caller, int i
 
 static inline CUnit* ParseSelectUnit(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseRawUnit(L, caller, index);
 
 	if (unit == nullptr || unit->noSelect)
@@ -469,7 +469,7 @@ static inline CUnit* ParseSelectUnit(lua_State* L, const char* caller, int index
  */
 int LuaUnsyncedCtrl::Ping(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// pre-game ping would not be handled properly, send via GUI
 	if (guihandler == nullptr)
 		return 0;
@@ -527,7 +527,7 @@ int LuaUnsyncedCtrl::Log(lua_State* L)
  */
 int LuaUnsyncedCtrl::SendCommands(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if ((guihandler == nullptr) || gs->noHelperAIs)
 		return 0;
 
@@ -569,7 +569,7 @@ int LuaUnsyncedCtrl::SendCommands(lua_State* L)
 
 static string ParseMessage(lua_State* L, const string& msg)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	string::size_type start = msg.find("<PLAYER");
 	if (start == string::npos)
 		return msg;
@@ -597,7 +597,7 @@ static string ParseMessage(lua_State* L, const string& msg)
 
 static void PrintMessage(lua_State* L, const string& msg)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LOG("%s", ParseMessage(L, msg).c_str());
 }
 
@@ -614,7 +614,7 @@ static void PrintMessage(lua_State* L, const string& msg)
  */
 int LuaUnsyncedCtrl::SendMessage(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	PrintMessage(L, luaL_checksstring(L, 1));
 	return 0;
 }
@@ -626,7 +626,7 @@ int LuaUnsyncedCtrl::SendMessage(lua_State* L)
  */
 int LuaUnsyncedCtrl::SendMessageToSpectators(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (gu->spectating)
 		PrintMessage(L, luaL_checksstring(L, 1));
 
@@ -641,7 +641,7 @@ int LuaUnsyncedCtrl::SendMessageToSpectators(lua_State* L)
  */
 int LuaUnsyncedCtrl::SendMessageToPlayer(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (luaL_checkint(L, 1) == gu->myPlayerNum)
 		PrintMessage(L, luaL_checksstring(L, 2));
 
@@ -656,7 +656,7 @@ int LuaUnsyncedCtrl::SendMessageToPlayer(lua_State* L)
  */
 int LuaUnsyncedCtrl::SendMessageToTeam(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (luaL_checkint(L, 1) == gu->myTeam)
 		PrintMessage(L, luaL_checksstring(L, 2));
 
@@ -671,7 +671,7 @@ int LuaUnsyncedCtrl::SendMessageToTeam(lua_State* L)
  */
 int LuaUnsyncedCtrl::SendMessageToAllyTeam(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (luaL_checkint(L, 1) == gu->myAllyTeam)
 		PrintMessage(L, luaL_checksstring(L, 2));
 
@@ -693,7 +693,7 @@ int LuaUnsyncedCtrl::SendMessageToAllyTeam(lua_State* L)
  */
 int LuaUnsyncedCtrl::LoadSoundDef(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LuaParser soundDefsParser(luaL_checksstring(L, 1), SPRING_VFS_ZIP_FIRST, SPRING_VFS_ZIP_FIRST);
 
 	const bool retval = sound->LoadSoundDefs(&soundDefsParser);
@@ -724,7 +724,7 @@ int LuaUnsyncedCtrl::LoadSoundDef(lua_State* L)
  */
 int LuaUnsyncedCtrl::PlaySoundFile(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int args = lua_gettop(L);
 	      int index = 3;
 
@@ -816,7 +816,7 @@ int LuaUnsyncedCtrl::PlaySoundFile(lua_State* L)
 */
 int LuaUnsyncedCtrl::PlaySoundStream(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// file, volume, enqueue
 	Channels::BGMusic->StreamPlay(luaL_checksstring(L, 1), luaL_optnumber(L, 2, 1.0f), luaL_optboolean(L, 3, false));
 
@@ -834,7 +834,7 @@ int LuaUnsyncedCtrl::PlaySoundStream(lua_State* L)
  */
 int LuaUnsyncedCtrl::StopSoundStream(lua_State*)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Channels::BGMusic->StreamStop();
 	return 0;
 }
@@ -847,7 +847,7 @@ int LuaUnsyncedCtrl::StopSoundStream(lua_State*)
  */
 int LuaUnsyncedCtrl::PauseSoundStream(lua_State*)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Channels::BGMusic->StreamPause();
 	return 0;
 }
@@ -861,7 +861,7 @@ int LuaUnsyncedCtrl::PauseSoundStream(lua_State*)
  */
 int LuaUnsyncedCtrl::SetSoundStreamVolume(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Channels::BGMusic->SetVolume(luaL_checkfloat(L, 1));
 	return 0;
 }
@@ -871,7 +871,7 @@ int LuaUnsyncedCtrl::SetSoundStreamVolume(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetSoundEffectParams(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #if !defined(HEADLESS) && !defined(NO_SOUND)
 	if (!efx.Supported())
 		return 0;
@@ -989,7 +989,7 @@ int LuaUnsyncedCtrl::SetSoundEffectParams(lua_State* L)
  */
 int LuaUnsyncedCtrl::AddWorldIcon(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int cmdID = luaL_checkint(L, 1);
 	const float3 pos(luaL_checkfloat(L, 2),
 	                 luaL_checkfloat(L, 3),
@@ -1010,7 +1010,7 @@ int LuaUnsyncedCtrl::AddWorldIcon(lua_State* L)
  */
 int LuaUnsyncedCtrl::AddWorldText(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const string text = luaL_checksstring(L, 1);
 	const float3 pos(luaL_checkfloat(L, 2),
 	                 luaL_checkfloat(L, 3),
@@ -1033,7 +1033,7 @@ int LuaUnsyncedCtrl::AddWorldText(lua_State* L)
  */
 int LuaUnsyncedCtrl::AddWorldUnit(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int unitDefID = luaL_checkint(L, 1);
 
 	if (!unitDefHandler->IsValidUnitDefID(unitDefID))
@@ -1070,7 +1070,7 @@ int LuaUnsyncedCtrl::AddWorldUnit(lua_State* L)
  */
 int LuaUnsyncedCtrl::DrawUnitCommands(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (lua_istable(L, 1)) {
 		// second arg indicates if table is a map
 		const int unitArg = luaL_optboolean(L, 2, false)? -2 : -1;
@@ -1133,7 +1133,7 @@ int LuaUnsyncedCtrl::DrawUnitCommands(lua_State* L)
 
 static CCameraController::StateMap ParseCamStateMap(lua_State* L, int tableIdx)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CCameraController::StateMap camState;
 
 	for (lua_pushnil(L); lua_next(L, tableIdx) != 0; lua_pop(L, 1)) {
@@ -1166,7 +1166,7 @@ static CCameraController::StateMap ParseCamStateMap(lua_State* L, int tableIdx)
  */
 int LuaUnsyncedCtrl::SetCameraTarget(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (mouse == nullptr)
 		return 0;
 
@@ -1247,7 +1247,7 @@ int LuaUnsyncedCtrl::SetCameraOffset(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetCameraState(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// ??
 	if (mouse == nullptr)
 		return 0;
@@ -1284,7 +1284,7 @@ int LuaUnsyncedCtrl::SetCameraState(lua_State* L)
  */
 int LuaUnsyncedCtrl::SelectUnit(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!luaL_optboolean(L, 2, false))
 		selectedUnitsHandler.ClearSelected();
 
@@ -1308,7 +1308,7 @@ int LuaUnsyncedCtrl::SelectUnit(lua_State* L)
  */
 int LuaUnsyncedCtrl::DeselectUnit(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* const unit = ParseSelectUnit(L, __func__, 1);
 	if (unit == nullptr)
 		return 0;
@@ -1320,7 +1320,7 @@ int LuaUnsyncedCtrl::DeselectUnit(lua_State* L)
 
 static int TableSelectionCommonFunc(lua_State* L, int unitIndexInTable, bool isSelect, const char *caller)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, 1))
 		luaL_error(L, "[%s] 1st argument must be a table", caller);
 
@@ -1352,7 +1352,7 @@ static int TableSelectionCommonFunc(lua_State* L, int unitIndexInTable, bool isS
  */
 int LuaUnsyncedCtrl::DeselectUnitArray(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return TableSelectionCommonFunc(L, -1, false, __func__);
 }
 
@@ -1364,7 +1364,7 @@ int LuaUnsyncedCtrl::DeselectUnitArray(lua_State* L)
  */
 int LuaUnsyncedCtrl::DeselectUnitMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return TableSelectionCommonFunc(L, -2, false, __func__);
 }
 
@@ -1377,7 +1377,7 @@ int LuaUnsyncedCtrl::DeselectUnitMap(lua_State* L)
  */
 int LuaUnsyncedCtrl::SelectUnitArray(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return TableSelectionCommonFunc(L, -1, true, __func__);
 }
 
@@ -1390,7 +1390,7 @@ int LuaUnsyncedCtrl::SelectUnitArray(lua_State* L)
  */
 int LuaUnsyncedCtrl::SelectUnitMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return TableSelectionCommonFunc(L, -2, true, __func__);
 }
 
@@ -1452,7 +1452,7 @@ int LuaUnsyncedCtrl::SelectUnitMap(lua_State* L)
 
 static bool ParseLight(lua_State* L, GL::Light& light, const int tblIdx, const char* caller)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, tblIdx)) {
 		luaL_error(L, "[%s] argument %d must be a table!", caller, tblIdx);
 		return false;
@@ -1571,7 +1571,7 @@ static bool ParseLight(lua_State* L, GL::Light& light, const int tblIdx, const c
  */
 int LuaUnsyncedCtrl::AddMapLight(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLuaHandle::GetHandleSynced(L) || !CLuaHandle::GetHandleFullRead(L))
 		return 0;
 
@@ -1598,7 +1598,7 @@ int LuaUnsyncedCtrl::AddMapLight(lua_State* L)
  */
 int LuaUnsyncedCtrl::AddModelLight(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLuaHandle::GetHandleSynced(L) || !CLuaHandle::GetHandleFullRead(L))
 		return 0;
 
@@ -1624,7 +1624,7 @@ int LuaUnsyncedCtrl::AddModelLight(lua_State* L)
  */
 int LuaUnsyncedCtrl::UpdateMapLight(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int lightHandle = luaL_checkint(L, 1);
 
 	if (CLuaHandle::GetHandleSynced(L) || !CLuaHandle::GetHandleFullRead(L))
@@ -1647,7 +1647,7 @@ int LuaUnsyncedCtrl::UpdateMapLight(lua_State* L)
  */
 int LuaUnsyncedCtrl::UpdateModelLight(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int lightHandle = luaL_checkint(L, 1);
 
 	if (CLuaHandle::GetHandleSynced(L) || !CLuaHandle::GetHandleFullRead(L))
@@ -1666,7 +1666,7 @@ int LuaUnsyncedCtrl::UpdateModelLight(lua_State* L)
  */
 static bool AddLightTrackingTarget(lua_State* L, GL::Light* light, bool trackEnable, bool trackUnit, const char* caller)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	bool ret = false;
 
 	if (trackUnit) {
@@ -1731,7 +1731,7 @@ static bool AddLightTrackingTarget(lua_State* L, GL::Light* light, bool trackEna
  */
 int LuaUnsyncedCtrl::SetMapLightTrackingState(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLuaHandle::GetHandleSynced(L) || !CLuaHandle::GetHandleFullRead(L))
 		return 0;
 
@@ -1768,7 +1768,7 @@ int LuaUnsyncedCtrl::SetMapLightTrackingState(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetModelLightTrackingState(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLuaHandle::GetHandleSynced(L) || !CLuaHandle::GetHandleFullRead(L))
 		return 0;
 
@@ -1811,7 +1811,7 @@ int LuaUnsyncedCtrl::SetModelLightTrackingState(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetMapShader(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLuaHandle::GetHandleSynced(L))
 		return 0;
 
@@ -1837,7 +1837,7 @@ int LuaUnsyncedCtrl::SetMapShader(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetMapSquareTexture(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLuaHandle::GetHandleSynced(L))
 		return 0;
 
@@ -1892,7 +1892,7 @@ int LuaUnsyncedCtrl::SetMapSquareTexture(lua_State* L)
 
 static MapTextureData ParseLuaTextureData(lua_State* L, bool mapTex)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	MapTextureData luaTexData;
 
 	const std::string& texType = mapTex? luaL_checkstring(L, 1): "";
@@ -1936,7 +1936,7 @@ static MapTextureData ParseLuaTextureData(lua_State* L, bool mapTex)
  */
 int LuaUnsyncedCtrl::SetMapShadingTexture(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLuaHandle::GetHandleSynced(L))
 		return 0;
 
@@ -1956,7 +1956,7 @@ int LuaUnsyncedCtrl::SetMapShadingTexture(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetSkyBoxTexture(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLuaHandle::GetHandleSynced(L))
 		return 0;
 
@@ -1982,7 +1982,7 @@ int LuaUnsyncedCtrl::SetSkyBoxTexture(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetUnitNoDraw(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseCtrlUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2002,7 +2002,7 @@ int LuaUnsyncedCtrl::SetUnitNoDraw(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetUnitEngineDrawMask(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseCtrlUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2022,7 +2022,7 @@ int LuaUnsyncedCtrl::SetUnitEngineDrawMask(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetUnitAlwaysUpdateMatrix(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseCtrlUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2042,7 +2042,7 @@ int LuaUnsyncedCtrl::SetUnitAlwaysUpdateMatrix(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetUnitNoMinimap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseCtrlUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2062,7 +2062,7 @@ int LuaUnsyncedCtrl::SetUnitNoMinimap(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetUnitNoSelect(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseCtrlUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2091,7 +2091,7 @@ int LuaUnsyncedCtrl::SetUnitNoSelect(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetUnitLeaveTracks(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseCtrlUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2120,7 +2120,7 @@ int LuaUnsyncedCtrl::SetUnitLeaveTracks(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetUnitSelectionVolumeData(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseCtrlUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2147,7 +2147,7 @@ int LuaUnsyncedCtrl::SetUnitSelectionVolumeData(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetFeatureNoDraw(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseCtrlFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -2167,7 +2167,7 @@ int LuaUnsyncedCtrl::SetFeatureNoDraw(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetFeatureEngineDrawMask(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseCtrlFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -2187,7 +2187,7 @@ int LuaUnsyncedCtrl::SetFeatureEngineDrawMask(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetFeatureAlwaysUpdateMatrix(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseCtrlFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -2209,7 +2209,7 @@ int LuaUnsyncedCtrl::SetFeatureAlwaysUpdateMatrix(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetFeatureFade(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseCtrlFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -2238,7 +2238,7 @@ int LuaUnsyncedCtrl::SetFeatureFade(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetFeatureSelectionVolumeData(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseCtrlFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -2269,7 +2269,7 @@ int LuaUnsyncedCtrl::SetFeatureSelectionVolumeData(lua_State* L)
  */
 int LuaUnsyncedCtrl::AddUnitIcon(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLuaHandle::GetHandleSynced(L))
 		return 0;
 
@@ -2296,7 +2296,7 @@ int LuaUnsyncedCtrl::AddUnitIcon(lua_State* L)
  */
 int LuaUnsyncedCtrl::FreeUnitIcon(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLuaHandle::GetHandleSynced(L))
 		return 0;
 
@@ -2314,7 +2314,7 @@ int LuaUnsyncedCtrl::FreeUnitIcon(lua_State* L)
  */
 int LuaUnsyncedCtrl::UnitIconSetDraw(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseCtrlUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2336,7 +2336,7 @@ int LuaUnsyncedCtrl::UnitIconSetDraw(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetUnitDefIcon(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const UnitDef* ud = unitDefHandler->GetUnitDefByID(luaL_checkint(L, 1));
 
 	if (ud == nullptr)
@@ -2377,7 +2377,7 @@ int LuaUnsyncedCtrl::SetUnitDefIcon(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetUnitDefImage(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const UnitDef* ud = unitDefHandler->GetUnitDefByID(luaL_checkint(L, 1));
 
 	if (ud == nullptr)
@@ -2427,7 +2427,7 @@ int LuaUnsyncedCtrl::SetUnitDefImage(lua_State* L)
  */
 int LuaUnsyncedCtrl::ExtractModArchiveFile(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const string path = luaL_checkstring(L, 1);
 
 	CFileHandler vfsFile(path, SPRING_VFS_ZIP);
@@ -2492,7 +2492,7 @@ int LuaUnsyncedCtrl::ExtractModArchiveFile(lua_State* L)
  */
 int LuaUnsyncedCtrl::CreateDir(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string& dir = luaL_checkstring(L, 1);
 
 	// keep directories within the Spring directory
@@ -2522,7 +2522,7 @@ int LuaUnsyncedCtrl::CreateDir(lua_State* L)
 
 static int SetActiveCommandByIndex(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -2550,7 +2550,7 @@ static int SetActiveCommandByIndex(lua_State* L)
 
 static int SetActiveCommandByAction(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -2586,7 +2586,7 @@ static int SetActiveCommandByAction(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetActiveCommand(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -2612,7 +2612,7 @@ int LuaUnsyncedCtrl::SetActiveCommand(lua_State* L)
  */
 int LuaUnsyncedCtrl::LoadCmdColorsConfig(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	cmdColors.LoadConfigFromString(luaL_checkstring(L, 1));
 	return 0;
 }
@@ -2624,7 +2624,7 @@ int LuaUnsyncedCtrl::LoadCmdColorsConfig(lua_State* L)
  */
 int LuaUnsyncedCtrl::LoadCtrlPanelConfig(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -2638,7 +2638,7 @@ int LuaUnsyncedCtrl::LoadCtrlPanelConfig(lua_State* L)
  */
 int LuaUnsyncedCtrl::ForceLayoutUpdate(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (guihandler == nullptr)
 		return 0;
 
@@ -2655,7 +2655,7 @@ int LuaUnsyncedCtrl::ForceLayoutUpdate(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetDrawSelectionInfo(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (guihandler != nullptr)
 		guihandler->SetDrawSelectionInfo(luaL_checkboolean(L, 1));
 
@@ -2671,7 +2671,7 @@ int LuaUnsyncedCtrl::SetDrawSelectionInfo(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetBoxSelectionByEngine(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	bool b = luaL_checkboolean(L, 1);
 	selectedUnitsHandler.SetBoxSelectionHandledByEngine(b);
 	return 0;
@@ -2689,7 +2689,7 @@ int LuaUnsyncedCtrl::SetBoxSelectionByEngine(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetTeamColor(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int teamID = luaL_checkint(L, 1);
 	if (!teamHandler.IsValidTeam(teamID))
 		return 0;
@@ -2720,7 +2720,7 @@ int LuaUnsyncedCtrl::SetTeamColor(lua_State* L)
  */
 int LuaUnsyncedCtrl::AssignMouseCursor(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string& cmdName  = luaL_checksstring(L, 1);
 	const std::string& fileName = luaL_checksstring(L, 2);
 
@@ -2744,7 +2744,7 @@ int LuaUnsyncedCtrl::AssignMouseCursor(lua_State* L)
  */
 int LuaUnsyncedCtrl::ReplaceMouseCursor(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const string oldName = luaL_checksstring(L, 1);
 	const string newName = luaL_checksstring(L, 2);
 
@@ -2769,7 +2769,7 @@ int LuaUnsyncedCtrl::ReplaceMouseCursor(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetCustomCommandDrawData(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int cmdID = luaL_checkint(L, 1);
 
 	int iconID = 0;
@@ -2813,7 +2813,7 @@ int LuaUnsyncedCtrl::SetCustomCommandDrawData(lua_State* L)
  */
 int LuaUnsyncedCtrl::WarpMouse(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int x = luaL_checkint(L, 1);
 	const int y = globalRendering->viewSizeY - luaL_checkint(L, 2) - 1;
 	mouse->WarpMouse(x, y);
@@ -2828,7 +2828,7 @@ int LuaUnsyncedCtrl::WarpMouse(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetMouseCursor(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string& cursorName = luaL_checkstring(L, 1);
 	const float cursorScale = luaL_optfloat(L, 2, 1.0f);
 
@@ -2853,7 +2853,7 @@ int LuaUnsyncedCtrl::SetMouseCursor(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetLosViewColors(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float alwaysColor[3];
 	float losColor[3];
 	float radarColor[3];
@@ -2903,7 +2903,7 @@ int LuaUnsyncedCtrl::SetLosViewColors(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetNanoProjectileParams(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CNanoProjectile::rotVal0 = luaL_optfloat(L, 1, 0.0f) * (math::DEG_TO_RAD                            );
 	CNanoProjectile::rotVel0 = luaL_optfloat(L, 2, 0.0f) * (math::DEG_TO_RAD / GAME_SPEED               );
 	CNanoProjectile::rotAcc0 = luaL_optfloat(L, 3, 0.0f) * (math::DEG_TO_RAD / (GAME_SPEED * GAME_SPEED));
@@ -2935,7 +2935,7 @@ int LuaUnsyncedCtrl::SetNanoProjectileParams(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetConfigInt(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string& key = luaL_checkstring(L, 1);
 
 	// don't allow to change a read-only variable
@@ -2964,7 +2964,7 @@ int LuaUnsyncedCtrl::SetConfigInt(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetConfigFloat(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string& key = luaL_checkstring(L, 1);
 
 	if (configHandler->IsReadOnly(key)) {
@@ -2988,7 +2988,7 @@ int LuaUnsyncedCtrl::SetConfigFloat(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetConfigString(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string& key = luaL_checkstring(L, 1);
 	const std::string& val = luaL_checkstring(L, 2);
 
@@ -3007,7 +3007,7 @@ int LuaUnsyncedCtrl::SetConfigString(lua_State* L)
 /******************************************************************************/
 
 static int ReloadOrRestart(const std::string& springArgs, const std::string& scriptText, bool newProcess) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string springFullName = Platform::GetProcessExecutableFile();
 	const std::string scriptFullName = dataDirLocater.GetWriteDirPath() + "script.txt";
 
@@ -3065,7 +3065,7 @@ static int ReloadOrRestart(const std::string& springArgs, const std::string& scr
  */
 int LuaUnsyncedCtrl::Quit(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	gu->globalQuit = true;
 	return 0;
 }
@@ -3084,7 +3084,7 @@ int LuaUnsyncedCtrl::Quit(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetUnitGroup(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (gs->noHelperAIs)
 		return 0;
 
@@ -3120,7 +3120,7 @@ int LuaUnsyncedCtrl::SetUnitGroup(lua_State* L)
 static void ParseUnitMap(lua_State* L, const char* caller,
                          int table, vector<int>& unitIDs)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, table))
 		luaL_error(L, "%s(): error parsing unit map", caller);
 
@@ -3138,7 +3138,7 @@ static void ParseUnitMap(lua_State* L, const char* caller,
 static void ParseUnitArray(lua_State* L, const char* caller,
                            int table, vector<int>& unitIDs)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, table))
 		luaL_error(L, "%s(): error parsing unit array", caller);
 
@@ -3157,7 +3157,7 @@ static void ParseUnitArray(lua_State* L, const char* caller,
 
 static bool CanGiveOrders(const lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (gs->PreSimFrame())
 		return false;
 
@@ -3199,7 +3199,7 @@ static bool CanGiveOrders(const lua_State* L)
  */
 int LuaUnsyncedCtrl::GiveOrder(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!CanGiveOrders(L))
 		return 1;
 
@@ -3221,7 +3221,7 @@ int LuaUnsyncedCtrl::GiveOrder(lua_State* L)
  */
 int LuaUnsyncedCtrl::GiveOrderToUnit(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!CanGiveOrders(L)) {
 		lua_pushboolean(L, false);
 		return 1;
@@ -3254,7 +3254,7 @@ int LuaUnsyncedCtrl::GiveOrderToUnit(lua_State* L)
  */
 int LuaUnsyncedCtrl::GiveOrderToUnitMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!CanGiveOrders(L)) {
 		lua_pushboolean(L, false);
 		return 1;
@@ -3287,7 +3287,7 @@ int LuaUnsyncedCtrl::GiveOrderToUnitMap(lua_State* L)
  */
 int LuaUnsyncedCtrl::GiveOrderToUnitArray(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!CanGiveOrders(L)) {
 		lua_pushboolean(L, false);
 		return 1;
@@ -3330,7 +3330,7 @@ int LuaUnsyncedCtrl::GiveOrderToUnitArray(lua_State* L)
  */
 int LuaUnsyncedCtrl::GiveOrderArrayToUnit(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!CanGiveOrders(L)) {
 		lua_pushboolean(L, false);
 		return 1;
@@ -3365,7 +3365,7 @@ int LuaUnsyncedCtrl::GiveOrderArrayToUnit(lua_State* L)
  */
 int LuaUnsyncedCtrl::GiveOrderArrayToUnitMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!CanGiveOrders(L)) {
 		lua_pushboolean(L, false);
 		return 1;
@@ -3407,7 +3407,7 @@ int LuaUnsyncedCtrl::GiveOrderArrayToUnitMap(lua_State* L)
  */
 int LuaUnsyncedCtrl::GiveOrderArrayToUnitArray(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!CanGiveOrders(L)) {
 		lua_pushboolean(L, false);
 		return 1;
@@ -3443,7 +3443,7 @@ int LuaUnsyncedCtrl::GiveOrderArrayToUnitArray(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetBuildSpacing(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (guihandler != nullptr)
 		guihandler->SetBuildSpacing(luaL_checkinteger(L, 1));
 
@@ -3459,7 +3459,7 @@ int LuaUnsyncedCtrl::SetBuildSpacing(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetBuildFacing(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (guihandler != nullptr)
 		guihandler->SetBuildFacing(luaL_checkint(L, 1));
 
@@ -3481,7 +3481,7 @@ int LuaUnsyncedCtrl::SetBuildFacing(lua_State* L)
  */
 int LuaUnsyncedCtrl::SendLuaUIMsg(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string msg = luaL_checksstring(L, 1);
 	const std::vector<std::uint8_t> data(msg.begin(), msg.end());
 
@@ -3506,7 +3506,7 @@ int LuaUnsyncedCtrl::SendLuaUIMsg(lua_State* L)
  */
 int LuaUnsyncedCtrl::SendLuaGaiaMsg(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string msg = luaL_checksstring(L, 1);
 	const std::vector<std::uint8_t> data(msg.begin(), msg.end());
 
@@ -3526,7 +3526,7 @@ int LuaUnsyncedCtrl::SendLuaGaiaMsg(lua_State* L)
  */
 int LuaUnsyncedCtrl::SendLuaRulesMsg(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string msg = luaL_checksstring(L, 1);
 	const std::vector<std::uint8_t> data(msg.begin(), msg.end());
 
@@ -3547,7 +3547,7 @@ int LuaUnsyncedCtrl::SendLuaRulesMsg(lua_State* L)
  */
 int LuaUnsyncedCtrl::SendLuaMenuMsg(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (luaMenu != nullptr)
 		luaMenu->RecvLuaMsg(luaL_checksstring(L, 1), gu->myPlayerNum);
 
@@ -3571,7 +3571,7 @@ int LuaUnsyncedCtrl::SendLuaMenuMsg(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetShareLevel(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (gu->spectating || gs->noHelperAIs || gs->PreSimFrame())
 		return 0;
 
@@ -3613,7 +3613,7 @@ int LuaUnsyncedCtrl::SetShareLevel(lua_State* L)
  */
 int LuaUnsyncedCtrl::ShareResources(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (gu->spectating || gs->noHelperAIs || gs->PreSimFrame())
 		return 0;
 
@@ -3667,7 +3667,7 @@ int LuaUnsyncedCtrl::ShareResources(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetLastMessagePosition(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const float3 pos(luaL_checkfloat(L, 1),
 	                 luaL_checkfloat(L, 2),
 	                 luaL_checkfloat(L, 3));
@@ -3693,7 +3693,7 @@ int LuaUnsyncedCtrl::SetLastMessagePosition(lua_State* L)
  */
 int LuaUnsyncedCtrl::MarkerAddPoint(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (inMapDrawer == nullptr)
 		return 0;
 
@@ -3726,7 +3726,7 @@ int LuaUnsyncedCtrl::MarkerAddPoint(lua_State* L)
  */
 int LuaUnsyncedCtrl::MarkerAddLine(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (inMapDrawer == nullptr)
 		return 0;
 
@@ -3763,7 +3763,7 @@ int LuaUnsyncedCtrl::MarkerAddLine(lua_State* L)
  */
 int LuaUnsyncedCtrl::MarkerErasePosition(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (inMapDrawer == nullptr)
 		return 0;
 
@@ -3806,7 +3806,7 @@ int LuaUnsyncedCtrl::MarkerErasePosition(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetAtmosphere(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, 1))
 		luaL_error(L, "Incorrect arguments to SetAtmosphere()");
 
@@ -3877,7 +3877,7 @@ int LuaUnsyncedCtrl::SetAtmosphere(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetSunDirection(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto dir = float3(luaL_checkfloat(L, 1), luaL_checkfloat(L, 2), luaL_checkfloat(L, 3));
 	auto intensity = luaL_optfloat(L, 4, 1.0f); // seems broken atm, only toggles shadows off when set to 0
 	ISky::GetSky()->GetLight()->SetLightDir(float4(dir.SafeNormalize(), intensity));
@@ -3896,7 +3896,7 @@ int LuaUnsyncedCtrl::SetSunDirection(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetSunLighting(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, 1))
 		luaL_error(L, "[%s] argument should be a table", __func__);
 
@@ -3951,7 +3951,7 @@ int LuaUnsyncedCtrl::SetSunLighting(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetMapRenderingParams(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, 1))
 		luaL_error(L, "[%s] incorrect arguments");
 
@@ -4019,7 +4019,7 @@ int LuaUnsyncedCtrl::SetMapRenderingParams(lua_State* L)
  */
 int LuaUnsyncedCtrl::ForceTesselationUpdate(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CSMFGroundDrawer* smfDrawer = dynamic_cast<CSMFGroundDrawer*>(readMap->GetGroundDrawer());
 
 	if (smfDrawer == nullptr) {
@@ -4055,7 +4055,7 @@ int LuaUnsyncedCtrl::ForceTesselationUpdate(lua_State* L)
  * @treturn ?nil|bool ai_processed
  */
 int LuaUnsyncedCtrl::SendSkirmishAIMessage(lua_State* L) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLuaHandle::GetHandleSynced(L))
 		return 0;
 
@@ -4090,7 +4090,7 @@ int LuaUnsyncedCtrl::SendSkirmishAIMessage(lua_State* L) {
  * @treturn nil
  */
 int LuaUnsyncedCtrl::SetLogSectionFilterLevel(lua_State* L) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int loglevel = LuaUtils::ParseLogLevel(L, 2);
 
 	if (loglevel < 0)
@@ -4113,7 +4113,7 @@ int LuaUnsyncedCtrl::SetLogSectionFilterLevel(lua_State* L) {
  * @treturn nil
  */
 int LuaUnsyncedCtrl::GarbageCollectCtrl(lua_State* L) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	luaContextData* ctxData = GetLuaContextData(L);
 	SLuaGarbageCollectCtrl& gcCtrl = ctxData->gcCtrl;
 
@@ -4139,7 +4139,7 @@ int LuaUnsyncedCtrl::GarbageCollectCtrl(lua_State* L) {
  */
 int LuaUnsyncedCtrl::SetDrawSky(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	globalRendering->drawSky = !!luaL_checkboolean(L, 1);
 	return 0;
 }
@@ -4151,7 +4151,7 @@ int LuaUnsyncedCtrl::SetDrawSky(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetDrawWater(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	globalRendering->drawWater = !!luaL_checkboolean(L, 1);
 	return 0;
 }
@@ -4163,7 +4163,7 @@ int LuaUnsyncedCtrl::SetDrawWater(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetDrawGround(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	globalRendering->drawGround = !!luaL_checkboolean(L, 1);
 	return 0;
 }
@@ -4176,7 +4176,7 @@ int LuaUnsyncedCtrl::SetDrawGround(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetDrawGroundDeferred(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CBaseGroundDrawer* gd = readMap->GetGroundDrawer();
 
 	gd->SetDrawDeferredPass(luaL_checkboolean(L, 1));
@@ -4196,7 +4196,7 @@ int LuaUnsyncedCtrl::SetDrawGroundDeferred(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetDrawModelsDeferred(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// NOTE the argument ordering
 	unitDrawer->SetDrawDeferredPass(luaL_checkboolean(L, 1));
 	unitDrawer->SetDrawForwardPass(luaL_optboolean(L, 3, unitDrawer->DrawForward()));
@@ -4220,7 +4220,7 @@ int LuaUnsyncedCtrl::SetDrawModelsDeferred(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetVideoCapturingMode(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	videoCapturing->SetAllowRecord(luaL_checkboolean(L, 1));
 	return 0;
 }
@@ -4232,7 +4232,7 @@ int LuaUnsyncedCtrl::SetVideoCapturingMode(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetVideoCapturingTimeOffset(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	videoCapturing->SetTimeOffset(luaL_checkfloat(L, 1));
 	return 0;
 }
@@ -4286,7 +4286,7 @@ int LuaUnsyncedCtrl::SetVideoCapturingTimeOffset(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetWaterParams(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, 1))
 		luaL_error(L, "[%s] incorrect arguments", __func__);
 
@@ -4519,7 +4519,7 @@ int LuaUnsyncedCtrl::PreloadUnitDefModel(lua_State* L) {
  * @treturn nil
  */
 int LuaUnsyncedCtrl::PreloadFeatureDefModel(lua_State* L) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const FeatureDef* fd = featureDefHandler->GetFeatureDefByID(luaL_checkint(L, 1));
 
 	if (fd == nullptr)
@@ -4537,7 +4537,7 @@ int LuaUnsyncedCtrl::PreloadFeatureDefModel(lua_State* L) {
  */
 int LuaUnsyncedCtrl::PreloadSoundItem(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// always push false in synced context
 	const bool retval = sound->PreloadSoundItem(luaL_checkstring(L, 1));
 	const bool synced = CLuaHandle::GetHandleSynced(L);
@@ -4554,7 +4554,7 @@ int LuaUnsyncedCtrl::PreloadSoundItem(lua_State* L)
  */
 int LuaUnsyncedCtrl::LoadModelTextures(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string modelName = luaL_optstring(L, 1, "");
 	if (modelName.empty()) {
 		lua_pushnil(L);
@@ -4591,7 +4591,7 @@ int LuaUnsyncedCtrl::LoadModelTextures(lua_State* L)
  */
 int LuaUnsyncedCtrl::CreateGroundDecal(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const uint32_t id = groundDecals->CreateLuaDecal();
 	if (id > 0) {
 		lua_pushnumber(L, id);
@@ -4609,7 +4609,7 @@ int LuaUnsyncedCtrl::CreateGroundDecal(lua_State* L)
  */
 int LuaUnsyncedCtrl::DestroyGroundDecal(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	lua_pushboolean(L, groundDecals->DeleteLuaDecal(luaL_checkint(L, 1)));
 	return 1;
 }
@@ -4628,7 +4628,7 @@ int LuaUnsyncedCtrl::DestroyGroundDecal(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetGroundDecalPosAndDims(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		lua_pushboolean(L, false);
@@ -4680,7 +4680,7 @@ int LuaUnsyncedCtrl::SetGroundDecalPosAndDims(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetGroundDecalQuadPosAndHeight(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		lua_pushboolean(L, false);
@@ -4710,7 +4710,7 @@ int LuaUnsyncedCtrl::SetGroundDecalQuadPosAndHeight(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetGroundDecalRotation(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		lua_pushboolean(L, false);
@@ -4734,7 +4734,7 @@ int LuaUnsyncedCtrl::SetGroundDecalRotation(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetGroundDecalTexture(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	lua_pushboolean(L,
 		groundDecals->SetDecalTexture(luaL_checkint(L, 1), luaL_checksstring(L, 2), luaL_optboolean(L, 3, false))
 	);
@@ -4775,7 +4775,7 @@ int LuaUnsyncedCtrl::SetGroundDecalTextureParams(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetGroundDecalAlpha(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		lua_pushboolean(L, false);
@@ -4802,7 +4802,7 @@ int LuaUnsyncedCtrl::SetGroundDecalAlpha(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetGroundDecalNormal(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		lua_pushboolean(L, false);
@@ -4836,7 +4836,7 @@ int LuaUnsyncedCtrl::SetGroundDecalNormal(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetGroundDecalTint(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		lua_pushboolean(L, false);
@@ -4869,7 +4869,7 @@ int LuaUnsyncedCtrl::SetGroundDecalTint(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetGroundDecalMisc(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		lua_pushboolean(L, false);
@@ -4899,7 +4899,7 @@ int LuaUnsyncedCtrl::SetGroundDecalMisc(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetGroundDecalCreationFrame(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto* decal = groundDecals->GetDecalById(luaL_checkint(L, 1));
 	if (!decal) {
 		lua_pushboolean(L, false);
@@ -4931,7 +4931,7 @@ int LuaUnsyncedCtrl::SetGroundDecalCreationFrame(lua_State* L)
  */
 int LuaUnsyncedCtrl::SDLSetTextInputRect(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SDL_Rect textWindow;
 	textWindow.x = luaL_checkint(L, 1);
 	textWindow.y = luaL_checkint(L, 2);
@@ -4948,7 +4948,7 @@ int LuaUnsyncedCtrl::SDLSetTextInputRect(lua_State* L)
  */
 int LuaUnsyncedCtrl::SDLStartTextInput(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SDL_StartTextInput();
 	return 0;
 }
@@ -4960,7 +4960,7 @@ int LuaUnsyncedCtrl::SDLStartTextInput(lua_State* L)
  */
 int LuaUnsyncedCtrl::SDLStopTextInput(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SDL_StopTextInput();
 	return 0;
 }
@@ -4985,7 +4985,7 @@ int LuaUnsyncedCtrl::SDLStopTextInput(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetWindowGeometry(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int displayIndex = luaL_checkint(L, 1) - 1;
 	const int winRelPosX = luaL_checkint(L, 2);
 	const int winRelPosY = luaL_checkint(L, 3);
@@ -5009,7 +5009,7 @@ int LuaUnsyncedCtrl::SetWindowGeometry(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetWindowMinimized(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	lua_pushboolean(L, globalRendering->SetWindowMinimized());
 	return 1;
 }
@@ -5021,7 +5021,7 @@ int LuaUnsyncedCtrl::SetWindowMinimized(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetWindowMaximized(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	lua_pushboolean(L, globalRendering->SetWindowMaximized());
 	return 1;
 }
@@ -5039,7 +5039,7 @@ int LuaUnsyncedCtrl::SetWindowMaximized(lua_State* L)
  */
 int LuaUnsyncedCtrl::Reload(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (ReloadOrRestart("", luaL_checkstring(L, 1), false));
 }
 
@@ -5054,7 +5054,7 @@ int LuaUnsyncedCtrl::Reload(lua_State* L)
  */
 int LuaUnsyncedCtrl::Restart(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// same as Reload now, cl-args are always ignored
 	return (ReloadOrRestart(luaL_checkstring(L, 1), luaL_checkstring(L, 2), false));
 }
@@ -5072,7 +5072,7 @@ int LuaUnsyncedCtrl::Restart(lua_State* L)
  */
 int LuaUnsyncedCtrl::Start(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (ReloadOrRestart(luaL_checkstring(L, 1), luaL_checkstring(L, 2), true) != 0) {
 		lua_pushboolean(L, false);
 		return 1;
@@ -5096,7 +5096,7 @@ int LuaUnsyncedCtrl::Start(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetWMIcon(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string iconFileName = luaL_checksstring(L, 1);
 	const bool forceResolution = luaL_optboolean(L, 2, false);
 
@@ -5126,7 +5126,7 @@ int LuaUnsyncedCtrl::SetWMIcon(lua_State* L)
  */
 int LuaUnsyncedCtrl::SetWMCaption(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	globalRendering->SetWindowTitle(luaL_checksstring(L, 1));
 	return 0;
 }
@@ -5137,7 +5137,7 @@ int LuaUnsyncedCtrl::SetWMCaption(lua_State* L)
  * @treturn nil
  */
 int LuaUnsyncedCtrl::ClearWatchDogTimer(lua_State* L) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (lua_gettop(L) == 0) {
 		// clear for current thread
 		Watchdog::ClearTimer();
@@ -5160,7 +5160,7 @@ int LuaUnsyncedCtrl::ClearWatchDogTimer(lua_State* L) {
  */
 int LuaUnsyncedCtrl::SetClipboard(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SDL_SetClipboardText(luaL_checkstring(L, 1));
 	return 0;
 }
@@ -5183,7 +5183,7 @@ int LuaUnsyncedCtrl::SetClipboard(lua_State* L)
  */
 int LuaUnsyncedCtrl::Yield(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (CLoadLock::GetThreadSafety() == false) {
 		lua_pushboolean(L, false); //hint Lua might stop calling Yield
 		return 1;

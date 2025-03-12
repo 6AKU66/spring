@@ -19,7 +19,7 @@ static int SyncTableMetatable(lua_State* L);
 
 static int SyncTableIndex(lua_State* dstL)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (lua_isnoneornil(dstL, -1))
 		return 0;
 
@@ -75,7 +75,7 @@ static int SyncTableMetatable(lua_State* L)
 
 bool LuaSyncedTable::PushEntries(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	HSTR_PUSH(L, "SYNCED");
 	lua_newtable(L); { // the proxy table
 

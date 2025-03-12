@@ -25,7 +25,7 @@ static spring::unsynced_map<int, int> oldColors;
 
 void CTeamHighlight::Enable(unsigned currentTime)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!highlight)
 		return;
 
@@ -51,7 +51,7 @@ void CTeamHighlight::Enable(unsigned currentTime)
 
 void CTeamHighlight::Disable()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (oldColors.empty())
 		return;
 
@@ -64,7 +64,7 @@ void CTeamHighlight::Disable()
 }
 
 void CTeamHighlight::Update(int frameNum) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if ((frameNum % TEAM_SLOWUPDATE_RATE))
 		return;
 

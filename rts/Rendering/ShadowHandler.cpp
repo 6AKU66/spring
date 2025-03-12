@@ -40,7 +40,7 @@ CShadowHandler shadowHandler;
 
 void CShadowHandler::Reload(const char* argv)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int nextShadowConfig = (shadowConfig + 1) & 0xF;
 	int nextShadowMapSize = shadowMapSize;
 	int nextShadowProMode = shadowProMode;
@@ -64,7 +64,7 @@ void CShadowHandler::Reload(const char* argv)
 
 void CShadowHandler::Init()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const bool tmpFirstInit = firstInit;
 	firstInit = false;
 
@@ -123,7 +123,7 @@ void CShadowHandler::Init()
 
 void CShadowHandler::Kill()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	FreeFBOAndTextures();
 	shaderHandler->ReleaseProgramObjects("[ShadowHandler]");
 	shadowGenProgs.fill(nullptr);
@@ -132,7 +132,7 @@ void CShadowHandler::Kill()
 
 void CShadowHandler::Update()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CCamera* playCam = CCameraHandler::GetCamera(CCamera::CAMTYPE_PLAYER);
 	CCamera* shadCam = CCameraHandler::GetCamera(CCamera::CAMTYPE_SHADOW);
 
@@ -142,14 +142,14 @@ void CShadowHandler::Update()
 
 void CShadowHandler::SaveShadowMapTextures() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glSaveTexture(shadowDepthTexture, fmt::format("smDepth_{}.png", globalRendering->drawFrame).c_str());
 	glSaveTexture(shadowColorTexture, fmt::format("smColor_{}.png", globalRendering->drawFrame).c_str());
 }
 
 void CShadowHandler::DrawFrustumDebug() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!debugFrustum || !shadowsLoaded)
 		return;
 
@@ -184,7 +184,7 @@ void CShadowHandler::DrawFrustumDebug() const
 }
 
 void CShadowHandler::FreeFBOAndTextures() {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (smOpaqFBO.IsValid()) {
 		smOpaqFBO.Bind();
 		smOpaqFBO.DetachAll();
@@ -201,7 +201,7 @@ void CShadowHandler::FreeFBOAndTextures() {
 
 void CShadowHandler::LoadProjectionMatrix(const CCamera* shadowCam)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const CMatrix44f& ccm = shadowCam->GetClipControlMatrix();
 	      CMatrix44f& spm = projMatrix[SHADOWMAT_TYPE_DRAWING];
 
@@ -220,7 +220,7 @@ void CShadowHandler::LoadProjectionMatrix(const CCamera* shadowCam)
 
 void CShadowHandler::LoadShadowGenShaders()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	#define sh shaderHandler
 	static const std::string shadowGenProgHandles[SHADOWGEN_PROGRAM_COUNT] = {
 		"ShadowGenShaderProgModel",
@@ -337,7 +337,7 @@ void CShadowHandler::LoadShadowGenShaders()
 
 bool CShadowHandler::InitFBOAndTextures()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	//create dummy textures / FBO in case shadowConfig is 0
 	const int realShTexSize = shadowConfig > 0 ? shadowMapSize : 1;
 
@@ -447,7 +447,7 @@ bool CShadowHandler::InitFBOAndTextures()
 
 void CShadowHandler::DrawShadowPasses()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	inShadowPass = true;
 
 	glPushAttrib(GL_POLYGON_BIT | GL_ENABLE_BIT);
@@ -505,7 +505,7 @@ void CShadowHandler::DrawShadowPasses()
 
 static CMatrix44f ComposeLightMatrix(const CCamera* playerCam, const ISkyLight* light)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CMatrix44f lightMatrix;
 
 	// sun direction is in world-space, invert it
@@ -537,14 +537,14 @@ static CMatrix44f ComposeLightMatrix(const CCamera* playerCam, const ISkyLight* 
 
 static CMatrix44f ComposeScaleMatrix(const float4 scales)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// note: T is z-bias, scales.z is z-near
 	return (CMatrix44f(FwdVector * 0.5f, RgtVector / scales.x, UpVector / scales.y, FwdVector / scales.w));
 }
 
 void CShadowHandler::SetShadowMatrix(CCamera* playerCam, CCamera* shadowCam)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const CMatrix44f lightMatrix = ComposeLightMatrix(playerCam, ISky::GetSky()->GetLight());
 	const CMatrix44f scaleMatrix = ComposeScaleMatrix(shadowProjScales = GetShadowProjectionScales(playerCam, lightMatrix));
 
@@ -579,7 +579,7 @@ void CShadowHandler::SetShadowMatrix(CCamera* playerCam, CCamera* shadowCam)
 
 void CShadowHandler::SetShadowCamera(CCamera* shadowCam)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int realShTexSize = shadowConfig > 0 ? shadowMapSize : 1;
 
 	// first set matrices needed by shaders (including ShadowGenVertProg)
@@ -604,7 +604,7 @@ void CShadowHandler::SetShadowCamera(CCamera* shadowCam)
 
 void CShadowHandler::SetupShadowTexSampler(unsigned int texUnit, bool enable) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glActiveTexture(texUnit);
 	glBindTexture(GL_TEXTURE_2D, shadowDepthTexture);
 
@@ -617,7 +617,7 @@ void CShadowHandler::SetupShadowTexSampler(unsigned int texUnit, bool enable) co
 
 void CShadowHandler::SetupShadowTexSamplerRaw() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 	glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
@@ -627,7 +627,7 @@ void CShadowHandler::SetupShadowTexSamplerRaw() const
 
 void CShadowHandler::ResetShadowTexSampler(unsigned int texUnit, bool disable) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glActiveTexture(texUnit);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -639,7 +639,7 @@ void CShadowHandler::ResetShadowTexSampler(unsigned int texUnit, bool disable) c
 
 void CShadowHandler::ResetShadowTexSamplerRaw() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 	glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
 }
@@ -647,7 +647,7 @@ void CShadowHandler::ResetShadowTexSamplerRaw() const
 
 void CShadowHandler::CreateShadows()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// NOTE:
 	//   we unbind later in WorldDrawer::GenerateIBLTextures() to save render
 	//   context switches (which are one of the slowest OpenGL operations!)
@@ -686,7 +686,7 @@ void CShadowHandler::CreateShadows()
 
 void CShadowHandler::EnableColorOutput(bool enable) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(FBO::GetCurrentBoundFBO() == smOpaqFBO.GetId());
 
 	const GLboolean b = static_cast<GLboolean>(enable);
@@ -696,7 +696,7 @@ void CShadowHandler::EnableColorOutput(bool enable) const
 
 
 float4 CShadowHandler::GetShadowProjectionScales(CCamera* playerCam, const CMatrix44f& lightViewMat) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float4 projScales;
 	float2 projRadius;
 
@@ -750,7 +750,7 @@ float4 CShadowHandler::GetShadowProjectionScales(CCamera* playerCam, const CMatr
 }
 
 float CShadowHandler::GetOrthoProjectedMapRadius(const float3& sunDir, float3& projPos) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// to fit the map inside the frustum, we need to know
 	// the distance from one corner to its opposing corner
 	//
@@ -806,7 +806,7 @@ float CShadowHandler::GetOrthoProjectedMapRadius(const float3& sunDir, float3& p
 }
 
 float CShadowHandler::GetOrthoProjectedFrustumRadius(CCamera* playerCam, const CMatrix44f& lightViewMat, float3& centerPos) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float3 frustumPoints[8];
 
 	#if 0
@@ -854,7 +854,7 @@ float CShadowHandler::GetOrthoProjectedFrustumRadius(CCamera* playerCam, const C
 
 float3 CShadowHandler::CalcShadowProjectionPos(CCamera* playerCam, float3* frustumPoints)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static constexpr float T1 = 100.0f;
 	static constexpr float T2 = 200.0f;
 

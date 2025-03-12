@@ -104,7 +104,7 @@ Synced Lua API
 
 inline void LuaSyncedCtrl::CheckAllowGameChanges(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!CLuaHandle::GetHandleAllowChanges(L)) {
 		luaL_error(L, "Unsafe attempt to change game state");
 	}
@@ -116,7 +116,7 @@ inline void LuaSyncedCtrl::CheckAllowGameChanges(lua_State* L)
 
 bool LuaSyncedCtrl::PushEntries(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	{
 		// these need to be re-initialized here since we might have reloaded
 		inCreateUnit = 0;
@@ -377,13 +377,13 @@ bool LuaSyncedCtrl::PushEntries(lua_State* L)
 
 static inline CUnit* ParseRawUnit(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (unitHandler.GetUnit(luaL_checkint(L, index)));
 }
 
 static inline CUnit* ParseUnit(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseRawUnit(L, caller, index);
 
 	if (unit == nullptr)
@@ -396,7 +396,7 @@ static inline CUnit* ParseUnit(lua_State* L, const char* caller, int index)
 
 static inline CFeature* ParseFeature(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* f = featureHandler.GetFeature(luaL_checkint(L, index));
 
 	if (f == nullptr)
@@ -409,7 +409,7 @@ static inline CFeature* ParseFeature(lua_State* L, const char* caller, int index
 
 static inline CProjectile* ParseProjectile(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* p = projectileHandler.GetProjectileBySyncedID(luaL_checkint(L, index));
 
 	if (p == nullptr)
@@ -423,7 +423,7 @@ static inline CProjectile* ParseProjectile(lua_State* L, const char* caller, int
 
 static bool ParseProjectileParams(lua_State* L, ProjectileParams& params, const int tblIdx, const char* caller)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, tblIdx)) {
 		luaL_error(L, "[%s] argument %d must be a table!", caller, tblIdx);
 		return false;
@@ -493,7 +493,7 @@ static bool ParseProjectileParams(lua_State* L, ProjectileParams& params, const 
 
 static CTeam* ParseTeam(lua_State* L, const char* caller, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_isnumber(L, index)) {
 		luaL_error(L, "%s(): Bad teamID", caller);
 		return nullptr;
@@ -511,7 +511,7 @@ static CTeam* ParseTeam(lua_State* L, const char* caller, int index)
 static void ParseUnitMap(lua_State* L, const char* caller,
 	int table, vector<CUnit*>& unitIDs)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, table))
 		luaL_error(L, "%s(): error parsing unit map", caller);
 
@@ -532,7 +532,7 @@ static void ParseUnitMap(lua_State* L, const char* caller,
 static void ParseUnitArray(lua_State* L, const char* caller,
 	int table, vector<CUnit*>& unitIDs)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, table))
 		luaL_error(L, "%s(): error parsing unit array", caller);
 
@@ -552,7 +552,7 @@ static void ParseUnitArray(lua_State* L, const char* caller,
 static void ParseUnitDefArray(lua_State* L, const char* caller,
 	int table, vector<const UnitDef*>& unitDefs)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, table))
 		luaL_error(L, "%s(): error parsing unitdef array", caller);
 
@@ -571,7 +571,7 @@ static void ParseUnitDefArray(lua_State* L, const char* caller,
 
 static int SetSolidObjectCollisionVolumeData(lua_State* L, CSolidObject* o)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (o == nullptr)
 		return 0;
 
@@ -580,7 +580,7 @@ static int SetSolidObjectCollisionVolumeData(lua_State* L, CSolidObject* o)
 
 static int SetSolidObjectBlocking(lua_State* L, CSolidObject* o)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (o == nullptr)
 		return 0;
 
@@ -616,7 +616,7 @@ static int SetSolidObjectBlocking(lua_State* L, CSolidObject* o)
 
 static int SetSolidObjectRotation(lua_State* L, CSolidObject* o, bool isFeature)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (o == nullptr)
 		return 0;
 
@@ -633,7 +633,7 @@ static int SetSolidObjectRotation(lua_State* L, CSolidObject* o, bool isFeature)
 
 static int SetSolidObjectHeadingAndUpDir(lua_State* L, CSolidObject* o, bool isFeature)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (o == nullptr)
 		return 0;
 
@@ -655,7 +655,7 @@ static int SetSolidObjectHeadingAndUpDir(lua_State* L, CSolidObject* o, bool isF
 
 static int SetSolidObjectDirection(lua_State* L, CSolidObject* o)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (o == nullptr)
 		return 0;
 
@@ -671,7 +671,7 @@ static int SetSolidObjectDirection(lua_State* L, CSolidObject* o)
 
 static int SetWorldObjectVelocity(lua_State* L, CWorldObject* o)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (o == nullptr)
 		return 0;
 
@@ -686,7 +686,7 @@ static int SetWorldObjectVelocity(lua_State* L, CWorldObject* o)
 
 static int SetSolidObjectMass(lua_State* L, CSolidObject* o)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (o == nullptr)
 		return 0;
 
@@ -697,7 +697,7 @@ static int SetSolidObjectMass(lua_State* L, CSolidObject* o)
 
 static int SetSolidObjectPhysicalState(lua_State* L, CSolidObject* o)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (o == nullptr)
 		return 0;
 
@@ -732,7 +732,7 @@ static int SetSolidObjectPhysicalState(lua_State* L, CSolidObject* o)
 
 static int SetSolidObjectPieceCollisionVolumeData(lua_State* L, CSolidObject* obj)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (obj == nullptr)
 		return 0;
 
@@ -757,7 +757,7 @@ static int SetSolidObjectPieceCollisionVolumeData(lua_State* L, CSolidObject* ob
 
 static int SetSolidObjectPieceVisible(lua_State* L, CSolidObject* obj)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (obj == nullptr)
 		return 0;
 
@@ -772,7 +772,7 @@ static int SetSolidObjectPieceVisible(lua_State* L, CSolidObject* obj)
 
 static int SetWorldObjectAlwaysVisible(lua_State* L, CWorldObject* o, const char* caller)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (o == nullptr)
 		return 0;
 
@@ -782,7 +782,7 @@ static int SetWorldObjectAlwaysVisible(lua_State* L, CWorldObject* o, const char
 
 static int SetWorldObjectUseAirLos(lua_State* L, CWorldObject* o, const char* caller)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (o == nullptr)
 		return 0;
 
@@ -796,7 +796,7 @@ static int SetWorldObjectUseAirLos(lua_State* L, CWorldObject* o, const char* ca
 
 static inline bool IsPlayerSynced(const CPlayer* player)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (!gameSetup->hostDemo || player->isFromDemo);
 }
 
@@ -816,7 +816,7 @@ static inline bool IsPlayerSynced(const CPlayer* player)
  */
 int LuaSyncedCtrl::SetAlly(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int firstAllyTeamID = luaL_checkint(L, 1);
 	const int secondAllyTeamID = luaL_checkint(L, 2);
 
@@ -842,7 +842,7 @@ int LuaSyncedCtrl::SetAlly(lua_State* L)
  */
 int LuaSyncedCtrl::SetAllyTeamStartBox(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int allyTeamID = luaL_checkint(L, 1);
 	const float xMin = luaL_checkfloat(L, 2);
 	const float zMin = luaL_checkfloat(L, 3);
@@ -872,7 +872,7 @@ int LuaSyncedCtrl::SetAllyTeamStartBox(lua_State* L)
  */
 int LuaSyncedCtrl::AssignPlayerToTeam(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int playerID = luaL_checkint(L, 1);
 	const int teamID = luaL_checkint(L, 2);
 
@@ -901,7 +901,7 @@ int LuaSyncedCtrl::AssignPlayerToTeam(lua_State* L)
  */
 int LuaSyncedCtrl::SetGlobalLos(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int allyTeam = luaL_checkint(L, 1);
 
 	if (!teamHandler.IsValidAllyTeam(allyTeam))
@@ -928,7 +928,7 @@ int LuaSyncedCtrl::SetGlobalLos(lua_State* L)
  */
 int LuaSyncedCtrl::KillTeam(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int teamID = luaL_checkint(L, 1);
 
 	if (!teamHandler.IsValidTeam(teamID))
@@ -962,7 +962,7 @@ int LuaSyncedCtrl::KillTeam(lua_State* L)
  */
 int LuaSyncedCtrl::GameOver(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, 1)) {
 		luaL_error(L, "Incorrect arguments to GameOver()");
 		return 0;
@@ -1005,7 +1005,7 @@ int LuaSyncedCtrl::GameOver(lua_State* L)
  */
 int LuaSyncedCtrl::SetTidal(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	envResHandler.LoadTidal(luaL_optnumber(L, 1, envResHandler.GetCurrentTidalStrength()));
 	return 0;
 }
@@ -1034,7 +1034,7 @@ int LuaSyncedCtrl::SetWind(lua_State* L)
  */
 int LuaSyncedCtrl::AddTeamResource(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int teamID = luaL_checkint(L, 1);
 
 	if (!teamHandler.IsValidTeam(teamID))
@@ -1072,7 +1072,7 @@ int LuaSyncedCtrl::AddTeamResource(lua_State* L)
  */
 int LuaSyncedCtrl::UseTeamResource(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int teamID = luaL_checkint(L, 1);
 
 	if (!teamHandler.IsValidTeam(teamID))
@@ -1157,7 +1157,7 @@ int LuaSyncedCtrl::UseTeamResource(lua_State* L)
  */
 int LuaSyncedCtrl::SetTeamResource(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int teamID = luaL_checkint(L, 1);
 
 	if (!teamHandler.IsValidTeam(teamID))
@@ -1329,7 +1329,7 @@ int LuaSyncedCtrl::ShareTeamResource(lua_State* L)
 void SetRulesParam(lua_State* L, const char* caller, int offset,
 				LuaRulesParams::Params& params)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int index = offset + 1;
 	const int valIndex = offset + 2;
 	const int losIndex = offset + 3; // table
@@ -1408,7 +1408,7 @@ int LuaSyncedCtrl::SetGameRulesParam(lua_State* L)
  */
 int LuaSyncedCtrl::SetTeamRulesParam(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CTeam* team = ParseTeam(L, __func__, 1);
 	if (team == nullptr)
 		return 0;
@@ -1427,7 +1427,7 @@ int LuaSyncedCtrl::SetTeamRulesParam(lua_State* L)
  */
 int LuaSyncedCtrl::SetPlayerRulesParam(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int playerID = luaL_checkint(L, 1);
 	if (!playerHandler.IsValidPlayer(playerID))
 		return 0;
@@ -1452,7 +1452,7 @@ int LuaSyncedCtrl::SetPlayerRulesParam(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitRulesParam(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1473,7 +1473,7 @@ int LuaSyncedCtrl::SetUnitRulesParam(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureRulesParam(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseFeature(L, __func__, 1);
 	if (feature == nullptr)
 		return 0;
@@ -1495,7 +1495,7 @@ static inline void ParseCobArgs(
 	int last,
 	std::array<int, 1 + MAX_COB_ARGS>& args
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	args[0] = 0;
 
 	for (int a = first; a <= last; a++) {
@@ -1544,7 +1544,7 @@ static inline void ParseCobArgs(
  */
 int LuaSyncedCtrl::CallCOBScript(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 //FIXME?	CheckAllowGameChanges(L);
 	const int numArgs = lua_gettop(L);
 
@@ -1604,7 +1604,7 @@ int LuaSyncedCtrl::CallCOBScript(lua_State* L)
  */
 int LuaSyncedCtrl::GetCOBScriptID(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int args = lua_gettop(L); // number of arguments
 
 	if ((args < 2) || !lua_isnumber(L, 1) || !lua_isstring(L, 2))
@@ -1656,7 +1656,7 @@ int LuaSyncedCtrl::GetCOBScriptID(lua_State* L)
  */
 int LuaSyncedCtrl::CreateUnit(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 
 	if (inCreateUnit >= MAX_CMD_RECURSION_DEPTH) {
@@ -1751,7 +1751,7 @@ int LuaSyncedCtrl::CreateUnit(lua_State* L)
  */
 int LuaSyncedCtrl::DestroyUnit(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L); // FIXME -- recursion protection
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
@@ -1838,7 +1838,7 @@ int LuaSyncedCtrl::TransferUnit(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitCosts(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -1878,7 +1878,7 @@ int LuaSyncedCtrl::SetUnitCosts(lua_State* L)
 
 static bool SetUnitResourceParam(CUnit* unit, const char* name, float value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// [u|c][u|m][m|e]
 	//
 	// unconditional | conditional
@@ -1951,7 +1951,7 @@ static bool SetUnitResourceParam(CUnit* unit, const char* name, float value)
  */
 int LuaSyncedCtrl::SetUnitResourcing(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2009,7 +2009,7 @@ int LuaSyncedCtrl::SetUnitTooltip(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitHealth(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2085,7 +2085,7 @@ int LuaSyncedCtrl::SetUnitMaxHealth(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitStockpile(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2110,7 +2110,7 @@ int LuaSyncedCtrl::SetUnitStockpile(lua_State* L)
 
 static bool SetSingleUnitWeaponState(lua_State* L, CWeapon* weapon, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// FIXME: missing checks and updates?
 	switch (hashString(lua_tolstring(L, index, nullptr))) {
 		case hashString("reloadState"):
@@ -2196,7 +2196,7 @@ static bool SetSingleUnitWeaponState(lua_State* L, CWeapon* weapon, int index)
  */
 int LuaSyncedCtrl::SetUnitUseWeapons(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2243,7 +2243,7 @@ int LuaSyncedCtrl::SetUnitUseWeapons(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitWeaponState(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2276,7 +2276,7 @@ int LuaSyncedCtrl::SetUnitWeaponState(lua_State* L)
 
 static int SetSingleDynDamagesKey(lua_State* L, DynDamageArray* damages, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const float value = lua_tofloat(L, index + 1);
 
 	if (lua_isnumber(L, index)) {
@@ -2380,7 +2380,7 @@ static int SetSingleDynDamagesKey(lua_State* L, DynDamageArray* damages, int ind
  */
 int LuaSyncedCtrl::SetUnitWeaponDamages(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2432,7 +2432,7 @@ int LuaSyncedCtrl::SetUnitWeaponDamages(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitMaxRange(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2453,7 +2453,7 @@ int LuaSyncedCtrl::SetUnitMaxRange(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitExperience(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2473,7 +2473,7 @@ int LuaSyncedCtrl::SetUnitExperience(lua_State* L)
  */
 int LuaSyncedCtrl::AddUnitExperience(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2494,7 +2494,7 @@ int LuaSyncedCtrl::AddUnitExperience(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitArmored(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2521,7 +2521,7 @@ int LuaSyncedCtrl::SetUnitArmored(lua_State* L)
 
 static unsigned char ParseLosBits(lua_State* L, int index, unsigned char bits)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (lua_isnumber(L, index))
 		return (unsigned char)lua_tonumber(L, index);
 
@@ -2587,7 +2587,7 @@ static unsigned char ParseLosBits(lua_State* L, int index, unsigned char bits)
  */
 int LuaSyncedCtrl::SetUnitLosMask(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2619,7 +2619,7 @@ int LuaSyncedCtrl::SetUnitLosMask(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitLosState(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2660,7 +2660,7 @@ int LuaSyncedCtrl::SetUnitLosState(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitCloak(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2697,7 +2697,7 @@ int LuaSyncedCtrl::SetUnitCloak(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitStealth(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2733,7 +2733,7 @@ int LuaSyncedCtrl::SetUnitSonarStealth(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitSeismicSignature(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* const unit = ParseUnit(L, __func__, 1);
 	if (unit == nullptr)
 		return 0;
@@ -2750,7 +2750,7 @@ int LuaSyncedCtrl::SetUnitSeismicSignature(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitAlwaysVisible(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetWorldObjectAlwaysVisible(L, ParseUnit(L, __func__, 1), __func__));
 }
 
@@ -2764,7 +2764,7 @@ int LuaSyncedCtrl::SetUnitAlwaysVisible(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitUseAirLos(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetWorldObjectUseAirLos(L, ParseUnit(L, __func__, 1), __func__));
 }
 
@@ -2778,7 +2778,7 @@ int LuaSyncedCtrl::SetUnitUseAirLos(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitMetalExtraction(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2806,7 +2806,7 @@ int LuaSyncedCtrl::SetUnitMetalExtraction(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitHarvestStorage(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2829,7 +2829,7 @@ int LuaSyncedCtrl::SetUnitHarvestStorage(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitBuildParams(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2866,7 +2866,7 @@ int LuaSyncedCtrl::SetUnitBuildParams(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitBuildSpeed(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2920,7 +2920,7 @@ int LuaSyncedCtrl::SetUnitBuildSpeed(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitNanoPieces(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -2982,7 +2982,7 @@ int LuaSyncedCtrl::SetUnitNanoPieces(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitBlocking(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetSolidObjectBlocking(L, ParseUnit(L, __func__, 1)));
 }
 
@@ -2994,7 +2994,7 @@ int LuaSyncedCtrl::SetUnitBlocking(lua_State* L)
  * @treturn bool success
  */
 int LuaSyncedCtrl::SetUnitCrashing(lua_State* L) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3033,7 +3033,7 @@ int LuaSyncedCtrl::SetUnitCrashing(lua_State* L) {
  */
 int LuaSyncedCtrl::SetUnitShieldState(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3071,7 +3071,7 @@ int LuaSyncedCtrl::SetUnitShieldState(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitShieldRechargeDelay(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto unit = ParseUnit(L, __func__, 1);
 	if (unit == nullptr)
 		return 0;
@@ -3111,7 +3111,7 @@ int LuaSyncedCtrl::SetUnitShieldRechargeDelay(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitFlanking(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3184,7 +3184,7 @@ int LuaSyncedCtrl::SetUnitFuel(lua_State* L) { return 0; } // FIXME: DELETE ME
  */
 int LuaSyncedCtrl::SetUnitNeutral(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3219,7 +3219,7 @@ int LuaSyncedCtrl::SetUnitNeutral(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitTarget(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3290,7 +3290,7 @@ int LuaSyncedCtrl::SetUnitTarget(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitMidAndAimPos(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr) {
@@ -3334,7 +3334,7 @@ int LuaSyncedCtrl::SetUnitMidAndAimPos(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitRadiusAndHeight(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr) {
@@ -3371,7 +3371,7 @@ int LuaSyncedCtrl::SetUnitRadiusAndHeight(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitBuildeeRadius(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3393,7 +3393,7 @@ int LuaSyncedCtrl::SetUnitBuildeeRadius(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitPieceParent(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3438,7 +3438,7 @@ int LuaSyncedCtrl::SetUnitPieceParent(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitPieceMatrix(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3519,7 +3519,7 @@ int LuaSyncedCtrl::SetUnitCollisionVolumeData(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitPieceCollisionVolumeData(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetSolidObjectPieceCollisionVolumeData(L, ParseUnit(L, __func__, 1)));
 }
 
@@ -3547,7 +3547,7 @@ int LuaSyncedCtrl::SetUnitPieceVisible(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitSensorRadius(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3602,7 +3602,7 @@ int LuaSyncedCtrl::SetUnitSensorRadius(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitPosErrorParams(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3638,7 +3638,7 @@ int LuaSyncedCtrl::SetUnitPosErrorParams(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitMoveGoal(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
@@ -3674,7 +3674,7 @@ int LuaSyncedCtrl::SetUnitMoveGoal(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitLandGoal(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3700,7 +3700,7 @@ int LuaSyncedCtrl::SetUnitLandGoal(lua_State* L)
  */
 int LuaSyncedCtrl::ClearUnitGoal(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3730,7 +3730,7 @@ int LuaSyncedCtrl::ClearUnitGoal(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitPhysics(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetSolidObjectPhysicalState(L, ParseUnit(L, __func__, 1)));
 }
 
@@ -3742,7 +3742,7 @@ int LuaSyncedCtrl::SetUnitPhysics(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitMass(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetSolidObjectMass(L, ParseUnit(L, __func__, 1)));
 }
 
@@ -3773,7 +3773,7 @@ int LuaSyncedCtrl::SetUnitMass(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitPosition(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -3813,7 +3813,7 @@ int LuaSyncedCtrl::SetUnitPosition(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitRotation(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetSolidObjectRotation(L, ParseUnit(L, __func__, 1), false));
 }
 
@@ -3828,7 +3828,7 @@ int LuaSyncedCtrl::SetUnitRotation(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitDirection(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetSolidObjectDirection(L, ParseUnit(L, __func__, 1)));
 }
 
@@ -3844,7 +3844,7 @@ int LuaSyncedCtrl::SetUnitDirection(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitHeadingAndUpDir(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return SetSolidObjectHeadingAndUpDir(L, ParseUnit(L, __func__, 1), false);
 }
 
@@ -3876,7 +3876,7 @@ int LuaSyncedCtrl::SetUnitVelocity(lua_State* L)
  */
 int LuaSyncedCtrl::SetFactoryBuggerOff(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* u = ParseUnit(L, __func__, 1);
 	if (u == nullptr)
 		return 0;
@@ -3913,7 +3913,7 @@ int LuaSyncedCtrl::SetFactoryBuggerOff(lua_State* L)
  */
 int LuaSyncedCtrl::BuggerOff(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float3 pos;
 	pos.x = luaL_checkfloat(L, 1);
 	pos.z = luaL_checkfloat(L, 3);
@@ -3955,7 +3955,7 @@ int LuaSyncedCtrl::BuggerOff(lua_State* L)
  */
 int LuaSyncedCtrl::AddUnitDamage(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -4026,7 +4026,7 @@ int LuaSyncedCtrl::AddUnitImpulse(lua_State* L)
  */
 int LuaSyncedCtrl::AddUnitSeismicPing(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -4048,7 +4048,7 @@ int LuaSyncedCtrl::AddUnitSeismicPing(lua_State* L)
  */
 int LuaSyncedCtrl::AddUnitResource(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -4085,7 +4085,7 @@ int LuaSyncedCtrl::AddUnitResource(lua_State* L)
  */
 int LuaSyncedCtrl::UseUnitResource(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -4156,7 +4156,7 @@ int LuaSyncedCtrl::UseUnitResource(lua_State* L)
  */
 int LuaSyncedCtrl::AddObjectDecal(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -4174,7 +4174,7 @@ int LuaSyncedCtrl::AddObjectDecal(lua_State* L)
  */
 int LuaSyncedCtrl::RemoveObjectDecal(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -4199,7 +4199,7 @@ int LuaSyncedCtrl::RemoveObjectDecal(lua_State* L)
  */
 int LuaSyncedCtrl::AddGrass(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const float3 pos(luaL_checkfloat(L, 1), 0.0f, luaL_checkfloat(L, 2));
 	const uint8_t grassValue = static_cast<uint8_t>(luaL_optint(L, 3, 1));
 
@@ -4215,7 +4215,7 @@ int LuaSyncedCtrl::AddGrass(lua_State* L)
  */
 int LuaSyncedCtrl::RemoveGrass(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const float3 pos(luaL_checkfloat(L, 1), 0.0f, luaL_checkfloat(L, 2));
 
 	grassDrawer->RemoveGrass(pos.cClampInBounds());
@@ -4242,7 +4242,7 @@ int LuaSyncedCtrl::RemoveGrass(lua_State* L)
  */
 int LuaSyncedCtrl::CreateFeature(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 
 	const FeatureDef* featureDef = nullptr;
@@ -4325,7 +4325,7 @@ int LuaSyncedCtrl::CreateFeature(lua_State* L)
  */
 int LuaSyncedCtrl::DestroyFeature(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 	CFeature* feature = ParseFeature(L, __func__, 1);
 	if (feature == nullptr)
@@ -4351,7 +4351,7 @@ int LuaSyncedCtrl::DestroyFeature(lua_State* L)
  */
 int LuaSyncedCtrl::TransferFeature(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 	CFeature* feature = ParseFeature(L, __func__, 1);
 	if (feature == nullptr)
@@ -4374,7 +4374,7 @@ int LuaSyncedCtrl::TransferFeature(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureAlwaysVisible(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetWorldObjectAlwaysVisible(L, ParseFeature(L, __func__, 1), __func__));
 }
 
@@ -4387,7 +4387,7 @@ int LuaSyncedCtrl::SetFeatureAlwaysVisible(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureUseAirLos(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetWorldObjectUseAirLos(L, ParseFeature(L, __func__, 1), __func__));
 }
 
@@ -4419,7 +4419,7 @@ int LuaSyncedCtrl::SetFeatureHealth(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureMaxHealth(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -4439,7 +4439,7 @@ int LuaSyncedCtrl::SetFeatureMaxHealth(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureReclaim(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -4462,7 +4462,7 @@ int LuaSyncedCtrl::SetFeatureReclaim(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureResources(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -4498,7 +4498,7 @@ int LuaSyncedCtrl::SetFeatureResources(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureResurrect(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -4554,7 +4554,7 @@ int LuaSyncedCtrl::SetFeatureResurrect(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureMoveCtrl(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -4629,7 +4629,7 @@ int LuaSyncedCtrl::SetFeatureMass(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeaturePosition(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -4655,7 +4655,7 @@ int LuaSyncedCtrl::SetFeaturePosition(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureRotation(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetSolidObjectRotation(L, ParseFeature(L, __func__, 1), true));
 }
 
@@ -4670,7 +4670,7 @@ int LuaSyncedCtrl::SetFeatureRotation(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureDirection(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetSolidObjectDirection(L, ParseFeature(L, __func__, 1)));
 }
 
@@ -4686,7 +4686,7 @@ int LuaSyncedCtrl::SetFeatureDirection(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureHeadingAndUpDir(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return SetSolidObjectHeadingAndUpDir(L, ParseFeature(L, __func__, 1), true);
 }
 
@@ -4700,7 +4700,7 @@ int LuaSyncedCtrl::SetFeatureHeadingAndUpDir(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureVelocity(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetWorldObjectVelocity(L, ParseFeature(L, __func__, 1)));
 }
 
@@ -4719,7 +4719,7 @@ int LuaSyncedCtrl::SetFeatureVelocity(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureBlocking(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetSolidObjectBlocking(L, ParseFeature(L, __func__, 1)));
 }
 
@@ -4732,7 +4732,7 @@ int LuaSyncedCtrl::SetFeatureBlocking(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureNoSelect(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseFeature(L, __func__, 1);
 
 	if (feature == nullptr)
@@ -4760,7 +4760,7 @@ int LuaSyncedCtrl::SetFeatureNoSelect(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeatureMidAndAimPos(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CFeature* feature = ParseFeature(L, __func__, 1);
 
 	if (feature == nullptr) {
@@ -4871,7 +4871,7 @@ int LuaSyncedCtrl::SetFeatureCollisionVolumeData(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeaturePieceCollisionVolumeData(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetSolidObjectPieceCollisionVolumeData(L, ParseFeature(L, __func__, 1)));
 }
 
@@ -4885,7 +4885,7 @@ int LuaSyncedCtrl::SetFeaturePieceCollisionVolumeData(lua_State* L)
  */
 int LuaSyncedCtrl::SetFeaturePieceVisible(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetSolidObjectPieceVisible(L, ParseFeature(L, __func__, 1)));
 }
 
@@ -4949,7 +4949,7 @@ int LuaSyncedCtrl::SetProjectileAlwaysVisible(lua_State* L)
  */
 int LuaSyncedCtrl::SetProjectileUseAirLos(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetWorldObjectUseAirLos(L, ParseProjectile(L, __func__, 1), __func__));
 }
 
@@ -4963,7 +4963,7 @@ int LuaSyncedCtrl::SetProjectileUseAirLos(lua_State* L)
  */
 int LuaSyncedCtrl::SetProjectileMoveControl(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* proj = ParseProjectile(L, __func__, 1);
 
 	if (proj == nullptr)
@@ -4985,7 +4985,7 @@ int LuaSyncedCtrl::SetProjectileMoveControl(lua_State* L)
  */
 int LuaSyncedCtrl::SetProjectilePosition(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* proj = ParseProjectile(L, __func__, 1);
 
 	if (proj == nullptr)
@@ -5009,7 +5009,7 @@ int LuaSyncedCtrl::SetProjectilePosition(lua_State* L)
  */
 int LuaSyncedCtrl::SetProjectileVelocity(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetWorldObjectVelocity(L, ParseProjectile(L, __func__, 1)));
 }
 
@@ -5020,7 +5020,7 @@ int LuaSyncedCtrl::SetProjectileVelocity(lua_State* L)
  */
 int LuaSyncedCtrl::SetProjectileCollision(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* proj = ParseProjectile(L, __func__, 1);
 
 	if (proj == nullptr)
@@ -5051,7 +5051,7 @@ int LuaSyncedCtrl::SetProjectileCollision(lua_State* L)
  */
 int LuaSyncedCtrl::SetProjectileTarget(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* pro = ParseProjectile(L, __func__, 1);
 	CWeaponProjectile* wpro = nullptr;
 
@@ -5127,7 +5127,7 @@ int LuaSyncedCtrl::SetProjectileTarget(lua_State* L)
  */
 int LuaSyncedCtrl::SetProjectileIsIntercepted(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* proj = ParseProjectile(L, __func__, 1);
 
 	if (proj == nullptr || !proj->weapon)
@@ -5151,7 +5151,7 @@ int LuaSyncedCtrl::SetProjectileIsIntercepted(lua_State* L)
  */
 int LuaSyncedCtrl::SetProjectileDamages(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* proj = ParseProjectile(L, __func__, 1);
 
 	if (proj == nullptr || !proj->weapon)
@@ -5187,7 +5187,7 @@ int LuaSyncedCtrl::SetProjectileDamages(lua_State* L)
  */
 int LuaSyncedCtrl::SetProjectileIgnoreTrackingError(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* proj = ParseProjectile(L, __func__, 1);
 
 	if (proj == nullptr)
@@ -5218,7 +5218,7 @@ int LuaSyncedCtrl::SetProjectileIgnoreTrackingError(lua_State* L)
  */
 int LuaSyncedCtrl::SetProjectileGravity(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* proj = ParseProjectile(L, __func__, 1);
 
 	if (proj == nullptr)
@@ -5247,7 +5247,7 @@ int LuaSyncedCtrl::SetProjectileSpinVec(lua_State* L) { return 0; } // FIXME: DE
  */
 int LuaSyncedCtrl::SetPieceProjectileParams(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* proj = ParseProjectile(L, __func__, 1);
 
 	if (proj == nullptr || !proj->piece)
@@ -5275,7 +5275,7 @@ int LuaSyncedCtrl::SetPieceProjectileParams(lua_State* L)
  */
 int LuaSyncedCtrl::SetProjectileCEG(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* proj = ParseProjectile(L, __func__, 1);
 
 	if (proj == nullptr)
@@ -5338,7 +5338,7 @@ int LuaSyncedCtrl::SetProjectileCEG(lua_State* L)
  */
 int LuaSyncedCtrl::UnitFinishCommand(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 
 	CUnit* unit = ParseUnit(L, __func__, 1);
@@ -5362,7 +5362,7 @@ int LuaSyncedCtrl::UnitFinishCommand(lua_State* L)
  */
 int LuaSyncedCtrl::GiveOrderToUnit(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 
 	CUnit* unit = ParseUnit(L, __func__, 1);
@@ -5399,7 +5399,7 @@ int LuaSyncedCtrl::GiveOrderToUnit(lua_State* L)
  */
 int LuaSyncedCtrl::GiveOrderToUnitMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 
 	// units
@@ -5443,7 +5443,7 @@ int LuaSyncedCtrl::GiveOrderToUnitMap(lua_State* L)
  */
 int LuaSyncedCtrl::GiveOrderToUnitArray(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 
 	// units
@@ -5487,7 +5487,7 @@ int LuaSyncedCtrl::GiveOrderToUnitArray(lua_State* L)
  */
 int LuaSyncedCtrl::GiveOrderArrayToUnit(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 
 	CUnit* const unit = ParseUnit(L, __func__, 1);
@@ -5528,7 +5528,7 @@ int LuaSyncedCtrl::GiveOrderArrayToUnit(lua_State* L)
  */
 int LuaSyncedCtrl::GiveOrderArrayToUnitMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 
 	std::vector<CUnit*> units;
@@ -5571,7 +5571,7 @@ int LuaSyncedCtrl::GiveOrderArrayToUnitMap(lua_State* L)
  */
 int LuaSyncedCtrl::GiveOrderArrayToUnitArray(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckAllowGameChanges(L);
 
 	// units
@@ -5625,7 +5625,7 @@ int LuaSyncedCtrl::GiveOrderArrayToUnitArray(lua_State* L)
 static void ParseParams(lua_State* L, const char* caller, float& factor,
 		int& x1, int& z1, int& x2, int& z2, int resolution, int maxX, int maxZ)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float fx1 = 0.0f;
 	float fz1 = 0.0f;
 	float fx2 = 0.0f;
@@ -5665,7 +5665,7 @@ static void ParseParams(lua_State* L, const char* caller, float& factor,
 static inline void ParseMapParams(lua_State* L, const char* caller,
 		float& factor, int& x1, int& z1, int& x2, int& z2)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	ParseParams(L, caller, factor, x1, z1, x2, z2, SQUARE_SIZE, mapDims.mapx, mapDims.mapy);
 }
 
@@ -5687,7 +5687,7 @@ static inline void ParseMapParams(lua_State* L, const char* caller,
  */
 int LuaSyncedCtrl::LevelHeightMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (mapDamage->Disabled()) {
 		return 0;
 	}
@@ -5718,7 +5718,7 @@ int LuaSyncedCtrl::LevelHeightMap(lua_State* L)
  */
 int LuaSyncedCtrl::AdjustHeightMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (mapDamage->Disabled()) {
 		return 0;
 	}
@@ -5751,7 +5751,7 @@ int LuaSyncedCtrl::AdjustHeightMap(lua_State* L)
  */
 int LuaSyncedCtrl::RevertHeightMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (mapDamage->Disabled()) {
 		return 0;
 	}
@@ -5798,7 +5798,7 @@ int LuaSyncedCtrl::RevertHeightMap(lua_State* L)
  */
 int LuaSyncedCtrl::AddHeightMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!inHeightMap) {
 		luaL_error(L, "AddHeightMap() can only be called in SetHeightMapFunc()");
 	}
@@ -5849,7 +5849,7 @@ int LuaSyncedCtrl::AddHeightMap(lua_State* L)
  */
 int LuaSyncedCtrl::SetHeightMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!inHeightMap) {
 		luaL_error(L, "SetHeightMap() can only be called in SetHeightMapFunc()");
 	}
@@ -5915,7 +5915,7 @@ int LuaSyncedCtrl::SetHeightMap(lua_State* L)
  */
 int LuaSyncedCtrl::SetHeightMapFunc(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (mapDamage->Disabled()) {
 		return 0;
 	}
@@ -5971,7 +5971,7 @@ int LuaSyncedCtrl::SetHeightMapFunc(lua_State* L)
  */
 int LuaSyncedCtrl::LevelOriginalHeightMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (mapDamage->Disabled()) {
 		return 0;
 	}
@@ -6001,7 +6001,7 @@ int LuaSyncedCtrl::LevelOriginalHeightMap(lua_State* L)
  */
 int LuaSyncedCtrl::AdjustOriginalHeightMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (mapDamage->Disabled()) {
 		return 0;
 	}
@@ -6033,7 +6033,7 @@ int LuaSyncedCtrl::AdjustOriginalHeightMap(lua_State* L)
  */
 int LuaSyncedCtrl::RevertOriginalHeightMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (mapDamage->Disabled()) {
 		return 0;
 	}
@@ -6082,7 +6082,7 @@ int LuaSyncedCtrl::RevertOriginalHeightMap(lua_State* L)
  */
 int LuaSyncedCtrl::AddOriginalHeightMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!inOriginalHeightMap) {
 		luaL_error(L, "AddOriginalHeightMap() can only be called in SetOriginalHeightMapFunc()");
 	}
@@ -6126,7 +6126,7 @@ int LuaSyncedCtrl::AddOriginalHeightMap(lua_State* L)
  */
 int LuaSyncedCtrl::SetOriginalHeightMap(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!inOriginalHeightMap) {
 		luaL_error(L, "SetOriginalHeightMap() can only be called in SetOriginalHeightMapFunc()");
 	}
@@ -6176,7 +6176,7 @@ int LuaSyncedCtrl::SetOriginalHeightMap(lua_State* L)
  */
 int LuaSyncedCtrl::SetOriginalHeightMapFunc(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (mapDamage->Disabled()) {
 		return 0;
 	}
@@ -6210,7 +6210,7 @@ int LuaSyncedCtrl::SetOriginalHeightMapFunc(lua_State* L)
 static inline void ParseSmoothMeshParams(lua_State* L, const char* caller,
 		float& factor, int& x1, int& z1, int& x2, int& z2)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	ParseParams(L, caller, factor, x1, z1, x2, z2,
 			smoothGround.GetResolution(),
 			smoothGround.GetMaxX() - 1,
@@ -6230,7 +6230,7 @@ static inline void ParseSmoothMeshParams(lua_State* L, const char* caller,
  */
 int LuaSyncedCtrl::LevelSmoothMesh(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float height;
 	int x1, x2, z1, z2;
 	ParseSmoothMeshParams(L, __func__, height, x1, z1, x2, z2);
@@ -6257,7 +6257,7 @@ int LuaSyncedCtrl::LevelSmoothMesh(lua_State* L)
  */
 int LuaSyncedCtrl::AdjustSmoothMesh(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float height;
 	int x1, x2, z1, z2;
 	ParseSmoothMeshParams(L, __func__, height, x1, z1, x2, z2);
@@ -6284,7 +6284,7 @@ int LuaSyncedCtrl::AdjustSmoothMesh(lua_State* L)
  */
 int LuaSyncedCtrl::RevertSmoothMesh(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float origFactor;
 	int x1, x2, z1, z2;
 	ParseSmoothMeshParams(L, __func__, origFactor, x1, z1, x2, z2);
@@ -6326,7 +6326,7 @@ int LuaSyncedCtrl::RevertSmoothMesh(lua_State* L)
  */
 int LuaSyncedCtrl::AddSmoothMesh(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!inSmoothMesh) {
 		luaL_error(L, "AddSmoothMesh() can only be called in SetSmoothMeshFunc()");
 	}
@@ -6366,7 +6366,7 @@ int LuaSyncedCtrl::AddSmoothMesh(lua_State* L)
  */
 int LuaSyncedCtrl::SetSmoothMesh(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!inSmoothMesh) {
 		luaL_error(L, "SetSmoothMesh() can only be called in SetSmoothMeshFunc()");
 	}
@@ -6487,7 +6487,7 @@ int LuaSyncedCtrl::SetMapSquareTerrainType(lua_State* L)
  */
 int LuaSyncedCtrl::SetTerrainTypeData(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int args = lua_gettop(L);
 	const int tti = luaL_checkint(L, 1);
 
@@ -6564,7 +6564,7 @@ int LuaSyncedCtrl::SetSquareBuildingMask(lua_State* L)
  */
 int LuaSyncedCtrl::UnitWeaponFire(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -6588,7 +6588,7 @@ int LuaSyncedCtrl::UnitWeaponFire(lua_State* L)
  */
 int LuaSyncedCtrl::UnitWeaponHoldFire(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -6613,7 +6613,7 @@ int LuaSyncedCtrl::UnitWeaponHoldFire(lua_State* L)
  */
 int LuaSyncedCtrl::UnitAttach(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* transporter = ParseUnit(L, __func__, 1);
 
 	if (transporter == nullptr)
@@ -6650,7 +6650,7 @@ int LuaSyncedCtrl::UnitAttach(lua_State* L)
  */
 int LuaSyncedCtrl::UnitDetach(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* transportee = ParseUnit(L, __func__, 1);
 
 	if (transportee == nullptr)
@@ -6673,7 +6673,7 @@ int LuaSyncedCtrl::UnitDetach(lua_State* L)
  */
 int LuaSyncedCtrl::UnitDetachFromAir(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* transportee = ParseUnit(L, __func__, 1);
 
 	if (transportee == nullptr)
@@ -6708,7 +6708,7 @@ int LuaSyncedCtrl::UnitDetachFromAir(lua_State* L)
  */
 int LuaSyncedCtrl::SetUnitLoadingTransport(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -6739,7 +6739,7 @@ int LuaSyncedCtrl::SetUnitLoadingTransport(lua_State* L)
  */
 int LuaSyncedCtrl::SpawnProjectile(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	ProjectileParams params;
 
 	if ((params.weaponDef = weaponDefHandler->GetWeaponDefByID(luaL_checkint(L, 1))) == nullptr)
@@ -6761,7 +6761,7 @@ int LuaSyncedCtrl::SpawnProjectile(lua_State* L)
  */
 int LuaSyncedCtrl::DeleteProjectile(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CProjectile* proj = ParseProjectile(L, __func__, 1);
 
 	if (proj == nullptr)
@@ -6774,7 +6774,7 @@ int LuaSyncedCtrl::DeleteProjectile(lua_State* L)
 // Slight repetition with SetSingleDynDamagesKey, but it may be ugly to combine them
 static int SetSingleDamagesKey(lua_State* L, DamageArray& damages, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const float value = lua_tofloat(L, index + 1);
 
 	if (lua_isnumber(L, index)) {
@@ -6813,7 +6813,7 @@ static int SetSingleDamagesKey(lua_State* L, DamageArray& damages, int index)
 
 static int SetExplosionParam(lua_State* L, CExplosionParams& params, DamageArray& damages, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	switch (hashString(lua_tostring(L, index))) {
 		case hashString("damages"): {
 			if (lua_istable(L, index + 1)) {
@@ -6914,7 +6914,7 @@ static int SetExplosionParam(lua_State* L, CExplosionParams& params, DamageArray
  */
 int LuaSyncedCtrl::SpawnExplosion(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const float3 pos = {luaL_checkfloat(L, 1      ), luaL_checkfloat(L, 2      ), luaL_checkfloat(L, 3      )};
 	const float3 dir = {luaL_optfloat  (L, 4, 0.0f), luaL_optfloat  (L, 5, 0.0f), luaL_optfloat  (L, 6, 0.0f)};
 
@@ -6990,7 +6990,7 @@ int LuaSyncedCtrl::SpawnExplosion(lua_State* L)
  */
 int LuaSyncedCtrl::SpawnCEG(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const float3 pos = {luaL_optfloat(L, 2, 0.0f), luaL_optfloat(L, 3, 0.0f), luaL_optfloat(L, 4, 0.0f)};
 	const float3 dir = {luaL_optfloat(L, 5, 0.0f), luaL_optfloat(L, 6, 0.0f), luaL_optfloat(L, 7, 0.0f)};
 
@@ -7025,7 +7025,7 @@ int LuaSyncedCtrl::SpawnCEG(lua_State* L)
  */
 int LuaSyncedCtrl::SpawnSFX(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CUnit* unit = ParseUnit(L, __func__, 1);
 
 	if (unit == nullptr)
@@ -7055,7 +7055,7 @@ int LuaSyncedCtrl::SpawnSFX(lua_State* L)
  */
 int LuaSyncedCtrl::SetNoPause(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!FullCtrl(L))
 		return 0;
 
@@ -7078,7 +7078,7 @@ int LuaSyncedCtrl::SetNoPause(lua_State* L)
  */
 int LuaSyncedCtrl::SetExperienceGrade(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!FullCtrl(L))
 		return 0;
 
@@ -7111,7 +7111,7 @@ int LuaSyncedCtrl::SetExperienceGrade(lua_State* L)
  */
 int LuaSyncedCtrl::SetRadarErrorParams(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int allyTeamID = lua_tonumber(L, 1);
 
 	if (!teamHandler.IsValidAllyTeam(allyTeamID))
@@ -7130,7 +7130,7 @@ int LuaSyncedCtrl::SetRadarErrorParams(lua_State* L)
 static bool ParseNamedInt(lua_State* L, const string& key,
                           const string& name, int& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (key != name) {
 		return false;
 	}
@@ -7146,7 +7146,7 @@ static bool ParseNamedInt(lua_State* L, const string& key,
 static bool ParseNamedBool(lua_State* L, const string& key,
                            const string& name, bool& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (key != name) {
 		return false;
 	}
@@ -7162,7 +7162,7 @@ static bool ParseNamedBool(lua_State* L, const string& key,
 static bool ParseNamedString(lua_State* L, const string& key,
                              const string& name, string& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (key != name) {
 		return false;
 	}
@@ -7177,7 +7177,7 @@ static bool ParseNamedString(lua_State* L, const string& key,
 
 static int ParseStringVector(lua_State* L, int index, vector<string>& strvec)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	strvec.clear();
 	int i = 1;
 	while (true) {
@@ -7203,7 +7203,7 @@ static int ParseStringVector(lua_State* L, int index, vector<string>& strvec)
 static bool ParseCommandDescription(lua_State* L, int table,
                                     SCommandDescription& cd)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_istable(L, table)) {
 		luaL_error(L, "Can not parse CommandDescription");
 		return false;
@@ -7266,7 +7266,7 @@ static bool ParseCommandDescription(lua_State* L, int table,
  */
 int LuaSyncedCtrl::EditUnitCmdDesc(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!FullCtrl(L))
 		return 0;
 
@@ -7300,7 +7300,7 @@ int LuaSyncedCtrl::EditUnitCmdDesc(lua_State* L)
  */
 int LuaSyncedCtrl::InsertUnitCmdDesc(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!FullCtrl(L))
 		return 0;
 
@@ -7341,7 +7341,7 @@ int LuaSyncedCtrl::InsertUnitCmdDesc(lua_State* L)
  */
 int LuaSyncedCtrl::RemoveUnitCmdDesc(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!FullCtrl(L))
 		return 0;
 

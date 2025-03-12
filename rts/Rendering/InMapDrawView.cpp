@@ -20,13 +20,13 @@ CInMapDrawView* inMapDrawerView = nullptr;
  * how far on the way between x and y [0.0f, 1.0f]
  */
 static inline unsigned char smoothStep(int x, int y, int a) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (unsigned char)((x * (1.0f - a)) + (y * a));
 }
 
 CInMapDrawView::CInMapDrawView()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	uint8_t tex[64][128][4];
 	std::memset(tex, 0, sizeof(tex));
 
@@ -100,7 +100,7 @@ CInMapDrawView::CInMapDrawView()
 
 CInMapDrawView::~CInMapDrawView()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glDeleteTextures(1, &texture);
 }
 
@@ -122,7 +122,7 @@ private:
 
 void InMapDraw_QuadDrawer::DrawPoint(const CInMapDrawModel::MapPoint* point) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const float3& pos = point->GetPos();
 	const float3 dif = (pos - camera->GetPos()).ANormalize();
 	const float3 dir1 = (dif.cross(UpVector)).ANormalize();
@@ -162,7 +162,7 @@ void InMapDraw_QuadDrawer::DrawPoint(const CInMapDrawModel::MapPoint* point) con
 
 void InMapDraw_QuadDrawer::DrawLine(const CInMapDrawModel::MapLine* line) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const SColor color = line->IsBySpectator() ? color4::white : SColor{ teamHandler.Team(line->GetTeamID())->color };
 	rbl->AddVertices({
 		{ line->GetPos1() - (line->GetPos1() - camera->GetPos()).ANormalize() * 26, color },
@@ -172,7 +172,7 @@ void InMapDraw_QuadDrawer::DrawLine(const CInMapDrawModel::MapLine* line) const
 
 void InMapDraw_QuadDrawer::DrawQuad(int x, int y)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const CInMapDrawModel::DrawQuad* dq = inMapDrawerModel->GetDrawQuad(x, y);
 
 	//! draw point markers
@@ -194,7 +194,7 @@ void InMapDraw_QuadDrawer::DrawQuad(int x, int y)
 
 void CInMapDrawView::Draw()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	InMapDraw_QuadDrawer drawer;
 	drawer.visibleLabels = &visibleLabels;
 	drawer.rbl = &rbl;

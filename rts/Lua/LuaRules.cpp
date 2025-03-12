@@ -42,7 +42,7 @@ DECL_FREE_HANDLER(CLuaRules, luaRules)
 
 CLuaRules::CLuaRules(bool dryRun): CSplitLuaHandle("LuaRules", LUA_HANDLE_ORDER_RULES)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	currentCobArgs = nullptr;
 
 	if (!IsValid())
@@ -53,7 +53,7 @@ CLuaRules::CLuaRules(bool dryRun): CSplitLuaHandle("LuaRules", LUA_HANDLE_ORDER_
 
 CLuaRules::~CLuaRules()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	luaRules = nullptr;
 	currentCobArgs = nullptr;
 }
@@ -90,7 +90,7 @@ int CLuaRules::GetInitSelectTeam() const
 
 bool CLuaRules::AddSyncedCode(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	lua_getglobal(L, "Script");
 	LuaPushNamedCFunc(L, "PermitHelperAIs", PermitHelperAIs);
 	lua_pop(L, 1);
@@ -101,7 +101,7 @@ bool CLuaRules::AddSyncedCode(lua_State* L)
 
 bool CLuaRules::AddUnsyncedCode(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	lua_getglobal(L, "Spring");
 
 	lua_pushliteral(L, "UnitRendering");
@@ -125,7 +125,7 @@ bool CLuaRules::AddUnsyncedCode(lua_State* L)
 
 int CLuaRules::UnpackCobArg(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (currentCobArgs == nullptr) {
 		luaL_error(L, "Error in UnpackCobArg(), no current args");
 	}
@@ -143,7 +143,7 @@ int CLuaRules::UnpackCobArg(lua_State* L)
 void CLuaRules::Cob2Lua(const LuaHashString& name, const CUnit* unit,
                         int& argsCount, int args[MAX_LUA_COB_ARGS])
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static int callDepth = 0;
 	if (callDepth >= 16) {
 		LOG_L(L_WARNING, "[LuaRules::%s] call overflow: %s", __func__, name.GetString());
@@ -235,7 +235,7 @@ void CLuaRules::Cob2Lua(const LuaHashString& name, const CUnit* unit,
 
 int CLuaRules::PermitHelperAIs(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!lua_isboolean(L, 1)) {
 		luaL_error(L, "Incorrect argument to PermitHelperAIs()");
 	}

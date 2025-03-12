@@ -22,7 +22,7 @@ extern spring::recursive_mutex soundMutex;
 
 void AudioChannel::SetVolume(float newVolume)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	volume = std::max(newVolume, 0.0f);
 
 	if (curSources.empty())
@@ -40,7 +40,7 @@ void AudioChannel::SetVolume(float newVolume)
 
 void AudioChannel::Enable(bool newState)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	if ((enabled = newState))
@@ -52,7 +52,7 @@ void AudioChannel::Enable(bool newState)
 
 void AudioChannel::SoundSourceFinished(CSoundSource* sndSource)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// FIXME broken queue
 	// we don't want to play from the queue if we're about to shut down or
 	// if we're called from StreamPlay() -> SoundSource::Stop() context
@@ -71,7 +71,7 @@ void AudioChannel::SoundSourceFinished(CSoundSource* sndSource)
 
 void AudioChannel::FindSourceAndPlay(size_t id, const float3& pos, const float3& velocity, float volume, bool relative)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (id == 0 || volume <= 0.0f)
 		return;
 
@@ -141,25 +141,25 @@ void AudioChannel::FindSourceAndPlay(size_t id, const float3& pos, const float3&
 
 void AudioChannel::PlaySample(size_t id, float volume)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	FindSourceAndPlay(id, -FwdVector, ZeroVector, volume, true);
 }
 
 void AudioChannel::PlaySample(size_t id, const float3& pos, float volume)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	FindSourceAndPlay(id, pos, ZeroVector, volume, false);
 }
 
 void AudioChannel::PlaySample(size_t id, const float3& pos, const float3& velocity, float volume)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	FindSourceAndPlay(id, pos, velocity, volume, false);
 }
 
 void AudioChannel::PlaySample(size_t id, const CWorldObject* obj, float volume)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	FindSourceAndPlay(id, obj->pos, obj->speed, volume, false);
 }
 
@@ -167,7 +167,7 @@ void AudioChannel::PlaySample(size_t id, const CWorldObject* obj, float volume)
 void AudioChannel::PlayRandomSample(const GuiSoundSet& soundSet, const CWorldObject* obj) { PlayRandomSample(soundSet, obj->pos, obj->speed); }
 void AudioChannel::PlayRandomSample(const GuiSoundSet& soundSet, const float3& pos, const float3& vel)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int soundIdx = -1;
 
 	switch (soundSet.NumSounds()) {
@@ -182,7 +182,7 @@ void AudioChannel::PlayRandomSample(const GuiSoundSet& soundSet, const float3& p
 
 void AudioChannel::StreamPlay(const std::string& filepath, float volume, bool enqueue)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	if (!enabled)
@@ -211,7 +211,7 @@ void AudioChannel::StreamPlay(const std::string& filepath, float volume, bool en
 
 void AudioChannel::StreamPause()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	if (curStreamSrc != nullptr)
@@ -220,7 +220,7 @@ void AudioChannel::StreamPause()
 
 void AudioChannel::StreamStop()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	if (curStreamSrc != nullptr)
@@ -229,7 +229,7 @@ void AudioChannel::StreamStop()
 
 float AudioChannel::StreamGetTime()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	if (curStreamSrc != nullptr)
@@ -240,7 +240,7 @@ float AudioChannel::StreamGetTime()
 
 float AudioChannel::StreamGetPlayTime()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::recursive_mutex> lck(soundMutex);
 
 	if (curStreamSrc != nullptr)

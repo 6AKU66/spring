@@ -28,7 +28,7 @@
 
 static const CUnit* GetTrackableUnit(const CUnit* caiOwner, const CUnit* cmdUnit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (cmdUnit == nullptr)
 		return nullptr;
 	if ((cmdUnit->losStatus[caiOwner->allyteam] & (LOS_INLOS | LOS_INRADAR)) == 0)
@@ -38,7 +38,7 @@ static const CUnit* GetTrackableUnit(const CUnit* caiOwner, const CUnit* cmdUnit
 }
 
 CommandDrawer* CommandDrawer::GetInstance() {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// luaQueuedUnitSet gets cleared each frame, so this is fine wrt. reloading
 	static CommandDrawer drawer;
 	return &drawer;
@@ -47,7 +47,7 @@ CommandDrawer* CommandDrawer::GetInstance() {
 
 
 void CommandDrawer::Draw(const CCommandAI* cai, int queueDrawDepth) const {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// note: {Air,Builder}CAI inherit from MobileCAI, so test that last
 	if ((dynamic_cast<const     CAirCAI*>(cai)) != nullptr) {     DrawAirCAICommands(static_cast<const     CAirCAI*>(cai), queueDrawDepth); return; }
 	if ((dynamic_cast<const CBuilderCAI*>(cai)) != nullptr) { DrawBuilderCAICommands(static_cast<const CBuilderCAI*>(cai), queueDrawDepth); return; }
@@ -60,14 +60,14 @@ void CommandDrawer::Draw(const CCommandAI* cai, int queueDrawDepth) const {
 
 
 void CommandDrawer::AddLuaQueuedUnit(const CUnit* unit, int queueDrawDepth) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// needs to insert by id, pointers can become dangling
 	luaQueuedUnitSet.insert({ unit->id, queueDrawDepth });
 }
 
 void CommandDrawer::DrawLuaQueuedUnitSetCommands() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (luaQueuedUnitSet.empty())
 		return;
 
@@ -101,7 +101,7 @@ void CommandDrawer::DrawLuaQueuedUnitSetCommands() const
 
 void CommandDrawer::DrawCommands(const CCommandAI* cai, int queueDrawDepth) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const CUnit* owner = cai->owner;
 	const CCommandQueue& commandQue = cai->commandQue;
 
@@ -159,7 +159,7 @@ void CommandDrawer::DrawCommands(const CCommandAI* cai, int queueDrawDepth) cons
 
 void CommandDrawer::DrawAirCAICommands(const CAirCAI* cai, int queueDrawDepth) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const CUnit* owner = cai->owner;
 	const CCommandQueue& commandQue = cai->commandQue;
 
@@ -245,7 +245,7 @@ void CommandDrawer::DrawAirCAICommands(const CAirCAI* cai, int queueDrawDepth) c
 
 void CommandDrawer::DrawBuilderCAICommands(const CBuilderCAI* cai, int queueDrawDepth) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const CUnit* owner = cai->owner;
 	const CCommandQueue& commandQue = cai->commandQue;
 
@@ -414,7 +414,7 @@ void CommandDrawer::DrawBuilderCAICommands(const CBuilderCAI* cai, int queueDraw
 
 void CommandDrawer::DrawFactoryCAICommands(const CFactoryCAI* cai, int queueDrawDepth) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const CUnit* owner = cai->owner;
 	const CCommandQueue& commandQue = cai->commandQue;
 	const CCommandQueue& newUnitCommands = cai->newUnitCommands;
@@ -510,7 +510,7 @@ void CommandDrawer::DrawFactoryCAICommands(const CFactoryCAI* cai, int queueDraw
 
 void CommandDrawer::DrawMobileCAICommands(const CMobileCAI* cai, int queueDrawDepth) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const CUnit* owner = cai->owner;
 	const CCommandQueue& commandQue = cai->commandQue;
 
@@ -624,13 +624,13 @@ void CommandDrawer::DrawMobileCAICommands(const CMobileCAI* cai, int queueDrawDe
 
 void CommandDrawer::DrawWaitIcon(const Command& cmd) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	waitCommandsAI.AddIcon(cmd, lineDrawer.GetLastPos());
 }
 
 void CommandDrawer::DrawDefaultCommand(const Command& c, const CUnit* owner) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// TODO add Lua callin perhaps, for more elaborate needs?
 	const CCommandColors::DrawData* dd = cmdColors.GetCustomCmdData(c.GetID());
 
@@ -668,7 +668,7 @@ void CommandDrawer::DrawDefaultCommand(const Command& c, const CUnit* owner) con
 
 void CommandDrawer::DrawQuedBuildingSquares(const CBuilderCAI* cai) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const CCommandQueue& commandQue = cai->commandQue;
 	const auto& buildOptions = cai->buildOptions;
 

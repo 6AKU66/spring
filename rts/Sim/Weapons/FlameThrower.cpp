@@ -21,7 +21,7 @@ CR_REG_METADATA(CFlameThrower,(
 
 void CFlameThrower::FireImpl(const bool scriptCall)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float3 dir = currentTargetPos - weaponMuzzlePos;
 
 	const float dist = dir.LengthNormalize();

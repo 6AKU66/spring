@@ -56,7 +56,7 @@ static void CreatePathMetatable(lua_State* L);
 
 bool LuaPathFinder::PushEntries(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// safety in case of reload
 	costOverlays[ true].clear();
 	costOverlays[false].clear();
@@ -78,7 +78,7 @@ bool LuaPathFinder::PushEntries(lua_State* L)
 
 int LuaPathFinder::PushPathNodes(lua_State* L, const int pathID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (pathID == 0)
 		return 0;
 
@@ -121,7 +121,7 @@ int LuaPathFinder::PushPathNodes(lua_State* L, const int pathID)
 
 static int path_next(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int* idPtr = (int*)luaL_checkudata(L, 1, "Path");
 	const int pathID = *idPtr;
 
@@ -158,7 +158,7 @@ static int path_next(lua_State* L)
 
 static int path_nodes(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int* idPtr = (int*)luaL_checkudata(L, 1, "Path");
 	const int pathID = *idPtr;
 
@@ -167,7 +167,7 @@ static int path_nodes(lua_State* L)
 
 static int path_index(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int* idPtr = (int*)luaL_checkudata(L, 1, "Path");
 	const int pathID = *idPtr;
 
@@ -188,13 +188,13 @@ static int path_index(lua_State* L)
 
 static int path_newindex(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return 0;
 }
 
 static int path_gc(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int* idPtr = (int*)luaL_checkudata(L, 1, "Path");
 	const int pathID = *idPtr;
 
@@ -209,7 +209,7 @@ static int path_gc(lua_State* L)
 
 static void CreatePathMetatable(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	luaL_newmetatable(L, "Path");
 	HSTR_PUSH_CFUNC(L, "__gc",       path_gc);
 	HSTR_PUSH_CFUNC(L, "__index",    path_index);
@@ -223,7 +223,7 @@ static void CreatePathMetatable(lua_State* L)
 
 int LuaPathFinder::RequestPath(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const MoveDef* moveDef = nullptr;
 
 	if (lua_israwstring(L, 1)) {
@@ -263,7 +263,7 @@ int LuaPathFinder::RequestPath(lua_State* L)
 
 int LuaPathFinder::InitPathNodeCostsArray(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int overlayIndex = luaL_checkint(L, 1);
 	const unsigned int overlaySizeX = luaL_checkint(L, 2);
 	const unsigned int overlaySizeZ = luaL_checkint(L, 3);
@@ -296,7 +296,7 @@ int LuaPathFinder::InitPathNodeCostsArray(lua_State* L)
 
 int LuaPathFinder::FreePathNodeCostsArray(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int overlayIndex = luaL_checkint(L, 1);
 	const unsigned int syncedOverlay = CLuaHandle::GetHandleSynced(L);
 
@@ -330,7 +330,7 @@ int LuaPathFinder::FreePathNodeCostsArray(lua_State* L)
 
 int LuaPathFinder::SetPathNodeCosts(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int overlayIndex = luaL_checkint(L, 1);
 	const unsigned int syncedOverlay = CLuaHandle::GetHandleSynced(L);
 
@@ -355,7 +355,7 @@ int LuaPathFinder::SetPathNodeCosts(lua_State* L)
 
 int LuaPathFinder::GetPathNodeCosts(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int overlayIndex = luaL_checkint(L, 1);
 	const unsigned int syncedOverlay = CLuaHandle::GetHandleSynced(L);
 
@@ -387,7 +387,7 @@ int LuaPathFinder::GetPathNodeCosts(lua_State* L)
 
 int LuaPathFinder::SetPathNodeCost(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int overlayIndex = luaL_checkint(L, 1);
 	const unsigned int costValIndex = luaL_checkint(L, 2);
 	const unsigned int syncedOverlay = CLuaHandle::GetHandleSynced(L);
@@ -418,7 +418,7 @@ int LuaPathFinder::SetPathNodeCost(lua_State* L)
 
 int LuaPathFinder::GetPathNodeCost(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int hmx = luaL_checkint(L, 1);
 	const unsigned int hmz = luaL_checkint(L, 2);
 

@@ -12,19 +12,19 @@
 
 int Mp3Decoder::GetChannels() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return data.channels;
 }
 
 long Mp3Decoder::GetRate() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return data.sampleRate;
 }
 
 long Mp3Decoder::Read(uint8_t *buffer,int length, int bigendianp,int word,int sgned,int *bitstream)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto bytesToFrames = sizeof(drmp3_int16) / sizeof(*buffer);
 	return drmp3_read_pcm_frames_s16(&data, length / bytesToFrames / data.channels,
 			reinterpret_cast<drmp3_int16*>(buffer)) * bytesToFrames * data.channels;
@@ -32,14 +32,14 @@ long Mp3Decoder::Read(uint8_t *buffer,int length, int bigendianp,int word,int sg
 
 float Mp3Decoder::GetTotalTime()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// linear complexity, but is cached in MusicStream
 	return 1.0f * drmp3_get_pcm_frame_count(&data) / data.sampleRate; 
 }
 
 bool Mp3Decoder::LoadData(const uint8_t* mem, size_t len)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!drmp3_init_memory(&data, mem, len, nullptr)) {
 		LOG_L(L_ERROR, "[Mp3Decoder::LoadFile] Failed to load");
 		return false;

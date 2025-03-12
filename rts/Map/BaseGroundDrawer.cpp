@@ -13,7 +13,7 @@ CONFIG(float, GroundLODScaleTerrainReflection).defaultValue(1.0f);
 
 CBaseGroundDrawer::CBaseGroundDrawer()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LODScaleReflection = configHandler->GetFloat("GroundLODScaleReflection");
 	LODScaleRefraction = configHandler->GetFloat("GroundLODScaleRefraction");
 	LODScaleTerrainReflection = configHandler->GetFloat("GroundLODScaleTerrainReflection");

@@ -20,7 +20,7 @@ int IGroundDecalDrawer::decalLevel = 0;
 
 static IGroundDecalDrawer* GetInstance()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	IGroundDecalDrawer* instance = &nullDecalDrawer;
 	if (!IGroundDecalDrawer::GetDrawDecals()) {
 		LOG_L(L_INFO, "Loaded DecalsDrawer: %s", "null");
@@ -38,7 +38,7 @@ static IGroundDecalDrawer* GetInstance()
 
 void IGroundDecalDrawer::Init()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	decalLevel = configHandler->GetInt("GroundDecals");
 
 	FreeInstance();
@@ -48,7 +48,7 @@ void IGroundDecalDrawer::Init()
 
 void IGroundDecalDrawer::FreeInstance()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (singleton != &nullDecalDrawer)
 		spring::SafeDelete(singleton);
 }
@@ -56,7 +56,7 @@ void IGroundDecalDrawer::FreeInstance()
 
 void IGroundDecalDrawer::SetDrawDecals(bool v)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (v) {
 		decalLevel =  std::abs(decalLevel);
 	} else {

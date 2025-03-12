@@ -366,7 +366,7 @@ CGlobalRendering::~CGlobalRendering()
 
 void CGlobalRendering::PreKill()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	UniformConstants::GetInstance().Kill(); //unsafe to kill in ~CGlobalRendering()
 	RenderBuffer::KillStatic();
 	CShaderHandler::FreeInstance();
@@ -375,7 +375,7 @@ void CGlobalRendering::PreKill()
 
 SDL_Window* CGlobalRendering::CreateSDLWindow(const char* title) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SDL_Window* newWindow = nullptr;
 
 	const std::array aaLvls = {msaaLevel, msaaLevel / 2, msaaLevel / 4, msaaLevel / 8, msaaLevel / 16, msaaLevel / 32, 0};
@@ -440,7 +440,7 @@ SDL_Window* CGlobalRendering::CreateSDLWindow(const char* title) const
 
 SDL_GLContext CGlobalRendering::CreateGLContext(const int2& minCtx)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SDL_GLContext newContext = nullptr;
 
 	constexpr int2 glCtxs[] = {{2, 0}, {2, 1},  {3, 0}, {3, 1}, {3, 2}, {3, 3},  {4, 0}, {4, 1}, {4, 2}, {4, 3}, {4, 4}, {4, 5}, {4, 6}};
@@ -497,7 +497,7 @@ SDL_GLContext CGlobalRendering::CreateGLContext(const int2& minCtx)
 
 bool CGlobalRendering::CreateWindowAndContext(const char* title)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (SDL_Init(SDL_INIT_VIDEO) == -1) {
 		LOG_L(L_FATAL, "[GR::%s] error \"%s\" initializing SDL", __func__, SDL_GetError());
 		return false;
@@ -578,13 +578,13 @@ bool CGlobalRendering::CreateWindowAndContext(const char* title)
 
 
 void CGlobalRendering::MakeCurrentContext(bool clear) const {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SDL_GL_MakeCurrent(sdlWindow, clear ? nullptr : glContext);
 }
 
 
 void CGlobalRendering::DestroyWindowAndContext() {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!sdlWindow)
 		return;
 
@@ -604,7 +604,7 @@ void CGlobalRendering::DestroyWindowAndContext() {
 }
 
 void CGlobalRendering::KillSDL() const {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	#if !defined(HEADLESS)
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 	#endif
@@ -614,7 +614,7 @@ void CGlobalRendering::KillSDL() const {
 }
 
 void CGlobalRendering::PostInit() {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	#ifndef HEADLESS
 	glewExperimental = true;
 	#endif
@@ -674,7 +674,7 @@ void CGlobalRendering::SwapBuffers(bool allowSwapBuffers, bool clearErrors)
 
 void CGlobalRendering::SetGLTimeStamp(uint32_t queryIdx) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!GLEW_ARB_timer_query)
 		return;
 
@@ -683,7 +683,7 @@ void CGlobalRendering::SetGLTimeStamp(uint32_t queryIdx) const
 
 uint64_t CGlobalRendering::CalcGLDeltaTime(uint32_t queryIdx0, uint32_t queryIdx1) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!GLEW_ARB_timer_query)
 		return 0;
 
@@ -713,7 +713,7 @@ uint64_t CGlobalRendering::CalcGLDeltaTime(uint32_t queryIdx0, uint32_t queryIdx
 
 void CGlobalRendering::CheckGLExtensions()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	#ifndef HEADLESS
 	// detect RenderDoc
 	{
@@ -757,7 +757,7 @@ void CGlobalRendering::CheckGLExtensions()
 
 void CGlobalRendering::SetGLSupportFlags()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string& glVendor = StringToLower(globalRenderingInfo.glVendor);
 	const std::string& glRenderer = StringToLower(globalRenderingInfo.glRenderer);
 	const std::string& glVersion = StringToLower(globalRenderingInfo.glVersion);
@@ -894,7 +894,7 @@ void CGlobalRendering::SetGLSupportFlags()
 
 void CGlobalRendering::QueryGLMaxVals()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// maximum 2D texture size
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 
@@ -927,7 +927,7 @@ void CGlobalRendering::QueryGLMaxVals()
 
 void CGlobalRendering::QueryVersionInfo(char (&sdlVersionStr)[64], char (&glVidMemStr)[64])
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto& grInfo = globalRenderingInfo;
 
 	auto& sdlVC = grInfo.sdlVersionCompiled;
@@ -969,7 +969,7 @@ void CGlobalRendering::QueryVersionInfo(char (&sdlVersionStr)[64], char (&glVidM
 
 void CGlobalRendering::LogVersionInfo(const char* sdlVersionStr, const char* glVidMemStr) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LOG("[GR::%s]", __func__);
 	LOG("\tSDL version : %s", sdlVersionStr);
 	LOG("\tGL version  : %s", globalRenderingInfo.glVersion);
@@ -1116,7 +1116,7 @@ void CGlobalRendering::LogDisplayMode(SDL_Window* window) const
 
 void CGlobalRendering::GetAllDisplayBounds(SDL_Rect& r) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int displayIdx = 0;
 	GetDisplayBounds(r, &displayIdx);
 
@@ -1138,7 +1138,7 @@ void CGlobalRendering::GetAllDisplayBounds(SDL_Rect& r) const
 
 void CGlobalRendering::GetWindowPosSizeBounded(int& x, int& y, int& w, int& h) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SDL_Rect r;
 	GetAllDisplayBounds(r);
 
@@ -1150,7 +1150,7 @@ void CGlobalRendering::GetWindowPosSizeBounded(int& x, int& y, int& w, int& h) c
 
 void CGlobalRendering::SetWindowTitle(const std::string& title)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// SDL_SetWindowTitle deadlocks in case it's called from non-main thread (during the MT loading).
 
 	static auto SetWindowTitleImpl = [](SDL_Window* sdlWindow, const std::string& title) {
@@ -1167,7 +1167,7 @@ void CGlobalRendering::SetWindowTitle(const std::string& title)
 
 void CGlobalRendering::SetWindowAttributes(SDL_Window* window)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// Get wanted state
 	borderless = configHandler->GetBool("WindowBorderless");
 	fullScreen = configHandler->GetBool("Fullscreen");
@@ -1207,7 +1207,7 @@ void CGlobalRendering::SetWindowAttributes(SDL_Window* window)
 
 void CGlobalRendering::ConfigNotify(const std::string& key, const std::string& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LOG("[GR::%s][1] key=%s val=%s", __func__, key.c_str(), value.c_str());
 	if (key == "DualScreenMode" || key == "DualScreenMiniMapOnLeft") {
 		SetDualScreenParams();
@@ -1246,19 +1246,19 @@ void CGlobalRendering::UpdateWindow()
 
 void CGlobalRendering::UpdateTimer()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	grTime = spring_now();
 }
 
 bool CGlobalRendering::GetWindowInputGrabbing()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return static_cast<bool>(SDL_GetWindowGrab(sdlWindow));
 }
 
 bool CGlobalRendering::SetWindowInputGrabbing(bool enable)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// SDL_SetWindowGrab deadlocks in case it's called from non-main thread (during the MT loading).
 
 	static auto SetWindowGrabImpl = [](SDL_Window* sdlWindow, bool enable) {
@@ -1275,7 +1275,7 @@ bool CGlobalRendering::SetWindowInputGrabbing(bool enable)
 
 bool CGlobalRendering::ToggleWindowInputGrabbing()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (GetWindowInputGrabbing())
 		return (SetWindowInputGrabbing(false));
 
@@ -1284,7 +1284,7 @@ bool CGlobalRendering::ToggleWindowInputGrabbing()
 
 bool CGlobalRendering::SetWindowPosHelper(int displayIdx, int winRPosX, int winRPosY, int winSizeX_, int winSizeY_, bool fs, bool bl) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #ifndef HEADLESS
 	if (displayIdx < 0 || displayIdx >= numDisplays) {
 		LOG_L(L_ERROR, "[GR::%s] displayIdx(%d) is out of bounds (%d,%d)", __func__, displayIdx, 0, numDisplays - 1);
@@ -1310,7 +1310,7 @@ bool CGlobalRendering::SetWindowPosHelper(int displayIdx, int winRPosX, int winR
 }
 
 int2 CGlobalRendering::GetMaxWinRes() const {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SDL_DisplayMode dmode;
 	SDL_GetDesktopDisplayMode(GetCurrentDisplayIndex(), &dmode);
 	return {dmode.w, dmode.h};
@@ -1318,7 +1318,7 @@ int2 CGlobalRendering::GetMaxWinRes() const {
 
 int2 CGlobalRendering::GetCfgWinRes() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int2 res = {configHandler->GetInt(xsKeys[fullScreen]), configHandler->GetInt(ysKeys[fullScreen])};
 
 	// copy Native Desktop Resolution if user did not specify a value
@@ -1334,20 +1334,20 @@ int2 CGlobalRendering::GetCfgWinRes() const
 
 int CGlobalRendering::GetCurrentDisplayIndex() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return sdlWindow ? SDL_GetWindowDisplayIndex(sdlWindow) : 0;
 }
 
 void CGlobalRendering::GetDisplayBounds(SDL_Rect& r, const int* di) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int displayIndex = di ? *di : GetCurrentDisplayIndex();
 	SDL_GetDisplayBounds(displayIndex, &r);
 }
 
 void CGlobalRendering::GetUsableDisplayBounds(SDL_Rect& r, const int* di) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int displayIndex = di ? *di : GetCurrentDisplayIndex();
 	SDL_GetDisplayUsableBounds(displayIndex, &r);
 }
@@ -1356,7 +1356,7 @@ void CGlobalRendering::GetUsableDisplayBounds(SDL_Rect& r, const int* di) const
 // only called on startup; change the config based on command-line args
 void CGlobalRendering::SetFullScreen(bool cliWindowed, bool cliFullScreen)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const bool cfgFullScreen = configHandler->GetBool("Fullscreen");
 
 	fullScreen = (cfgFullScreen && !cliWindowed  );
@@ -1367,19 +1367,19 @@ void CGlobalRendering::SetFullScreen(bool cliWindowed, bool cliFullScreen)
 
 void CGlobalRendering::SetDualScreenParams()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	dualScreenMode = configHandler->GetBool("DualScreenMode");
 	dualScreenMiniMapOnLeft = dualScreenMode && configHandler->GetBool("DualScreenMiniMapOnLeft");
 }
 
 static const auto compareSDLRectPosX = [](const SDL_Rect& a, const SDL_Rect& b) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
   return (a.x < b.x);
 };
 
 void CGlobalRendering::UpdateViewPortGeometry()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	viewPosY = 0;
 	viewSizeY = winSizeY;
 	viewWindowOffsetY = 0;
@@ -1484,7 +1484,7 @@ void CGlobalRendering::UpdateViewPortGeometry()
 
 void CGlobalRendering::UpdatePixelGeometry()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	pixelX = 1.0f / viewSizeX;
 	pixelY = 1.0f / viewSizeY;
 
@@ -1494,7 +1494,7 @@ void CGlobalRendering::UpdatePixelGeometry()
 
 void CGlobalRendering::ReadWindowPosAndSize()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #ifdef HEADLESS
 	screenSizeX = 8;
 	screenSizeY = 8;
@@ -1532,7 +1532,7 @@ void CGlobalRendering::ReadWindowPosAndSize()
 
 void CGlobalRendering::SaveWindowPosAndSize()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #ifdef HEADLESS
 	return;
 #endif
@@ -1557,7 +1557,7 @@ void CGlobalRendering::SaveWindowPosAndSize()
 
 void CGlobalRendering::UpdateGLConfigs()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LOG("[GR::%s]", __func__);
 
 	// re-read configuration value
@@ -1566,7 +1566,7 @@ void CGlobalRendering::UpdateGLConfigs()
 
 void CGlobalRendering::UpdateScreenMatrices()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// .x := screen width (meters), .y := eye-to-screen (meters)
 	static float2 screenParameters = { 0.36f, 0.60f };
 
@@ -1601,7 +1601,7 @@ void CGlobalRendering::UpdateScreenMatrices()
 
 void CGlobalRendering::UpdateWindowBorders(SDL_Window* window) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #ifndef HEADLESS
 	assert(window);
 
@@ -1660,7 +1660,7 @@ void CGlobalRendering::UpdateWindowBorders(SDL_Window* window) const
 
 void CGlobalRendering::UpdateGLGeometry()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LOG("[GR::%s][1] winSize=<%d,%d>", __func__, winSizeX, winSizeY);
 
 	ReadWindowPosAndSize();
@@ -1673,7 +1673,7 @@ void CGlobalRendering::UpdateGLGeometry()
 
 void CGlobalRendering::InitGLState()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LOG("[GR::%s]", __func__);
 
 	glShadeModel(GL_SMOOTH);
@@ -1712,14 +1712,14 @@ void CGlobalRendering::InitGLState()
 
 void CGlobalRendering::ToggleMultisampling() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static constexpr std::array<void(*)(), 2> ToggleFuncs = { []() { glDisable(GL_MULTISAMPLE); }, []() { glEnable(GL_MULTISAMPLE); } };
 	ToggleFuncs[msaaLevel > 0]();
 }
 
 bool CGlobalRendering::CheckShaderGL4() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #ifndef HEADLESS
 	//the code below doesn't make any sense, but here only to test if the shader can be compiled
 	constexpr static const char* vsSrc = R"(
@@ -1773,7 +1773,7 @@ void main()
 
 int CGlobalRendering::DepthBitsToFormat(int bits)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	switch (bits)
 	{
 	case 16:
@@ -1789,7 +1789,7 @@ int CGlobalRendering::DepthBitsToFormat(int bits)
 
 bool CGlobalRendering::SetWindowMinMaximized(bool maximize) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static constexpr uint32_t mmFlags[] = {
 		SDL_WINDOW_MINIMIZED,
 		SDL_WINDOW_MAXIMIZED
@@ -1813,7 +1813,7 @@ bool CGlobalRendering::SetWindowMinMaximized(bool maximize) const
  */
 bool CGlobalRendering::CheckGLMultiSampling() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (msaaLevel == 0)
 		return false;
 	if (!GLEW_ARB_multisample)
@@ -1830,7 +1830,7 @@ bool CGlobalRendering::CheckGLMultiSampling() const
 
 bool CGlobalRendering::CheckGLContextVersion(const int2& minCtx) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	#ifdef HEADLESS
 	return true;
 	#else
@@ -1990,7 +1990,7 @@ static void _GL_APIENTRY glDebugMessageCallbackFunc(
 
 bool CGlobalRendering::ToggleGLDebugOutput(unsigned int msgSrceIdx, unsigned int msgTypeIdx, unsigned int msgSevrIdx) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #if (defined(GL_ARB_debug_output) && !defined(HEADLESS))
 	if (!(GLEW_ARB_debug_output || GLEW_KHR_debug))
 		return false;
@@ -2025,12 +2025,12 @@ bool CGlobalRendering::ToggleGLDebugOutput(unsigned int msgSrceIdx, unsigned int
 
 void CGlobalRendering::LoadViewport()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glViewport(viewPosX, viewPosY, viewSizeX, viewSizeY);
 }
 
 void CGlobalRendering::LoadDualViewport()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glViewport(dualViewPosX, dualViewPosY, dualViewSizeX, dualViewSizeY);
 }

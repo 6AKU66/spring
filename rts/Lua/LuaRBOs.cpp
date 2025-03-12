@@ -21,7 +21,7 @@
 
 LuaRBOs::~LuaRBOs()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	for (const RBO* rbo: rbos) {
 		glDeleteRenderbuffersEXT(1, &rbo->id);
 	}
@@ -33,7 +33,7 @@ LuaRBOs::~LuaRBOs()
 
 bool LuaRBOs::PushEntries(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CreateMetatable(L);
 
 	REGISTER_LUA_CFUNC(CreateRBO);
@@ -45,7 +45,7 @@ bool LuaRBOs::PushEntries(lua_State* L)
 
 bool LuaRBOs::CreateMetatable(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	luaL_newmetatable(L, "RBO");
 	HSTR_PUSH_CFUNC(L, "__gc",        meta_gc);
 	HSTR_PUSH_CFUNC(L, "__index",     meta_index);
@@ -60,7 +60,7 @@ bool LuaRBOs::CreateMetatable(lua_State* L)
 
 const LuaRBOs::RBO* LuaRBOs::GetLuaRBO(lua_State* L, int index)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return static_cast<RBO*>(LuaUtils::GetUserData(L, index, "RBO"));
 }
 
@@ -84,7 +84,7 @@ void LuaRBOs::RBO::Init()
 
 void LuaRBOs::RBO::Free(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (id == 0)
 		return;
 
@@ -111,7 +111,7 @@ void LuaRBOs::RBO::Free(lua_State* L)
 
 int LuaRBOs::meta_gc(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	RBO* rbo = static_cast<RBO*>(luaL_checkudata(L, 1, "RBO"));
 	rbo->Free(L);
 	return 0;
@@ -120,7 +120,7 @@ int LuaRBOs::meta_gc(lua_State* L)
 
 int LuaRBOs::meta_index(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const RBO* rbo = static_cast<RBO*>(luaL_checkudata(L, 1, "RBO"));
 
 	switch (hashString(luaL_checkstring(L, 2))) {
@@ -139,7 +139,7 @@ int LuaRBOs::meta_index(lua_State* L)
 
 int LuaRBOs::meta_newindex(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return 0;
 }
 
@@ -169,7 +169,7 @@ int LuaRBOs::meta_newindex(lua_State* L)
  */
 int LuaRBOs::CreateRBO(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	RBO rbo;
 	rbo.Init();
 
@@ -243,7 +243,7 @@ int LuaRBOs::CreateRBO(lua_State* L)
  */
 int LuaRBOs::DeleteRBO(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (lua_isnil(L, 1)) {
 		return 0;
 	}

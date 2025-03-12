@@ -19,7 +19,7 @@
 #include <tracy/Tracy.hpp>
 
 static void GetRectangleCollisionVolume(const SRectangle& r, CollisionVolume& v, float3& rm) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float3 vScales;
 
 	// rectangle dimensions (WS)
@@ -38,7 +38,7 @@ static void GetRectangleCollisionVolume(const SRectangle& r, CollisionVolume& v,
 }
 
 bool QTPFS::PathCache::MarkDeadPaths(const SRectangle& r, int pathType) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto pathView = registry.view<IPath>(/*entt::exclude<PathIsDirty>*/);
 	if (pathView.empty())
 		return false;

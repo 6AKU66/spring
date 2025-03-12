@@ -11,7 +11,7 @@ Calculate speed-multiplier for given height and slope data.
 */
 float CMoveMath::HoverSpeedMod(const MoveDef& moveDef, float height, float slope)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// no speed-penalty if on water (unless noWaterMove)
 	if (height < 0.0f)
 		return (1.0f * !noHoverWaterMove);
@@ -24,7 +24,7 @@ float CMoveMath::HoverSpeedMod(const MoveDef& moveDef, float height, float slope
 
 float CMoveMath::HoverSpeedMod(const MoveDef& moveDef, float height, float slope, float dirSlopeMod)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!modInfo.allowDirectionalPathing) {
 		return HoverSpeedMod(moveDef, height, slope);
 	}

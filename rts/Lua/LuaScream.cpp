@@ -23,7 +23,7 @@ bool LuaScream::PushEntries(lua_State* L)
 
 bool LuaScream::CreateMetatable(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	luaL_newmetatable(L, "Scream");
 	HSTR_PUSH_CFUNC(L, "__gc",        meta_gc);
 	HSTR_PUSH_CFUNC(L, "__index",     meta_index);
@@ -35,7 +35,7 @@ bool LuaScream::CreateMetatable(lua_State* L)
 
 int LuaScream::meta_gc(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int* refPtr = (int*)luaL_checkudata(L, 1, "Scream");
 	lua_rawgeti(L, LUA_REGISTRYINDEX, *refPtr);
 	if (lua_isfunction(L, -1)) {
@@ -56,7 +56,7 @@ int LuaScream::meta_gc(lua_State* L)
 
 int LuaScream::meta_index(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int* refPtr = (int*)luaL_checkudata(L, 1, "Scream");
 	const string key = luaL_checkstring(L, 2);
 	if (key == "func") {
@@ -69,7 +69,7 @@ int LuaScream::meta_index(lua_State* L)
 
 int LuaScream::meta_newindex(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int* refPtr = (int*)luaL_checkudata(L, 1, "Scream");
 	const string key = luaL_checkstring(L, 2);
 	if (key == "func") {
@@ -85,7 +85,7 @@ int LuaScream::meta_newindex(lua_State* L)
 
 int LuaScream::CreateScream(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int* refPtr = (int*)lua_newuserdata(L, sizeof(int));
 	luaL_getmetatable(L, "Scream");
 	lua_setmetatable(L, -2);

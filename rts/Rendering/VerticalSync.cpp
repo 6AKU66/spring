@@ -29,33 +29,33 @@ CONFIG(int, VSync).
 
 CVerticalSync* CVerticalSync::GetInstance()
 {
-	//ZoneScoped;	
+	RECOIL_DETAILED_TRACY_ZONE;	
 	return &instance;
 }
 
 void CVerticalSync::WrapNotifyOnChange()
 {
-	//ZoneScoped;	
+	RECOIL_DETAILED_TRACY_ZONE;	
 	configHandler->NotifyOnChange(this, {"VSync"});
 }
 
 void CVerticalSync::WrapRemoveObserver()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// can't do this in the dtor because VerticalSync outlives configHandler
 	configHandler->RemoveObserver(this);
 }
 
 void CVerticalSync::ConfigNotify(const std::string& key, const std::string& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SetInterval(configHandler->GetInt("VSync"));
 }
 
 
 void CVerticalSync::Toggle()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// no-arg switch, select smallest interval
 	switch (std::clamp(SDL_GL_GetSwapInterval(), -1, 1)) {
 		case -1: { SetInterval( 0); } break;
@@ -68,7 +68,7 @@ void CVerticalSync::Toggle()
 void CVerticalSync::SetInterval() { SetInterval(configHandler->GetInt("VSync")); }
 void CVerticalSync::SetInterval(int i)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// recursion is already prevented (Set only notifies on changed
 	// values), this just avoids making the SDL calls a second time
 	if ((i = std::clamp(i, MAX_ADAPTIVE_INTERVAL, MAX_STANDARD_INTERVAL)) == interval)

@@ -22,7 +22,7 @@ CR_REG_METADATA(CRifle, )
 
 void CRifle::FireImpl(const bool scriptCall)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float3 dir = (currentTargetPos - weaponMuzzlePos).SafeNormalize();
 	dir +=
 		(gsRNG.NextVector() * SprayAngleExperience() + SalvoErrorExperience());

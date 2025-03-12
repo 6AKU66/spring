@@ -80,7 +80,7 @@ LuaParser::LuaParser(const std::string& _textChunk, const std::string& _accessMo
 	, lowerKeys(true)
 	, lowerCppKeys(true)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// be on the safe side
 	// D.synced = synced.b;
 	D.synced = true;
@@ -95,7 +95,7 @@ LuaParser::LuaParser(const std::string& _textChunk, const std::string& _accessMo
 
 LuaParser::~LuaParser()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// prevent crashes in glDelete* calls since LuaParser
 	// might be constructed by multiple different threads
 	D.Clear();
@@ -115,7 +115,7 @@ LuaParser::~LuaParser()
 
 void LuaParser::SetupLua(bool isSyncedCtxt, bool isDefsParser)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if ((L = LUA_OPEN(&D)) == nullptr)
 		return;
 
@@ -124,7 +124,7 @@ void LuaParser::SetupLua(bool isSyncedCtxt, bool isDefsParser)
 
 void LuaParser::SetupEnv(bool isSyncedCtxt, bool isDefsParser)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_OPEN_LIB(L, luaopen_base);
 	LUA_OPEN_LIB(L, luaopen_math);
 	LUA_OPEN_LIB(L, luaopen_table);
@@ -204,7 +204,7 @@ void LuaParser::SetupEnv(bool isSyncedCtxt, bool isDefsParser)
 
 bool LuaParser::Execute()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid()) {
 		errorLog = "could not initialize Lua library";
 		return false;
@@ -303,7 +303,7 @@ void LuaParser::RemoveTable(LuaTable* tbl) { spring::VectorErase(tables, tbl); }
 
 LuaTable LuaParser::GetRoot()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return LuaTable(this);
 }
 
@@ -312,7 +312,7 @@ LuaTable LuaParser::GetRoot()
 
 void LuaParser::PushParam()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 
@@ -326,7 +326,7 @@ void LuaParser::PushParam()
 
 void LuaParser::GetTable(const std::string& name, bool overwrite)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 
@@ -349,7 +349,7 @@ void LuaParser::GetTable(const std::string& name, bool overwrite)
 
 void LuaParser::GetTable(int index, bool overwrite)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 
@@ -372,7 +372,7 @@ void LuaParser::GetTable(int index, bool overwrite)
 
 void LuaParser::EndTable()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 	assert(initDepth > 0);
@@ -385,7 +385,7 @@ void LuaParser::EndTable()
 
 void LuaParser::AddFunc(const std::string& key, int (*func)(lua_State*))
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 	if (func == nullptr)
@@ -403,7 +403,7 @@ void LuaParser::AddFunc(const std::string& key, int (*func)(lua_State*))
 
 void LuaParser::AddInt(const std::string& key, int value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 	lua_pushsstring(L, key);
@@ -414,7 +414,7 @@ void LuaParser::AddInt(const std::string& key, int value)
 
 void LuaParser::AddBool(const std::string& key, bool value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 	lua_pushsstring(L, key);
@@ -425,7 +425,7 @@ void LuaParser::AddBool(const std::string& key, bool value)
 
 void LuaParser::AddFloat(const std::string& key, float value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 	lua_pushsstring(L, key);
@@ -436,7 +436,7 @@ void LuaParser::AddFloat(const std::string& key, float value)
 
 void LuaParser::AddString(const std::string& key, const std::string& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 	lua_pushsstring(L, key);
@@ -449,7 +449,7 @@ void LuaParser::AddString(const std::string& key, const std::string& value)
 
 void LuaParser::AddFunc(int key, int (*func)(lua_State*))
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 	if (func == nullptr)
@@ -464,7 +464,7 @@ void LuaParser::AddFunc(int key, int (*func)(lua_State*))
 
 void LuaParser::AddInt(int key, int value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 	lua_pushnumber(L, key);
@@ -475,7 +475,7 @@ void LuaParser::AddInt(int key, int value)
 
 void LuaParser::AddBool(int key, bool value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 	lua_pushnumber(L, key);
@@ -486,7 +486,7 @@ void LuaParser::AddBool(int key, bool value)
 
 void LuaParser::AddFloat(int key, float value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 	lua_pushnumber(L, key);
@@ -497,7 +497,7 @@ void LuaParser::AddFloat(int key, float value)
 
 void LuaParser::AddString(int key, const std::string& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid() || (initDepth < 0))
 		return;
 	lua_pushnumber(L, key);
@@ -514,7 +514,7 @@ void LuaParser::AddString(int key, const std::string& value)
 
 int LuaParser::TimeCheck(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	#if (!defined(UNITSYNC) && !defined(DEDICATED))
 	if (!lua_isstring(L, 1) || !lua_isfunction(L, 2))
 		luaL_error(L, "Invalid arguments to TimeCheck('string', func, ...)");
@@ -545,7 +545,7 @@ int LuaParser::TimeCheck(lua_State* L)
 int LuaParser::RandomSeed(lua_State* L) { return (DummyRandomSeed(L)); }
 int LuaParser::Random(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// both US and DS depend on LuaParser via MapParser, etc
 	#if (!defined(UNITSYNC) && !defined(DEDICATED))
 
@@ -602,7 +602,7 @@ int LuaParser::DummyRandom(lua_State* L) { return 0; }
 
 int LuaParser::DirList(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const LuaParser* currentParser = GetLuaParser(L);
 
 	const std::string& dir = luaL_checkstring(L, 1);
@@ -621,7 +621,7 @@ int LuaParser::DirList(lua_State* L)
 
 int LuaParser::SubDirs(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const LuaParser* currentParser = GetLuaParser(L);
 
 	const std::string& dir = luaL_checkstring(L, 1);
@@ -641,7 +641,7 @@ int LuaParser::SubDirs(lua_State* L)
 
 int LuaParser::Include(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const LuaParser* currentParser = GetLuaParser(L);
 
 	// filename [, fenv]
@@ -711,7 +711,7 @@ int LuaParser::Include(lua_State* L)
 
 int LuaParser::LoadFile(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const LuaParser* currentParser = GetLuaParser(L);
 
 	const std::string& filename = luaL_checkstring(L, 1);
@@ -744,7 +744,7 @@ int LuaParser::LoadFile(lua_State* L)
 
 int LuaParser::FileExists(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const LuaParser* currentParser = GetLuaParser(L);
 
 	const std::string& filename = luaL_checkstring(L, 1);
@@ -762,7 +762,7 @@ int LuaParser::FileExists(lua_State* L)
 
 int LuaParser::DontMessWithMyCase(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LuaParser* currentParser = GetLuaParser(L);
 
 	currentParser->SetLowerKeys(lua_toboolean(L, 1));
@@ -788,7 +788,7 @@ LuaTable::LuaTable()
 
 LuaTable::LuaTable(LuaParser* _parser)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(_parser != nullptr);
 
 	isValid = _parser->IsValid();
@@ -811,7 +811,7 @@ LuaTable::LuaTable(LuaParser* _parser)
 
 LuaTable::LuaTable(const LuaTable& tbl)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	parser = tbl.parser;
 	L      = tbl.L;
 	path   = tbl.path;
@@ -831,7 +831,7 @@ LuaTable::LuaTable(const LuaTable& tbl)
 
 LuaTable& LuaTable::operator=(const LuaTable& tbl)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (parser != nullptr && (refnum != LUA_NOREF) && (parser->currentRef == refnum)) {
 		lua_settop(L, 0);
 		parser->currentRef = LUA_NOREF;
@@ -868,7 +868,7 @@ LuaTable& LuaTable::operator=(const LuaTable& tbl)
 
 LuaTable LuaTable::SubTable(int key) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LuaTable subTable;
 	char buf[32];
 	SNPRINTF(buf, 32, "[%i]", key);
@@ -896,7 +896,7 @@ LuaTable LuaTable::SubTable(int key) const
 
 LuaTable LuaTable::SubTable(const std::string& mixedKey) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string key = !((parser != nullptr)? parser->lowerCppKeys : true) ? mixedKey : StringToLower(mixedKey);
 
 	LuaTable subTable;
@@ -924,7 +924,7 @@ LuaTable LuaTable::SubTable(const std::string& mixedKey) const
 
 LuaTable LuaTable::SubTableExpr(const std::string& expr) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (expr.empty())
 		return LuaTable(*this);
 
@@ -963,7 +963,7 @@ LuaTable LuaTable::SubTableExpr(const std::string& expr) const
 
 LuaTable::~LuaTable()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (parser != nullptr)
 		parser->RemoveTable(this);
 
@@ -982,7 +982,7 @@ LuaTable::~LuaTable()
 
 bool LuaTable::PushTable() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!isValid)
 		return false;
 
@@ -1014,7 +1014,7 @@ bool LuaTable::PushTable() const
 
 bool LuaTable::PushValue(int key) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushTable()) {
 		return false;
 	}
@@ -1030,7 +1030,7 @@ bool LuaTable::PushValue(int key) const
 
 bool LuaTable::PushValue(const std::string& mixedKey) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::string key = !(parser ? parser->lowerCppKeys : true) ? mixedKey : StringToLower(mixedKey);
 
 	if (!PushTable())
@@ -1118,7 +1118,7 @@ bool LuaTable::PushValue(const std::string& mixedKey) const
 
 bool LuaTable::KeyExists(int key) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return false;
 
@@ -1129,7 +1129,7 @@ bool LuaTable::KeyExists(int key) const
 
 bool LuaTable::KeyExists(const std::string& key) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return false;
 
@@ -1146,7 +1146,7 @@ bool LuaTable::KeyExists(const std::string& key) const
 
 LuaTable::DataType LuaTable::GetType(int key) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return NIL;
 
@@ -1165,7 +1165,7 @@ LuaTable::DataType LuaTable::GetType(int key) const
 
 LuaTable::DataType LuaTable::GetType(const std::string& key) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return NIL;
 
@@ -1190,7 +1190,7 @@ LuaTable::DataType LuaTable::GetType(const std::string& key) const
 
 int LuaTable::GetLength() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushTable())
 		return 0;
 
@@ -1200,7 +1200,7 @@ int LuaTable::GetLength() const
 
 int LuaTable::GetLength(int key) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return 0;
 
@@ -1212,7 +1212,7 @@ int LuaTable::GetLength(int key) const
 
 int LuaTable::GetLength(const std::string& key) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return 0;
 
@@ -1230,7 +1230,7 @@ int LuaTable::GetLength(const std::string& key) const
 
 bool LuaTable::GetKeys(std::vector<int>& data) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushTable())
 		return false;
 
@@ -1248,7 +1248,7 @@ bool LuaTable::GetKeys(std::vector<int>& data) const
 
 bool LuaTable::GetKeys(std::vector<std::string>& data) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushTable())
 		return false;
 
@@ -1267,7 +1267,7 @@ bool LuaTable::GetKeys(std::vector<std::string>& data) const
 
 bool LuaTable::GetPairs(std::vector<std::pair<int, std::string>>& data) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushTable())
 		return false;
 
@@ -1296,7 +1296,7 @@ bool LuaTable::GetPairs(std::vector<std::pair<int, std::string>>& data) const
 
 bool LuaTable::GetPairs(std::vector<std::pair<std::string, float>>& data) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushTable())
 		return false;
 
@@ -1318,7 +1318,7 @@ bool LuaTable::GetPairs(std::vector<std::pair<std::string, float>>& data) const
 
 bool LuaTable::GetPairs(std::vector<std::pair<std::string, std::string>>& data) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushTable())
 		return false;
 
@@ -1354,7 +1354,7 @@ bool LuaTable::GetPairs(std::vector<std::pair<std::string, std::string>>& data) 
 
 bool LuaTable::GetMap(spring::unordered_map<int, float>& data) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushTable())
 		return false;
 
@@ -1372,7 +1372,7 @@ bool LuaTable::GetMap(spring::unordered_map<int, float>& data) const
 
 bool LuaTable::GetMap(spring::unordered_map<int, std::string>& data) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushTable())
 		return false;
 
@@ -1397,7 +1397,7 @@ bool LuaTable::GetMap(spring::unordered_map<int, std::string>& data) const
 
 bool LuaTable::GetMap(spring::unordered_map<std::string, float>& data) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushTable())
 		return false;
 
@@ -1415,7 +1415,7 @@ bool LuaTable::GetMap(spring::unordered_map<std::string, float>& data) const
 
 bool LuaTable::GetMap(spring::unordered_map<std::string, std::string>& data) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushTable())
 		return false;
 
@@ -1448,7 +1448,7 @@ bool LuaTable::GetMap(spring::unordered_map<std::string, std::string>& data) con
 static bool ParseTableFloat(lua_State* L,
                             int tableIndex, int index, float& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	lua_pushnumber(L, index);
 	lua_gettable(L, tableIndex);
 	value = lua_tonumber(L, -1);
@@ -1464,7 +1464,7 @@ static bool ParseTableFloat(lua_State* L,
 
 static bool ParseFloat3(lua_State* L, int index, float3& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (lua_istable(L, index)) {
 		const int table = (index > 0) ? index : lua_gettop(L) + index + 1;
 		if (ParseTableFloat(L, table, 1, value.x) &&
@@ -1483,7 +1483,7 @@ static bool ParseFloat3(lua_State* L, int index, float3& value)
 
 static bool ParseFloat4(lua_State* L, int index, float4& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (lua_istable(L, index)) {
 		const int table = (index > 0) ? index : lua_gettop(L) + index + 1;
 		if (ParseTableFloat(L, table, 1, value.x) &&
@@ -1504,7 +1504,7 @@ static bool ParseFloat4(lua_State* L, int index, float4& value)
 
 static bool ParseBoolean(lua_State* L, int index, bool& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (lua_isboolean(L, index)) {
 		value = lua_toboolean(L, index);
 		return true;
@@ -1536,7 +1536,7 @@ static bool ParseBoolean(lua_State* L, int index, bool& value)
 
 int LuaTable::Get(const std::string& key, int def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return def;
 
@@ -1552,7 +1552,7 @@ int LuaTable::Get(const std::string& key, int def) const
 
 bool LuaTable::Get(const std::string& key, bool def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return def;
 
@@ -1568,7 +1568,7 @@ bool LuaTable::Get(const std::string& key, bool def) const
 
 float LuaTable::Get(const std::string& key, float def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return def;
 
@@ -1585,7 +1585,7 @@ float LuaTable::Get(const std::string& key, float def) const
 
 float3 LuaTable::Get(const std::string& key, const float3& def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return def;
 
@@ -1600,7 +1600,7 @@ float3 LuaTable::Get(const std::string& key, const float3& def) const
 
 float4 LuaTable::Get(const std::string& key, const float4& def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return def;
 
@@ -1617,7 +1617,7 @@ float4 LuaTable::Get(const std::string& key, const float4& def) const
 
 std::string LuaTable::Get(const std::string& key, const std::string& def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return def;
 
@@ -1639,7 +1639,7 @@ std::string LuaTable::Get(const std::string& key, const std::string& def) const
 
 int LuaTable::Get(int key, int def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return def;
 
@@ -1655,7 +1655,7 @@ int LuaTable::Get(int key, int def) const
 
 bool LuaTable::Get(int key, bool def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return def;
 
@@ -1671,7 +1671,7 @@ bool LuaTable::Get(int key, bool def) const
 
 float LuaTable::Get(int key, float def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return def;
 
@@ -1688,7 +1688,7 @@ float LuaTable::Get(int key, float def) const
 
 float3 LuaTable::Get(int key, const float3& def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return def;
 
@@ -1703,7 +1703,7 @@ float3 LuaTable::Get(int key, const float3& def) const
 
 float4 LuaTable::Get(int key, const float4& def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key)) {
 		return def;
 	}
@@ -1720,7 +1720,7 @@ float4 LuaTable::Get(int key, const float4& def) const
 
 std::string LuaTable::Get(int key, const std::string& def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!PushValue(key))
 		return def;
 
@@ -1742,28 +1742,28 @@ std::string LuaTable::Get(int key, const std::string& def) const
 
 float3 LuaTable::GetFloat3(int key, const float3& def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return Get(key, def);
 }
 
 
 float4 LuaTable::GetFloat4(int key, const float4& def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return Get(key, def);
 }
 
 
 float3 LuaTable::GetFloat3(const std::string& key, const float3& def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return Get(key, def);
 }
 
 
 float4 LuaTable::GetFloat4(const std::string& key, const float4& def) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return Get(key, def);
 }
 

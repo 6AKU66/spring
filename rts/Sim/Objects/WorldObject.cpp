@@ -31,7 +31,7 @@ CR_REG_METADATA(CWorldObject, (
 
 void CWorldObject::SetRadiusAndHeight(const S3DModel* mdl)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// initial values; can be overridden by LSC::Set*RadiusAndHeight
 	SetRadiusAndHeight(mdl->radius, mdl->height);
 

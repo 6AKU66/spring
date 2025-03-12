@@ -116,7 +116,7 @@ bool UniformConstants::Supported()
 
 void UniformConstants::Init()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (initialized) //don't need to reinit on resolution changes
 		return;
 
@@ -148,7 +148,7 @@ void UniformConstants::Init()
 
 void UniformConstants::Kill()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!Supported() || !initialized)
 		return;
 
@@ -163,7 +163,7 @@ void UniformConstants::Kill()
 
 void UniformConstants::UpdateMatricesImpl(UniformMatricesBuffer* updateBuffer)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	updateBuffer->screenView = globalRendering->screenViewMatrix;
 	updateBuffer->screenProj = globalRendering->screenProjMatrix;
 	updateBuffer->screenViewProj = updateBuffer->screenProj * updateBuffer->screenView;
@@ -217,7 +217,7 @@ void UniformConstants::UpdateMatricesImpl(UniformMatricesBuffer* updateBuffer)
 
 void UniformConstants::UpdateParamsImpl(UniformParamsBuffer* updateBuffer)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	updateBuffer->rndVec3 = guRNG.NextVector();
 	//TODO add something else
 	updateBuffer->renderCaps =
@@ -308,7 +308,7 @@ void UniformConstants::UpdateParamsImpl(UniformParamsBuffer* updateBuffer)
 
 void UniformConstants::UpdateMatrices()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!Supported())
 		return;
 
@@ -319,7 +319,7 @@ void UniformConstants::UpdateMatrices()
 
 void UniformConstants::UpdateParams()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!Supported())
 		return;
 
@@ -330,7 +330,7 @@ void UniformConstants::UpdateParams()
 
 void UniformConstants::Bind()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!Supported())
 		return;
 

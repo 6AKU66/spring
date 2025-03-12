@@ -15,7 +15,7 @@ CR_REG_METADATA(NanoPieceCache, (
 ))
 
 int NanoPieceCache::GetNanoPiece(CUnitScript* ownerScript) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	curBuildPowerMask |= (1 << (UNIT_SLOWUPDATE_RATE - 1));
 
 	int nanoPiece = -1;

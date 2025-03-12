@@ -115,7 +115,7 @@
 
 bool LuaConstGame::PushEntries(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	{
 		// game, should perhaps be moved over to ConstEngine
 		LuaPushNamedNumber(L, "maxTeams"  , MAX_TEAMS  );

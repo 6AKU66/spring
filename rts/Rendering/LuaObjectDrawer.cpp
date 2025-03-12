@@ -119,7 +119,7 @@ static DECL_ARRAY(std::vector<const CSolidObject*>, objectBuckets, MAX_TEAMS);
 
 static float GetLODFloat(const std::string& name)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// NOTE: the inverse of the value is used
 	const float value = std::max(0.0f, configHandler->GetFloat(name));
 	const float recip = spring::SafeDivide(1.0f, value);
@@ -130,13 +130,13 @@ static float GetLODFloat(const std::string& name)
 
 // opaque-pass state management funcs
 static void SetupOpaqueUnitDrawState(unsigned int modelType, bool deferredPass) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	unitDrawer->SetupOpaqueDrawing(deferredPass);
 	CModelDrawerHelper::PushModelRenderState(modelType);
 }
 
 static void ResetOpaqueUnitDrawState(unsigned int modelType, bool deferredPass) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CModelDrawerHelper::PopModelRenderState(modelType);
 	unitDrawer->ResetOpaqueDrawing(deferredPass);
 }
@@ -149,13 +149,13 @@ static void ResetOpaqueFeatureDrawState(unsigned int modelType, bool deferredPas
 
 // transparency-pass (reflection, ...) state management funcs
 static void SetupAlphaUnitDrawState(unsigned int modelType, bool deferredPass) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	unitDrawer->SetupAlphaDrawing(deferredPass);
 	CModelDrawerHelper::PushModelRenderState(modelType);
 }
 
 static void ResetAlphaUnitDrawState(unsigned int modelType, bool deferredPass) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CModelDrawerHelper::PopModelRenderState(modelType);
 	unitDrawer->ResetAlphaDrawing(deferredPass);
 }
@@ -169,7 +169,7 @@ static void ResetAlphaFeatureDrawState(unsigned int modelType, bool deferredPass
 // shadow-pass state management funcs
 // FIXME: setup face culling for S3O?
 static void SetupShadowUnitDrawState(unsigned int modelType, bool deferredPass) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glDisable(GL_TEXTURE_2D);
 
@@ -181,7 +181,7 @@ static void SetupShadowUnitDrawState(unsigned int modelType, bool deferredPass) 
 }
 
 static void ResetShadowUnitDrawState(unsigned int modelType, bool deferredPass) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	Shader::IProgramObject* po = shadowHandler.GetShadowGenProg(CShadowHandler::SHADOWGEN_PROGRAM_MODEL);
 
 	po->Disable();
@@ -196,14 +196,14 @@ static void ResetShadowFeatureDrawState(unsigned int modelType, bool deferredPas
 static const void SetObjectTeamColorNop(const CSolidObject*, const LuaMaterial*, float, bool) {}
 static const void SetObjectTeamColorLua(const CSolidObject* o, const LuaMaterial* m, float a, bool deferredPass)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(m->shaders[deferredPass].IsCustomType());
 	m->ExecuteInstanceTeamColor(CModelDrawerHelper::GetTeamColor(o->team, a), deferredPass);
 }
 
 static const void SetObjectTeamColorDef(const CSolidObject* o, const LuaMaterial* m, float a, bool deferredPass)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// only useful to set this if the object has a standard
 	// (engine) shader attached, otherwise requires testing
 	// if shader is bound in DrawerState etc
@@ -233,7 +233,7 @@ static const decltype(&SetObjectUniformsDef) soUniformFuncs[] = {
 
 
 static inline unsigned int CalcTeamColorUniformFuncIndex(const CSolidObject* o, const LuaMatShader* s) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int isCustomType = s->IsCustomType() << 0;
 	const unsigned int isEngineType = s->IsEngineType() << 1;
 	// if still in the same team{-bucket}, pick the no-op func
@@ -241,7 +241,7 @@ static inline unsigned int CalcTeamColorUniformFuncIndex(const CSolidObject* o, 
 }
 
 static inline unsigned int CalcSetObjectUniformFuncIndex(const CSolidObject* o, const LuaMatShader* s) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int isCustomType = s->IsCustomType() << 0;
 	const unsigned int isEngineType = s->IsEngineType() << 1;
 	return (isCustomType | isEngineType);
@@ -251,7 +251,7 @@ static inline unsigned int CalcSetObjectUniformFuncIndex(const CSolidObject* o, 
 
 void LuaObjectDrawer::Init()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	eventFuncs[LUAOBJ_UNIT   ] = &CEventHandler::DrawUnitsPostDeferred;
 	eventFuncs[LUAOBJ_FEATURE] = &CEventHandler::DrawFeaturesPostDeferred;
 
@@ -272,7 +272,7 @@ void LuaObjectDrawer::Init()
 
 void LuaObjectDrawer::Kill()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	eventFuncs[LUAOBJ_UNIT   ] = nullptr;
 	eventFuncs[LUAOBJ_FEATURE] = nullptr;
 
@@ -289,7 +289,7 @@ void LuaObjectDrawer::Kill()
 
 void LuaObjectDrawer::Update(bool init)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(geomBuffer != nullptr);
 
 	if (!drawDeferredAllowed)
@@ -315,7 +315,7 @@ void LuaObjectDrawer::Update(bool init)
 
 void LuaObjectDrawer::ReadLODScales(LuaObjType objType)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LODScale          [objType] = GetLODFloat("LODScale");
 	LODScaleShadow    [objType] = GetLODFloat("LODScaleShadow");
 	LODScaleReflection[objType] = GetLODFloat("LODScaleReflection");
@@ -324,7 +324,7 @@ void LuaObjectDrawer::ReadLODScales(LuaObjType objType)
 
 void LuaObjectDrawer::SetDrawPassGlobalLODFactor(LuaObjType objType)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (shadowHandler.InShadowPass()) {
 		LuaObjectMaterialData::SetGlobalLODFactor(objType, GetLODScaleShadow(objType) * camera->GetLPPScale());
 		return;
@@ -350,7 +350,7 @@ LuaMatType LuaObjectDrawer::GetDrawPassAlphaMat() { return alphaMats[IWater::Get
 
 void LuaObjectDrawer::DrawMaterialBins(LuaObjType objType, LuaMatType matType, bool deferredPass)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const LuaMatBinSet& bins = luaMatHandler.GetBins(matType);
 
 	if (bins.empty())
@@ -396,7 +396,7 @@ void LuaObjectDrawer::DrawMaterialBin(
 	bool deferredPass,
 	bool alphaMatBin
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	currBin->Execute(*prevMat, deferredPass);
 
 	const std::vector<CSolidObject*>& objects = currBin->GetObjects(objType);
@@ -458,7 +458,7 @@ void LuaObjectDrawer::DrawBinObject(
 	bool applyTrans,
 	bool noLuaCall
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned int preList  = lodMat->preDisplayList;
 	const unsigned int postList = lodMat->postDisplayList;
 
@@ -500,7 +500,7 @@ void LuaObjectDrawer::DrawBinObject(
 
 void LuaObjectDrawer::DrawDeferredPass(LuaObjType objType)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!drawDeferredEnabled)
 		return;
 	if (!geomBuffer->Valid())
@@ -564,7 +564,7 @@ void LuaObjectDrawer::DrawDeferredPass(LuaObjType objType)
 
 bool LuaObjectDrawer::DrawSingleObjectCommon(const CSolidObject* obj, LuaObjType objType, bool applyTrans)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const LuaObjectMaterialData* matData = obj->GetLuaMaterialData();
 	const LuaObjectLODMaterial* lodMat = nullptr;
 
@@ -618,13 +618,13 @@ bool LuaObjectDrawer::DrawSingleObjectCommon(const CSolidObject* obj, LuaObjType
 
 bool LuaObjectDrawer::DrawSingleObject(const CSolidObject* obj, LuaObjType objType)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (DrawSingleObjectCommon(obj, objType, true));
 }
 
 bool LuaObjectDrawer::DrawSingleObjectNoTrans(const CSolidObject* obj, LuaObjType objType)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (DrawSingleObjectCommon(obj, objType, false));
 }
 
@@ -633,7 +633,7 @@ bool LuaObjectDrawer::DrawSingleObjectNoTrans(const CSolidObject* obj, LuaObjTyp
 
 void LuaObjectDrawer::SetObjectLOD(CSolidObject* obj, LuaObjType objType, unsigned int lodCount)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!obj->localModel.Initialized())
 		return;
 
@@ -642,7 +642,7 @@ void LuaObjectDrawer::SetObjectLOD(CSolidObject* obj, LuaObjType objType, unsign
 
 bool LuaObjectDrawer::AddObjectForLOD(CSolidObject* obj, LuaObjType objType, bool useAlphaMat, bool useShadowMat)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (useShadowMat)
 		return (AddShadowMaterialObject(obj, objType));
 	if (useAlphaMat)
@@ -655,7 +655,7 @@ bool LuaObjectDrawer::AddObjectForLOD(CSolidObject* obj, LuaObjType objType, boo
 
 bool LuaObjectDrawer::AddOpaqueMaterialObject(CSolidObject* obj, LuaObjType objType)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LuaObjectMaterialData* matData = obj->GetLuaMaterialData();
 
 	const LuaMatType matType = GetDrawPassOpaqueMat();
@@ -666,7 +666,7 @@ bool LuaObjectDrawer::AddOpaqueMaterialObject(CSolidObject* obj, LuaObjType objT
 
 bool LuaObjectDrawer::AddAlphaMaterialObject(CSolidObject* obj, LuaObjType objType)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LuaObjectMaterialData* matData = obj->GetLuaMaterialData();
 
 	const LuaMatType matType = GetDrawPassAlphaMat();
@@ -677,7 +677,7 @@ bool LuaObjectDrawer::AddAlphaMaterialObject(CSolidObject* obj, LuaObjType objTy
 
 bool LuaObjectDrawer::AddShadowMaterialObject(CSolidObject* obj, LuaObjType objType)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LuaObjectMaterialData* matData = obj->GetLuaMaterialData();
 
 	const LuaMatType matType = GetDrawPassShadowMat();
@@ -690,7 +690,7 @@ bool LuaObjectDrawer::AddShadowMaterialObject(CSolidObject* obj, LuaObjType objT
 
 void LuaObjectDrawer::DrawOpaqueMaterialObjects(LuaObjType objType, bool deferredPass)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	switch (objType) {
 		case LUAOBJ_UNIT: {
 			for (int modelType = MODELTYPE_3DO; modelType < MODELTYPE_CNT; modelType++) {
@@ -714,7 +714,7 @@ void LuaObjectDrawer::DrawOpaqueMaterialObjects(LuaObjType objType, bool deferre
 
 void LuaObjectDrawer::DrawAlphaMaterialObjects(LuaObjType objType, bool)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	switch (objType) {
 		case LUAOBJ_UNIT: {
 			for (int modelType = MODELTYPE_3DO; modelType < MODELTYPE_CNT; modelType++) {
@@ -739,7 +739,7 @@ void LuaObjectDrawer::DrawAlphaMaterialObjects(LuaObjType objType, bool)
 
 void LuaObjectDrawer::DrawShadowMaterialObjects(LuaObjType objType, bool)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	switch (objType) {
 		case LUAOBJ_UNIT: {
 			for (int modelType = MODELTYPE_3DO; modelType < MODELTYPE_CNT; modelType++) {

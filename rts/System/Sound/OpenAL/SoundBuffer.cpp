@@ -46,7 +46,7 @@ struct WAVHeader
 
 bool SoundBuffer::LoadWAV(const std::string& file, const std::vector<std::uint8_t>& buffer)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	WAVHeader* header = (WAVHeader*)(&buffer[0]);
 
 	if ((buffer.empty()) || memcmp(header->riff, "RIFF", 4) || memcmp(header->wavefmt, "WAVEfmt", 7)) {
@@ -128,7 +128,7 @@ bool SoundBuffer::LoadWAV(const std::string& file, const std::vector<std::uint8_
 
 bool SoundBuffer::LoadVorbis(const std::string& file, const std::vector<std::uint8_t>& buffer)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	OggDecoder decoder;
 	const bool loaded = decoder.LoadData(buffer.data(), buffer.size());
 	if (!loaded) {
@@ -184,7 +184,7 @@ bool SoundBuffer::LoadVorbis(const std::string& file, const std::vector<std::uin
 
 bool SoundBuffer::LoadMp3(const std::string& file, const std::vector<std::uint8_t>& buffer)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto decoder = Mp3Decoder();
 	const bool loaded = decoder.LoadData(buffer.data(), buffer.size());
 	if (!loaded) {
@@ -230,7 +230,7 @@ bool SoundBuffer::LoadMp3(const std::string& file, const std::vector<std::uint8_
 
 bool SoundBuffer::AlGenBuffer(const std::string& file, ALenum format, const std::uint8_t* data, size_t datalength, int rate)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	alGenBuffers(1, &id);
 	if (!CheckError("SoundBuffer::alGenBuffers"))
 		return false;
@@ -239,7 +239,7 @@ bool SoundBuffer::AlGenBuffer(const std::string& file, ALenum format, const std:
 }
 
 bool SoundBuffer::Release() {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (id == 0)
 		return false;
 	alDeleteBuffers(1, &id);
@@ -249,7 +249,7 @@ bool SoundBuffer::Release() {
 
 int SoundBuffer::BufferSize() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	ALint size;
 	alGetBufferi(id, AL_SIZE, &size);
 	return static_cast<int>(size);
@@ -258,7 +258,7 @@ int SoundBuffer::BufferSize() const
 
 size_t SoundBuffer::GetId(const std::string& name)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto it = bufferMap.find(name);
 
 	if (it != bufferMap.end())
@@ -269,7 +269,7 @@ size_t SoundBuffer::GetId(const std::string& name)
 
 SoundBuffer& SoundBuffer::GetById(const size_t id)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(id < buffers.size());
 	return buffers.at(id);
 }
@@ -277,7 +277,7 @@ SoundBuffer& SoundBuffer::GetById(const size_t id)
 
 size_t SoundBuffer::AllocedSize()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	size_t numBytes = 0;
 	for (auto it = ++buffers.cbegin(); it != buffers.cend(); ++it)
 		numBytes += it->BufferSize();
@@ -286,7 +286,7 @@ size_t SoundBuffer::AllocedSize()
 
 size_t SoundBuffer::Insert(SoundBuffer&& buffer)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const size_t bufId = buffers.size();
 
 	bufferMap[buffer.GetFilename()] = bufId;

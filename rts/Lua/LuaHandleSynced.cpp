@@ -72,7 +72,7 @@ CUnsyncedLuaHandle::CUnsyncedLuaHandle(CSplitLuaHandle* _base, const std::string
 	: CLuaHandle(_name, _order, false, false)
 	, base(*_base)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	D.allowChanges = false;
 }
 
@@ -82,7 +82,7 @@ CUnsyncedLuaHandle::~CUnsyncedLuaHandle() = default;
 
 bool CUnsyncedLuaHandle::Init(std::string code, const std::string& file)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid())
 		return false;
 
@@ -187,7 +187,7 @@ bool CUnsyncedLuaHandle::Init(std::string code, const std::string& file)
  */
 void CUnsyncedLuaHandle::RecvFromSynced(lua_State* srcState, int args)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid())
 		return;
 
@@ -221,7 +221,7 @@ void CUnsyncedLuaHandle::RecvFromSynced(lua_State* srcState, int args)
  */
 bool CUnsyncedLuaHandle::DrawUnit(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 4, __func__);
 
@@ -257,7 +257,7 @@ bool CUnsyncedLuaHandle::DrawUnit(const CUnit* unit)
  */
 bool CUnsyncedLuaHandle::DrawFeature(const CFeature* feature)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 4, __func__);
 
@@ -293,7 +293,7 @@ bool CUnsyncedLuaHandle::DrawFeature(const CFeature* feature)
  */
 bool CUnsyncedLuaHandle::DrawShield(const CUnit* unit, const CWeapon* weapon)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 5, __func__);
 
@@ -330,7 +330,7 @@ bool CUnsyncedLuaHandle::DrawShield(const CUnit* unit, const CWeapon* weapon)
  */
 bool CUnsyncedLuaHandle::DrawProjectile(const CProjectile* projectile)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(projectile->weapon || projectile->piece);
 
 	LUA_CALL_IN_CHECK(L, false);
@@ -367,7 +367,7 @@ bool CUnsyncedLuaHandle::DrawProjectile(const CProjectile* projectile)
  */
 bool CUnsyncedLuaHandle::DrawMaterial(const LuaMaterial* material)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 4, __func__);
 
@@ -414,14 +414,14 @@ CSyncedLuaHandle::CSyncedLuaHandle(CSplitLuaHandle* _base, const std::string& _n
 	, base(*_base)
 	, origNextRef(-1)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	D.allowChanges = true;
 }
 
 
 CSyncedLuaHandle::~CSyncedLuaHandle()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// kill all unitscripts running in this handle
 	CLuaUnitScript::HandleFreed(this);
 }
@@ -429,7 +429,7 @@ CSyncedLuaHandle::~CSyncedLuaHandle()
 
 bool CSyncedLuaHandle::Init(std::string code, const std::string& file)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid())
 		return false;
 
@@ -554,7 +554,7 @@ bool CSyncedLuaHandle::Init(std::string code, const std::string& file)
 
 bool CSyncedLuaHandle::SyncedActionFallback(const std::string& msg, int playerID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	string cmd = msg;
 	const std::string::size_type pos = cmd.find_first_of(" \t");
 	if (pos != string::npos)
@@ -620,7 +620,7 @@ bool CSyncedLuaHandle::CommandFallback(const CUnit* unit, const Command& cmd)
  */
 bool CSyncedLuaHandle::AllowCommand(const CUnit* unit, const Command& cmd, int playerNum, bool fromSynced, bool fromLua)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 7 + 3, __func__);
 
@@ -704,7 +704,7 @@ std::pair <bool, bool> CSyncedLuaHandle::AllowUnitCreation(
  */
 bool CSyncedLuaHandle::AllowUnitTransfer(const CUnit* unit, int newTeam, bool capture)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 7, __func__);
 
@@ -741,7 +741,7 @@ bool CSyncedLuaHandle::AllowUnitTransfer(const CUnit* unit, int newTeam, bool ca
  */
 bool CSyncedLuaHandle::AllowUnitBuildStep(const CUnit* builder, const CUnit* unit, float part)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 7, __func__);
 
@@ -778,7 +778,7 @@ bool CSyncedLuaHandle::AllowUnitBuildStep(const CUnit* builder, const CUnit* uni
  */
 bool CSyncedLuaHandle::AllowUnitCaptureStep(const CUnit* builder, const CUnit* unit, float part)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 7, __func__);
 
@@ -816,7 +816,7 @@ bool CSyncedLuaHandle::AllowUnitCaptureStep(const CUnit* builder, const CUnit* u
  */
 bool CSyncedLuaHandle::AllowUnitTransport(const CUnit* transporter, const CUnit* transportee)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 2 + 6, __func__);
 
@@ -861,7 +861,7 @@ bool CSyncedLuaHandle::AllowUnitTransportLoad(
 	const float3& loadPos,
 	bool allowed
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 2 + 9, __func__);
 
@@ -911,7 +911,7 @@ bool CSyncedLuaHandle::AllowUnitTransportUnload(
 	const float3& unloadPos,
 	bool allowed
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 2 + 9, __func__);
 
@@ -948,7 +948,7 @@ bool CSyncedLuaHandle::AllowUnitTransportUnload(
  */
 bool CSyncedLuaHandle::AllowUnitCloak(const CUnit* unit, const CUnit* enemy)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 2 + 2, __func__);
 
@@ -985,7 +985,7 @@ bool CSyncedLuaHandle::AllowUnitCloak(const CUnit* unit, const CUnit* enemy)
  */
 bool CSyncedLuaHandle::AllowUnitDecloak(const CUnit* unit, const CSolidObject* object, const CWeapon* weapon)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 2 + 3, __func__);
 
@@ -1028,7 +1028,7 @@ bool CSyncedLuaHandle::AllowUnitDecloak(const CUnit* unit, const CSolidObject* o
  */
 bool CSyncedLuaHandle::AllowUnitKamikaze(const CUnit* unit, const CUnit* target, bool allowed)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 2 + 2, __func__);
 
@@ -1061,7 +1061,7 @@ bool CSyncedLuaHandle::AllowUnitKamikaze(const CUnit* unit, const CUnit* target,
  */
 bool CSyncedLuaHandle::AllowFeatureCreation(const FeatureDef* featureDef, int teamID, const float3& pos)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 7, __func__);
 
@@ -1106,7 +1106,7 @@ bool CSyncedLuaHandle::AllowFeatureCreation(const FeatureDef* featureDef, int te
  */
 bool CSyncedLuaHandle::AllowFeatureBuildStep(const CUnit* builder, const CFeature* feature, float part)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 7, __func__);
 
@@ -1141,7 +1141,7 @@ bool CSyncedLuaHandle::AllowFeatureBuildStep(const CUnit* builder, const CFeatur
  */
 bool CSyncedLuaHandle::AllowResourceLevel(int teamID, const std::string& type, float level)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 5, __func__);
 
@@ -1175,7 +1175,7 @@ bool CSyncedLuaHandle::AllowResourceLevel(int teamID, const std::string& type, f
  */
 bool CSyncedLuaHandle::AllowResourceTransfer(int oldTeam, int newTeam, const char* type, float amount)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 6, __func__);
 
@@ -1210,7 +1210,7 @@ bool CSyncedLuaHandle::AllowResourceTransfer(int oldTeam, int newTeam, const cha
  */
 bool CSyncedLuaHandle::AllowDirectUnitControl(int playerID, const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 6, __func__);
 
@@ -1253,7 +1253,7 @@ bool CSyncedLuaHandle::AllowDirectUnitControl(int playerID, const CUnit* unit)
  */
 bool CSyncedLuaHandle::AllowBuilderHoldFire(const CUnit* unit, int action)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 2 + 3 + 1, __func__);
 
@@ -1304,7 +1304,7 @@ bool CSyncedLuaHandle::AllowBuilderHoldFire(const CUnit* unit, int action)
  */
 bool CSyncedLuaHandle::AllowStartPosition(int playerID, int teamID, unsigned char readyState, const float3& clampedPos, const float3& rawPickPos)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 13, __func__);
 
@@ -1347,7 +1347,7 @@ bool CSyncedLuaHandle::AllowStartPosition(int playerID, int teamID, unsigned cha
  */
 bool CSyncedLuaHandle::MoveCtrlNotify(const CUnit* unit, int data)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 6, __func__);
 
@@ -1385,7 +1385,7 @@ bool CSyncedLuaHandle::MoveCtrlNotify(const CUnit* unit, int data)
  */
 bool CSyncedLuaHandle::TerraformComplete(const CUnit* unit, const CUnit* build)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 8, __func__);
 
@@ -1463,7 +1463,7 @@ bool CSyncedLuaHandle::UnitPreDamaged(
 	float* newDamage,
 	float* impulseMult
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 2 + 2 + 10, __func__);
 
@@ -1553,7 +1553,7 @@ bool CSyncedLuaHandle::FeaturePreDamaged(
 	float* newDamage,
 	float* impulseMult
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(newDamage != nullptr);
 	assert(impulseMult != nullptr);
 
@@ -1641,7 +1641,7 @@ bool CSyncedLuaHandle::ShieldPreDamaged(
 	const float3& startPos,
 	const float3& hitPos
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert((projectile != nullptr) || ((beamEmitter != nullptr) && (beamCarrier != nullptr)));
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 2 + 7 + 1, __func__);
@@ -1702,7 +1702,7 @@ bool CSyncedLuaHandle::ShieldPreDamaged(
  */
 int CSyncedLuaHandle::AllowWeaponTargetCheck(unsigned int attackerID, unsigned int attackerWeaponNum, unsigned int attackerWeaponDefID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	int ret = -1;
 
 	if (!watchAllowTargetDefs[attackerWeaponDefID])
@@ -1749,7 +1749,7 @@ bool CSyncedLuaHandle::AllowWeaponTarget(
 	unsigned int attackerWeaponDefID,
 	float* targetPriority
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	bool ret = true;
 
 	if (!watchAllowTargetDefs[attackerWeaponDefID])
@@ -1811,7 +1811,7 @@ bool CSyncedLuaHandle::AllowWeaponInterceptTarget(
 	const CWeapon* interceptorWeapon,
 	const CProjectile* interceptorTarget
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	bool ret = true;
 
 	if (!watchAllowTargetDefs[interceptorWeapon->weaponDef->id])
@@ -1846,7 +1846,7 @@ bool CSyncedLuaHandle::AllowWeaponInterceptTarget(
 
 int CSyncedLuaHandle::SyncedRandom(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	#if 0
 	spring_lua_synced_rand(L);
 	return 1;
@@ -1896,7 +1896,7 @@ int CSyncedLuaHandle::SyncedRandom(lua_State* L)
 
 int CSyncedLuaHandle::SyncedRandomSeed(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	gsRNG.SetSeed(luaL_checkint(L, -1), false);
 	return 0;
 }
@@ -1904,7 +1904,7 @@ int CSyncedLuaHandle::SyncedRandomSeed(lua_State* L)
 
 int CSyncedLuaHandle::SyncedNext(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	constexpr int whiteList[] = {
 		LUA_TSTRING,
 		LUA_TNUMBER,
@@ -1951,7 +1951,7 @@ int CSyncedLuaHandle::SyncedNext(lua_State* L)
 
 int CSyncedLuaHandle::SyncedPairs(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	/* copied from lbaselib.cpp */
 	luaL_checktype(L, 1, LUA_TTABLE);
 	lua_pushcfunction(L, SyncedNext);  /* return generator, */
@@ -1963,7 +1963,7 @@ int CSyncedLuaHandle::SyncedPairs(lua_State* L)
 
 int CSyncedLuaHandle::SendToUnsynced(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int args = lua_gettop(L);
 	if (args <= 0) {
 		luaL_error(L, "Incorrect arguments to SendToUnsynced()");
@@ -1991,7 +1991,7 @@ int CSyncedLuaHandle::SendToUnsynced(lua_State* L)
 
 int CSyncedLuaHandle::AddSyncedActionFallback(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::string cmdRaw = "/" + std::string(luaL_checkstring(L, 1));
 	std::string cmd = cmdRaw;
 
@@ -2015,7 +2015,7 @@ int CSyncedLuaHandle::AddSyncedActionFallback(lua_State* L)
 
 int CSyncedLuaHandle::RemoveSyncedActionFallback(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	//TODO move to LuaHandle
 	std::string cmdRaw = "/" + std::string(luaL_checkstring(L, 1));
 	std::string cmd = cmdRaw;
@@ -2087,7 +2087,7 @@ int CSyncedLuaHandle::RemoveSyncedActionFallback(lua_State* L)
 	}
 
 int CSyncedLuaHandle::GetWatchWeaponDef(lua_State* L) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	bool watched = false;
 
 	// trickery to keep Script.GetWatchWeapon backward-compatible
@@ -2146,7 +2146,7 @@ CSplitLuaHandle::CSplitLuaHandle(const std::string& _name, int _order)
 
 CSplitLuaHandle::~CSplitLuaHandle()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// must be called before their dtors!!!
 	syncedLuaHandle.KillLua();
 	unsyncedLuaHandle.KillLua();
@@ -2155,7 +2155,7 @@ CSplitLuaHandle::~CSplitLuaHandle()
 
 bool CSplitLuaHandle::InitSynced(bool dryRun)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid()) {
 		KillLua();
 		return false;
@@ -2185,7 +2185,7 @@ bool CSplitLuaHandle::InitSynced(bool dryRun)
 
 bool CSplitLuaHandle::InitUnsynced()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid()) {
 		KillLua();
 		return false;
@@ -2212,7 +2212,7 @@ bool CSplitLuaHandle::InitUnsynced()
 
 bool CSplitLuaHandle::Init(bool dryRun)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SetFullCtrl(true);
 	SetFullRead(true);
 	SetCtrlTeam(CEventClient::AllAccessTeam);
@@ -2226,7 +2226,7 @@ bool CSplitLuaHandle::Init(bool dryRun)
 
 bool CSplitLuaHandle::FreeUnsynced()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!unsyncedLuaHandle.IsValid())
 		return false;
 
@@ -2239,7 +2239,7 @@ bool CSplitLuaHandle::FreeUnsynced()
 
 bool CSplitLuaHandle::LoadUnsynced()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	::new (&unsyncedLuaHandle) CUnsyncedLuaHandle(this, syncedLuaHandle.GetName(), syncedLuaHandle.GetOrder() + 1);
 
 	if (!unsyncedLuaHandle.IsValid()) {
@@ -2253,7 +2253,7 @@ bool CSplitLuaHandle::LoadUnsynced()
 
 bool CSplitLuaHandle::SwapSyncedHandle(lua_State* L, lua_State* L_GC)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	eventHandler.RemoveClient(&syncedLuaHandle);
 
 	LUA_CLOSE(&syncedLuaHandle.L);
@@ -2271,7 +2271,7 @@ bool CSplitLuaHandle::SwapSyncedHandle(lua_State* L, lua_State* L_GC)
 
 string CSplitLuaHandle::LoadFile(const std::string& filename, const std::string& modes) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	string vfsModes(modes);
 	if (CSyncedLuaHandle::devMode)
 		vfsModes = SPRING_VFS_RAW + vfsModes;
@@ -2290,7 +2290,7 @@ string CSplitLuaHandle::LoadFile(const std::string& filename, const std::string&
 
 int CSplitLuaHandle::LoadStringData(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	size_t len;
 	const char *str    = luaL_checklstring(L, 1, &len);
 	const char *chunkname = luaL_optstring(L, 2, str);
@@ -2317,7 +2317,7 @@ int CSplitLuaHandle::LoadStringData(lua_State* L)
 
 int CSplitLuaHandle::CallAsTeam(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int args = lua_gettop(L);
 	if ((args < 2) || !lua_isfunction(L, 2))
 		luaL_error(L, "[%s] incorrect arguments", __func__);

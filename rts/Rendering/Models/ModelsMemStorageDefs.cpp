@@ -30,7 +30,7 @@ CR_REG_METADATA(ModelUniformData, (
 
 void ModelUniformData::SetGLSLDefinition(int binding)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const ModelUniformData dummy{};
 
 	std::map<uint32_t, std::pair<std::string, std::string>> membersMap;

@@ -14,7 +14,7 @@ float GMTDefaultPathController::GetDeltaSpeed(
 	bool wantReverse,
 	bool isReversing
 ) const {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// Sign(0) is negative which we do not want
 	const int  targetSpeedSign = Sign(int(!wantReverse) * 2 - 1);
 	const int currentSpeedSign = Sign(int(!isReversing) * 2 - 1);
@@ -54,7 +54,7 @@ short GMTDefaultPathController::GetDeltaHeading(
 	short oldHeading,
 	float maxTurnRate
 ) const {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	short deltaHeading = newHeading - oldHeading;
 
 	if (deltaHeading > 0) {
@@ -76,7 +76,7 @@ short GMTDefaultPathController::GetDeltaHeading(
 	float turnBrakeDist,
 	float* curTurnSpeedPtr
 ) const {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float curTurnSpeed = *curTurnSpeedPtr;
 	float absTurnSpeed = math::fabs(curTurnSpeed);
 

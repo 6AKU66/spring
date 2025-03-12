@@ -25,7 +25,7 @@
 
 void CPlayerRosterDrawer::Draw()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (playerRoster.GetSortType() == PlayerRoster::Disabled)
 		return;
 

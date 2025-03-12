@@ -20,7 +20,7 @@
 
 bool LuaConstCOB::PushEntries(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #define PUSH_COB(cmd) LuaPushNamedNumber(L, #cmd, cmd)
 
 	/*** @table COB
@@ -204,7 +204,7 @@ bool LuaConstCOB::PushEntries(lua_State* L)
 
 bool LuaConstSFX::PushEntries(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	/*** Piece Flags for Spring.UnitScript.Explode
 	 *
 	 * @table SFX

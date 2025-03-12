@@ -91,7 +91,7 @@ bool CLuaHandle::devMode = false;
 
 void CLuaHandle::PushTracebackFuncToRegistry(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	SPRING_LUA_OPEN_LIB(L, luaopen_debug);
 		HSTR_PUSH(L, "traceback");
 		LuaUtils::PushDebugTraceback(L);
@@ -152,7 +152,7 @@ CLuaHandle::CLuaHandle(const string& _name, int _order, bool _userMode, bool _sy
 
 CLuaHandle::~CLuaHandle()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// KillLua() must be called before us!
 	assert(!IsValid());
 	assert(!eventHandler.HasClient(this));
@@ -189,7 +189,7 @@ void CLuaHandle::KillLua(bool inFreeHandler)
 
 int CLuaHandle::KillActiveHandle(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CLuaHandle* ah = GetHandle(L);
 
 	if (ah != nullptr) {
@@ -212,7 +212,7 @@ int CLuaHandle::KillActiveHandle(lua_State* L)
 bool CLuaHandle::AddEntriesToTable(lua_State* L, const char* name,
                                    bool (*entriesFunc)(lua_State*))
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int top = lua_gettop(L);
 	lua_pushstring(L, name);
 	lua_rawget(L, -2);
@@ -242,7 +242,7 @@ bool CLuaHandle::AddEntriesToTable(lua_State* L, const char* name,
 
 void CLuaHandle::CheckStack()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid())
 		return;
 
@@ -256,7 +256,7 @@ void CLuaHandle::CheckStack()
 
 int CLuaHandle::XCall(lua_State* srcState, const char* funcName)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int top = lua_gettop(L);
 
 	// push the function
@@ -317,7 +317,7 @@ int CLuaHandle::RunCallInTraceback(
 	int errFuncIndex,
 	bool popErrorFunc
 ) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// do not signal floating point exceptions in user Lua code
 	ScopedDisableFpuExceptions fe;
 
@@ -517,7 +517,7 @@ bool CLuaHandle::LoadCode(lua_State* L, std::string code, const string& debug)
  */
 void CLuaHandle::Shutdown()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 3, __func__);
 
@@ -540,7 +540,7 @@ void CLuaHandle::Shutdown()
  */
 bool CLuaHandle::GotChatMsg(const string& msg, int playerID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 4, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -590,7 +590,7 @@ void CLuaHandle::Load(IArchive* archive)
 
 bool CLuaHandle::HasCallIn(lua_State* L, const string& name) const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IsValid())
 		return false;
 
@@ -614,7 +614,7 @@ bool CLuaHandle::HasCallIn(lua_State* L, const string& name) const
 
 bool CLuaHandle::UpdateCallIn(lua_State* L, const string& name)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (HasCallIn(L, name)) {
 		eventHandler.InsertEvent(this, name);
 	} else {
@@ -635,7 +635,7 @@ bool CLuaHandle::UpdateCallIn(lua_State* L, const string& name)
  */
 void CLuaHandle::GamePreload()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 3, __func__);
 
@@ -658,7 +658,7 @@ void CLuaHandle::GamePreload()
  */
 void CLuaHandle::GameStart()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 3, __func__);
 
@@ -726,7 +726,7 @@ void CLuaHandle::GamePaused(int playerID, bool paused)
 
 void CLuaHandle::RunDelayedFunctions(int frameNum)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 
 	const auto currentFrameIterator = delayedCallsByFrame.find(frameNum);
@@ -757,7 +757,7 @@ void CLuaHandle::RunDelayedFunctions(int frameNum)
  */
 void CLuaHandle::GameFrame(int frameNum)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (killMe) {
 		const std::string msg = GetName() + ((!killMsg.empty())? ": " + killMsg: "");
 
@@ -791,7 +791,7 @@ void CLuaHandle::GameFrame(int frameNum)
  */
 void CLuaHandle::GameFramePost(int frameNum)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 4, __func__);
 
@@ -815,7 +815,7 @@ void CLuaHandle::GameFramePost(int frameNum)
  */
 void CLuaHandle::GameID(const unsigned char* gameID, unsigned int numBytes)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 4, __func__);
 	const LuaUtils::ScopedDebugTraceBack traceBack(L);
@@ -846,7 +846,7 @@ void CLuaHandle::GameID(const unsigned char* gameID, unsigned int numBytes)
  */
 void CLuaHandle::TeamDied(int teamID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 4, __func__);
 
@@ -869,7 +869,7 @@ void CLuaHandle::TeamDied(int teamID)
  */
 void CLuaHandle::TeamChanged(int teamID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 4, __func__);
 
@@ -893,7 +893,7 @@ void CLuaHandle::TeamChanged(int teamID)
  */
 void CLuaHandle::PlayerChanged(int playerID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 4, __func__);
 
@@ -917,7 +917,7 @@ void CLuaHandle::PlayerChanged(int playerID)
  */
 void CLuaHandle::PlayerAdded(int playerID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 4, __func__);
 
@@ -942,7 +942,7 @@ void CLuaHandle::PlayerAdded(int playerID)
  */
 void CLuaHandle::PlayerRemoved(int playerID, int reason)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 5, __func__);
 
@@ -967,7 +967,7 @@ void CLuaHandle::PlayerRemoved(int playerID, int reason)
 
 inline void CLuaHandle::UnitCallIn(const LuaHashString& hs, const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 6, __func__);
 	const LuaUtils::ScopedDebugTraceBack traceBack(L);
@@ -994,7 +994,7 @@ inline void CLuaHandle::UnitCallIn(const LuaHashString& hs, const CUnit* unit)
  */
 void CLuaHandle::UnitCreated(const CUnit* unit, const CUnit* builder)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 7, __func__);
 
@@ -1024,7 +1024,7 @@ void CLuaHandle::UnitCreated(const CUnit* unit, const CUnit* builder)
  */
 void CLuaHandle::UnitFinished(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1043,7 +1043,7 @@ void CLuaHandle::UnitFinished(const CUnit* unit)
 void CLuaHandle::UnitFromFactory(const CUnit* unit,
                                  const CUnit* factory, bool userOrders)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 9, __func__);
 	const LuaUtils::ScopedDebugTraceBack traceBack(L);
@@ -1073,7 +1073,7 @@ void CLuaHandle::UnitFromFactory(const CUnit* unit,
  */
 void CLuaHandle::UnitReverseBuilt(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1091,7 +1091,7 @@ void CLuaHandle::UnitReverseBuilt(const CUnit* unit)
  */
 void CLuaHandle::UnitDestroyed(const CUnit* unit, const CUnit* attacker)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 9, __func__);
 
@@ -1125,7 +1125,7 @@ void CLuaHandle::UnitDestroyed(const CUnit* unit, const CUnit* attacker)
  */
 void CLuaHandle::UnitTaken(const CUnit* unit, int oldTeam, int newTeam)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 7, __func__);
 	const LuaUtils::ScopedDebugTraceBack traceBack(L);
@@ -1154,7 +1154,7 @@ void CLuaHandle::UnitTaken(const CUnit* unit, int oldTeam, int newTeam)
  */
 void CLuaHandle::UnitGiven(const CUnit* unit, int oldTeam, int newTeam)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 7, __func__);
 	const LuaUtils::ScopedDebugTraceBack traceBack(L);
@@ -1182,7 +1182,7 @@ void CLuaHandle::UnitGiven(const CUnit* unit, int oldTeam, int newTeam)
  */
 void CLuaHandle::UnitIdle(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1201,7 +1201,7 @@ void CLuaHandle::UnitIdle(const CUnit* unit)
  */
 void CLuaHandle::UnitCommand(const CUnit* unit, const Command& command, int playerNum, bool fromSynced, bool fromLua)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 1 + 7 + 3, __func__);
 
@@ -1235,7 +1235,7 @@ void CLuaHandle::UnitCommand(const CUnit* unit, const Command& command, int play
  */
 void CLuaHandle::UnitCmdDone(const CUnit* unit, const Command& command)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 8, __func__);
 
@@ -1345,7 +1345,7 @@ void CLuaHandle::UnitStunned(
  */
 void CLuaHandle::UnitExperience(const CUnit* unit, float oldExperience)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 8, __func__);
 
@@ -1399,7 +1399,7 @@ void CLuaHandle::UnitHarvestStorageFull(const CUnit* unit)
 void CLuaHandle::UnitSeismicPing(const CUnit* unit, int allyTeam,
                                  const float3& pos, float strength)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 9, __func__);
 	int readAllyTeam = GetHandleReadAllyTeam(L);
@@ -1431,7 +1431,7 @@ void CLuaHandle::UnitSeismicPing(const CUnit* unit, int allyTeam,
 void CLuaHandle::LosCallIn(const LuaHashString& hs,
                            const CUnit* unit, int allyTeam)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 6, __func__);
 	if (!hs.GetGlobalFunc(L))
@@ -1462,7 +1462,7 @@ void CLuaHandle::LosCallIn(const LuaHashString& hs,
  */
 void CLuaHandle::UnitEnteredRadar(const CUnit* unit, int allyTeam)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString hs(__func__);
 	LosCallIn(hs, unit, allyTeam);
 }
@@ -1500,7 +1500,7 @@ void CLuaHandle::UnitEnteredLos(const CUnit* unit, int allyTeam)
  */
 void CLuaHandle::UnitLeftRadar(const CUnit* unit, int allyTeam)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString hs(__func__);
 	LosCallIn(hs, unit, allyTeam);
 }
@@ -1541,7 +1541,7 @@ void CLuaHandle::UnitLeftLos(const CUnit* unit, int allyTeam)
  */
 void CLuaHandle::UnitLoaded(const CUnit* unit, const CUnit* transport)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 8, __func__);
 
@@ -1573,7 +1573,7 @@ void CLuaHandle::UnitLoaded(const CUnit* unit, const CUnit* transport)
  */
 void CLuaHandle::UnitUnloaded(const CUnit* unit, const CUnit* transport)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 8, __func__);
 
@@ -1623,7 +1623,7 @@ void CLuaHandle::UnitEnteredUnderwater(const CUnit* unit)
  */
 void CLuaHandle::UnitEnteredWater(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1639,7 +1639,7 @@ void CLuaHandle::UnitEnteredWater(const CUnit* unit)
  */
 void CLuaHandle::UnitEnteredAir(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1655,7 +1655,7 @@ void CLuaHandle::UnitEnteredAir(const CUnit* unit)
  */
 void CLuaHandle::UnitLeftUnderwater(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1670,7 +1670,7 @@ void CLuaHandle::UnitLeftUnderwater(const CUnit* unit)
  */
 void CLuaHandle::UnitLeftWater(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1686,7 +1686,7 @@ void CLuaHandle::UnitLeftWater(const CUnit* unit)
  */
 void CLuaHandle::UnitLeftAir(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1702,7 +1702,7 @@ void CLuaHandle::UnitLeftAir(const CUnit* unit)
  */
 void CLuaHandle::UnitCloaked(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1718,7 +1718,7 @@ void CLuaHandle::UnitCloaked(const CUnit* unit)
  */
 void CLuaHandle::UnitDecloaked(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1735,7 +1735,7 @@ void CLuaHandle::UnitDecloaked(const CUnit* unit)
  */
 bool CLuaHandle::UnitUnitCollision(const CUnit* collider, const CUnit* collidee)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static int returnValueDeprecationWarningIssued = -1;
 
 	// if empty, we are not a LuaHandleSynced
@@ -1787,7 +1787,7 @@ bool CLuaHandle::UnitUnitCollision(const CUnit* collider, const CUnit* collidee)
  */
 bool CLuaHandle::UnitFeatureCollision(const CUnit* collider, const CFeature* collidee)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	static int returnValueDeprecationWarningIssued = -1;
 
 	// if empty, we are not a LuaHandleSynced (and must always return false)
@@ -1839,7 +1839,7 @@ bool CLuaHandle::UnitFeatureCollision(const CUnit* collider, const CFeature* col
  */
 void CLuaHandle::UnitMoveFailed(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// if empty, we are not a LuaHandleSynced (and must always return false)
 	if (watchUnitDefs.empty())
 		return;
@@ -1861,7 +1861,7 @@ void CLuaHandle::UnitMoveFailed(const CUnit* unit)
  */
 void CLuaHandle::RenderUnitDestroyed(const CUnit* unit)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 9, __func__);
 
@@ -1898,7 +1898,7 @@ void CLuaHandle::RenderUnitDestroyed(const CUnit* unit)
  */
 void CLuaHandle::FeatureCreated(const CFeature* feature)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 5, __func__);
 
@@ -1925,7 +1925,7 @@ void CLuaHandle::FeatureCreated(const CFeature* feature)
  */
 void CLuaHandle::FeatureDestroyed(const CFeature* feature)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 5, __func__);
 
@@ -2010,7 +2010,7 @@ void CLuaHandle::FeatureDamaged(
  */
 void CLuaHandle::ProjectileCreated(const CProjectile* p)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// if empty, we are not a LuaHandleSynced
 	if (watchProjectileDefs.empty())
 		return;
@@ -2056,7 +2056,7 @@ void CLuaHandle::ProjectileCreated(const CProjectile* p)
  */
 void CLuaHandle::ProjectileDestroyed(const CProjectile* p)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// if empty, we are not a LuaHandleSynced
 	if (watchProjectileDefs.empty())
 		return;
@@ -2114,7 +2114,7 @@ void CLuaHandle::ProjectileDestroyed(const CProjectile* p)
  */
 bool CLuaHandle::Explosion(int weaponDefID, int projectileID, const float3& pos, const CUnit* owner)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// piece-projectile collision (*ALL* other
 	// explosion events pass valid weaponDefIDs)
 	if (weaponDefID < 0)
@@ -2169,7 +2169,7 @@ bool CLuaHandle::Explosion(int weaponDefID, int projectileID, const float3& pos,
 void CLuaHandle::StockpileChanged(const CUnit* unit,
                                   const CWeapon* weapon, int oldCount)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 8, __func__);
 
@@ -2198,7 +2198,7 @@ void CLuaHandle::StockpileChanged(const CUnit* unit,
  */
 bool CLuaHandle::RecvLuaMsg(const string& msg, int playerID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 8, __func__);
 
@@ -2223,7 +2223,7 @@ bool CLuaHandle::RecvLuaMsg(const string& msg, int playerID)
 
 void CLuaHandle::HandleLuaMsg(int playerID, int script, int mode, const std::vector<std::uint8_t>& data)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::string msg;
 	msg.resize(data.size());
 	std::copy(data.begin(), data.end(), msg.begin());
@@ -2278,7 +2278,7 @@ void CLuaHandle::HandleLuaMsg(int playerID, int script, int mode, const std::vec
  */
 void CLuaHandle::Save(zipFile archive)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	// LuaUI does not get this call-in
 	if (GetUserMode())
 		return;
@@ -2307,7 +2307,7 @@ void CLuaHandle::Save(zipFile archive)
  */
 void CLuaHandle::UnsyncedHeightMapUpdate(const SRectangle& rect)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 6, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -2331,7 +2331,7 @@ void CLuaHandle::UnsyncedHeightMapUpdate(const SRectangle& rect)
  */
 void CLuaHandle::Update()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 2, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -2351,7 +2351,7 @@ void CLuaHandle::Update()
  */
 void CLuaHandle::ViewResize()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 5, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -2387,7 +2387,7 @@ void CLuaHandle::ViewResize()
  */
 void CLuaHandle::SunChanged()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 2, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -2407,7 +2407,7 @@ void CLuaHandle::SunChanged()
 bool CLuaHandle::DefaultCommand(const CUnit* unit,
                                 const CFeature* feature, int& cmd)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 5, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -2459,7 +2459,7 @@ bool CLuaHandle::DefaultCommand(const CUnit* unit,
 
 void CLuaHandle::RunDrawCallIn(const LuaHashString& hs)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 2, __func__);
 	if (!hs.GetGlobalFunc(L))
@@ -2605,7 +2605,7 @@ DRAW_CALLIN(DrawShadowFeaturesLua)
 
 inline void CLuaHandle::DrawScreenCommon(const LuaHashString& cmdStr)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!cmdStr.GetGlobalFunc(L))
 		return;
 
@@ -2628,7 +2628,7 @@ inline void CLuaHandle::DrawScreenCommon(const LuaHashString& cmdStr)
  */
 void CLuaHandle::DrawScreen()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 4, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -2644,7 +2644,7 @@ void CLuaHandle::DrawScreen()
  */
 void CLuaHandle::DrawScreenEffects()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 4, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -2661,7 +2661,7 @@ void CLuaHandle::DrawScreenEffects()
  */
 void CLuaHandle::DrawScreenPost()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 4, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -2678,7 +2678,7 @@ void CLuaHandle::DrawScreenPost()
  */
 void CLuaHandle::DrawInMiniMap()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 4, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -2706,7 +2706,7 @@ void CLuaHandle::DrawInMiniMap()
  */
 void CLuaHandle::DrawInMiniMapBackground()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 4, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -2726,7 +2726,7 @@ void CLuaHandle::DrawInMiniMapBackground()
 }
 
 void CLuaHandle::DrawObjectsLua(std::initializer_list<bool> bools, const char* func) {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	const int extraArgs = bools.size();
 	luaL_checkstack(L, 2 + extraArgs, func);
@@ -2750,25 +2750,25 @@ void CLuaHandle::DrawObjectsLua(std::initializer_list<bool> bools, const char* f
 
 void CLuaHandle::DrawOpaqueUnitsLua(bool deferredPass, bool drawReflection, bool drawRefraction)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	DrawObjectsLua({ deferredPass, drawReflection, drawRefraction }, __func__);
 }
 
 void CLuaHandle::DrawOpaqueFeaturesLua(bool deferredPass, bool drawReflection, bool drawRefraction)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	DrawObjectsLua({ deferredPass, drawReflection, drawRefraction }, __func__);
 }
 
 void CLuaHandle::DrawAlphaUnitsLua(bool drawReflection, bool drawRefraction)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	DrawObjectsLua({ drawReflection, drawRefraction }, __func__);
 }
 
 void CLuaHandle::DrawAlphaFeaturesLua(bool drawReflection, bool drawRefraction)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	DrawObjectsLua({ drawReflection, drawRefraction }, __func__);
 }
 
@@ -2782,7 +2782,7 @@ void CLuaHandle::DrawAlphaFeaturesLua(bool drawReflection, bool drawRefraction)
  */
 void CLuaHandle::GameProgress(int frameNum)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 3, __func__);
 
@@ -2799,7 +2799,7 @@ void CLuaHandle::GameProgress(int frameNum)
 
 void CLuaHandle::Pong(uint8_t pingTag, const spring_time pktSendTime, const spring_time pktRecvTime)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 1 + 1 + 3, __func__);
 
@@ -2825,7 +2825,7 @@ void CLuaHandle::Pong(uint8_t pingTag, const spring_time pktSendTime, const spri
  */
 bool CLuaHandle::KeyMapChanged()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 3, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -2875,7 +2875,7 @@ bool CLuaHandle::KeyMapChanged()
  */
 bool CLuaHandle::KeyPress(int keyCode, int scanCode, bool isRepeat)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 
 	const bool isGame = game != nullptr;
@@ -2941,7 +2941,7 @@ bool CLuaHandle::KeyPress(int keyCode, int scanCode, bool isRepeat)
  */
 bool CLuaHandle::KeyRelease(int keyCode, int scanCode)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 
 	const bool isGame = game != nullptr;
@@ -2995,7 +2995,7 @@ bool CLuaHandle::KeyRelease(int keyCode, int scanCode)
  */
 bool CLuaHandle::TextInput(const std::string& utf8)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 3, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -3057,7 +3057,7 @@ bool CLuaHandle::TextEditing(const std::string& utf8, unsigned int start, unsign
  */
 bool CLuaHandle::MousePress(int x, int y, int button)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 5, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -3091,7 +3091,7 @@ bool CLuaHandle::MousePress(int x, int y, int button)
  */
 void CLuaHandle::MouseRelease(int x, int y, int button)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 5, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -3119,7 +3119,7 @@ void CLuaHandle::MouseRelease(int x, int y, int button)
  */
 bool CLuaHandle::MouseMove(int x, int y, int dx, int dy, int button)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 7, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -3209,7 +3209,7 @@ bool CLuaHandle::IsAbove(int x, int y)
  */
 string CLuaHandle::GetTooltip(int x, int y)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, "");
 	luaL_checkstack(L, 4, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -3252,7 +3252,7 @@ string CLuaHandle::GetTooltip(int x, int y)
  */
 bool CLuaHandle::CommandNotify(const Command& cmd)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 5, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -3286,7 +3286,7 @@ bool CLuaHandle::CommandNotify(const Command& cmd)
  */
 bool CLuaHandle::AddConsoleLine(const string& msg, const string& section, int level)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, true);
 	luaL_checkstack(L, 4, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -3308,7 +3308,7 @@ bool CLuaHandle::AddConsoleLine(const string& msg, const string& section, int le
  */
 bool CLuaHandle::GroupChanged(int groupID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 3, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -3335,7 +3335,7 @@ string CLuaHandle::WorldTooltip(const CUnit* unit,
                                 const CFeature* feature,
                                 const float3* groundPos)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, "");
 	luaL_checkstack(L, 6, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -3392,7 +3392,7 @@ bool CLuaHandle::MapDrawCmd(int playerID, int type,
                             const float3* pos1,
                             const string* label)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 9, __func__);
 	static const LuaHashString cmdStr(__func__);
@@ -3458,7 +3458,7 @@ bool CLuaHandle::MapDrawCmd(int playerID, int type,
 bool CLuaHandle::GameSetup(const string& state, bool& ready,
                            const std::vector< std::pair<int, std::string> >& playerStates)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 5, __func__);
 
@@ -3504,7 +3504,7 @@ bool CLuaHandle::GameSetup(const string& state, bool& ready,
  */
 const char* CLuaHandle::RecvSkirmishAIMessage(int aiTeam, const char* inData, int inSize, size_t* outSize)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, nullptr);
 	luaL_checkstack(L, 4, __func__);
 
@@ -3551,7 +3551,7 @@ const char* CLuaHandle::RecvSkirmishAIMessage(int aiTeam, const char* inData, in
  */
 void CLuaHandle::DownloadQueued(int ID, const string& archiveName, const string& archiveType)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 3, __func__);
 
@@ -3577,7 +3577,7 @@ void CLuaHandle::DownloadQueued(int ID, const string& archiveName, const string&
  */
 void CLuaHandle::DownloadStarted(int ID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 1, __func__);
 
@@ -3600,7 +3600,7 @@ void CLuaHandle::DownloadStarted(int ID)
  */
 void CLuaHandle::DownloadFinished(int ID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 1, __func__);
 
@@ -3624,7 +3624,7 @@ void CLuaHandle::DownloadFinished(int ID)
  */
 void CLuaHandle::DownloadFailed(int ID, int errorID)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 2, __func__);
 
@@ -3650,7 +3650,7 @@ void CLuaHandle::DownloadFailed(int ID, int errorID)
  */
 void CLuaHandle::DownloadProgress(int ID, long downloaded, long total)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L, false);
 	luaL_checkstack(L, 3, __func__);
 
@@ -3673,7 +3673,7 @@ void CLuaHandle::DownloadProgress(int ID, long downloaded, long total)
 
 void CLuaHandle::CollectGarbage(bool forced)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const float gcMemLoadMult = D.gcCtrl.baseMemLoadMult;
 	const float gcRunTimeMult = D.gcCtrl.baseRunTimeMult;
 
@@ -3745,7 +3745,7 @@ void CLuaHandle::CollectGarbage(bool forced)
 
 bool CLuaHandle::AddBasicCalls(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	HSTR_PUSH(L, "Script");
 	lua_createtable(L, 0, 17); {
 		HSTR_PUSH_CFUNC(L, "Kill",            KillActiveHandle);

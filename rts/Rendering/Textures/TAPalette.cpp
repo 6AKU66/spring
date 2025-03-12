@@ -7,7 +7,7 @@
 
 void CTAPalette::Init(CFileHandler& paletteFile)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!paletteFile.FileExists())
 		return;
 

@@ -14,7 +14,7 @@ CR_REG_METADATA(CDGunWeapon, )
 
 void CDGunWeapon::FireImpl(const bool scriptCall)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float3 dir = currentTargetPos - weaponMuzzlePos;
 	dir.Normalize();
 
@@ -33,7 +33,7 @@ void CDGunWeapon::FireImpl(const bool scriptCall)
 
 void CDGunWeapon::Init()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	CWeapon::Init();
 	muzzleFlareSize = 1.5f;
 }

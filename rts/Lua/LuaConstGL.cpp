@@ -19,7 +19,7 @@
 
 bool LuaConstGL::PushEntries(lua_State* L)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #define PUSH_GL(cmd) LuaPushNamedNumber(L, #cmd, GL_ ## cmd)
 
 	/***

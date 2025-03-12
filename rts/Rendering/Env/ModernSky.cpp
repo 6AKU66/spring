@@ -41,7 +41,7 @@ CModernSky::~CModernSky()
 
 void CModernSky::Draw()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 #ifndef HEADLESS
 	if (!globalRendering->drawSky)
 		return;

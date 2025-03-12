@@ -30,7 +30,7 @@ PlayerBase::PlayerBase() {
 
 void PlayerBase::SetValue(const std::string& key, const std::string& value)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	switch (hashString(key.c_str())) {
 		case hashString("team"): {
 			team = std::atoi(value.c_str());

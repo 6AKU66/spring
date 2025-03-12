@@ -15,14 +15,14 @@ std::unique_ptr<DepthBufferCopy> depthBufferCopy = nullptr;
 DepthBufferCopy::DepthBufferCopy()
 	: CEventClient("[DepthBufferCopy]", 012345, false)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	eventHandler.AddClient(this);
 	ViewResize();
 }
 
 DepthBufferCopy::~DepthBufferCopy()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(consumersCount[false] == 0);
 	assert(consumersCount[true ] == 0);
 
@@ -32,19 +32,19 @@ DepthBufferCopy::~DepthBufferCopy()
 
 void DepthBufferCopy::Init()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	depthBufferCopy = std::make_unique<DepthBufferCopy>();
 }
 
 void DepthBufferCopy::Kill()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	depthBufferCopy = nullptr;
 }
 
 void DepthBufferCopy::AddConsumer(bool ms)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (consumersCount[ms] == 0)
 		CreateTextureAndFBO(ms);
 
@@ -53,7 +53,7 @@ void DepthBufferCopy::AddConsumer(bool ms)
 
 void DepthBufferCopy::DelConsumer(bool ms)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	consumersCount[ms]--;
 
 	if (consumersCount[ms] == 0)
@@ -62,7 +62,7 @@ void DepthBufferCopy::DelConsumer(bool ms)
 
 void DepthBufferCopy::ViewResize()
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	for (size_t ms = 0; ms < depthFBOs.size(); ++ms) {
 		if (consumersCount[ms] == 0)
 			continue;
@@ -72,14 +72,14 @@ void DepthBufferCopy::ViewResize()
 }
 
 bool DepthBufferCopy::IsValid(bool ms) const {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const auto& depthFBO = depthFBOs[ms];
 	return depthFBO && depthFBO->IsValid() && depthTextures[ms] > 0;
 }
 
 void DepthBufferCopy::MakeDepthBufferCopy() const
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	const std::array<int, 4> srcScreenRect = { globalRendering->viewPosX, globalRendering->viewPosY, globalRendering->viewPosX + globalRendering->viewSizeX, globalRendering->viewPosY + globalRendering->viewSizeY };
 	const std::array<int, 4> dstScreenRect = { 0, 0, globalRendering->viewSizeX, globalRendering->viewSizeY };
 
@@ -102,7 +102,7 @@ void DepthBufferCopy::MakeDepthBufferCopy() const
 
 void DepthBufferCopy::DestroyTextureAndFBO(bool ms)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto& depthFBO = depthFBOs[ms];
 	auto& depthTexture = depthTextures[ms];
 
@@ -126,7 +126,7 @@ void DepthBufferCopy::DestroyTextureAndFBO(bool ms)
 
 void DepthBufferCopy::CreateTextureAndFBO(bool ms)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	auto& depthTexture = depthTextures[ms];
 	auto& depthFBO     = depthFBOs[ms];
 	const auto target = ms ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;

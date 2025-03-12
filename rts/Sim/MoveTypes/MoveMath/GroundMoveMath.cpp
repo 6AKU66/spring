@@ -11,7 +11,7 @@ Calculate speed-multiplier for given height and slope data.
 */
 float CMoveMath::GroundSpeedMod(const MoveDef& moveDef, float height, float slope)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	float speedMod = 0.0f;
 
 	// slope too steep or square too deep?
@@ -30,7 +30,7 @@ float CMoveMath::GroundSpeedMod(const MoveDef& moveDef, float height, float slop
 
 float CMoveMath::GroundSpeedMod(const MoveDef& moveDef, float height, float slope, float dirSlopeMod)
 {
-	//ZoneScoped;
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!modInfo.allowDirectionalPathing) {
 		return GroundSpeedMod(moveDef, height, slope);
 	}
