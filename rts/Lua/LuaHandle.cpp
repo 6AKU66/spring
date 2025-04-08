@@ -240,6 +240,7 @@ int CLuaHandle::KillActiveHandle(lua_State* L)
 bool CLuaHandle::AddEntriesToTable(lua_State* L, const char* name,
                                    bool (*entriesFunc)(lua_State*))
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int top = lua_gettop(L);
 	lua_pushstring(L, name);
 	lua_rawget(L, -2);
@@ -1054,6 +1055,7 @@ void CLuaHandle::UnitCreated(const CUnit* unit, const CUnit* builder)
  */
 void CLuaHandle::UnitFinished(const CUnit* unit)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1154,6 +1156,7 @@ void CLuaHandle::UnitConstructionDecayed(const CUnit* unit, float timeSinceLastB
  */
 void CLuaHandle::UnitDestroyed(const CUnit* unit, const CUnit* attacker, int weaponDefID)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 9, __func__);
 
@@ -1246,6 +1249,7 @@ void CLuaHandle::UnitGiven(const CUnit* unit, int oldTeam, int newTeam)
  */
 void CLuaHandle::UnitIdle(const CUnit* unit)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1688,6 +1692,7 @@ void CLuaHandle::UnitEnteredUnderwater(const CUnit* unit)
  */
 void CLuaHandle::UnitEnteredWater(const CUnit* unit)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1703,6 +1708,7 @@ void CLuaHandle::UnitEnteredWater(const CUnit* unit)
  */
 void CLuaHandle::UnitEnteredAir(const CUnit* unit)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1718,6 +1724,7 @@ void CLuaHandle::UnitEnteredAir(const CUnit* unit)
  */
 void CLuaHandle::UnitLeftUnderwater(const CUnit* unit)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1732,6 +1739,7 @@ void CLuaHandle::UnitLeftUnderwater(const CUnit* unit)
  */
 void CLuaHandle::UnitLeftWater(const CUnit* unit)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1747,6 +1755,7 @@ void CLuaHandle::UnitLeftWater(const CUnit* unit)
  */
 void CLuaHandle::UnitLeftAir(const CUnit* unit)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1762,6 +1771,7 @@ void CLuaHandle::UnitLeftAir(const CUnit* unit)
  */
 void CLuaHandle::UnitCloaked(const CUnit* unit)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }
@@ -1777,6 +1787,7 @@ void CLuaHandle::UnitCloaked(const CUnit* unit)
  */
 void CLuaHandle::UnitDecloaked(const CUnit* unit)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	static const LuaHashString cmdStr(__func__);
 	UnitCallIn(cmdStr, unit);
 }

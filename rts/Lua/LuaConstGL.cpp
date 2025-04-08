@@ -8,6 +8,8 @@
 #include "LuaUtils.h"
 #include "Rendering/GL/myGL.h"
 
+#include <tracy/Tracy.hpp>
+
 
 /***
  * OpenGL Constants
@@ -16,6 +18,7 @@
 
 bool LuaConstGL::PushEntries(lua_State* L)
 {
+
 /*** @field GL.cmd integer */
 #define PUSH_GL(cmd) LuaPushNamedNumber(L, #cmd, GL_ ## cmd)
 

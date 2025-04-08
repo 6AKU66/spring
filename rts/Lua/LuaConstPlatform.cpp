@@ -7,6 +7,8 @@
 #include "Rendering/GlobalRendering.h"
 #include "Rendering/GlobalRenderingInfo.h"
 
+#include <tracy/Tracy.hpp>
+
 /******************************************************************************
  * Platform constants
  * @see rts/Lua/LuaConstPlatform.cpp
@@ -45,6 +47,7 @@
 
 bool LuaConstPlatform::PushEntries(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	LuaPushNamedString(L, "gpu", globalRenderingInfo.gpuName);
 	LuaPushNamedString(L, "gpuVendor", globalRenderingInfo.gpuVendor);
 	LuaPushNamedNumber(L, "gpuMemorySize", globalRenderingInfo.gpuMemorySize.x);

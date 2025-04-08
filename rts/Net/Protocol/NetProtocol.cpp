@@ -18,6 +18,8 @@
 #include "System/Log/ILog.h"
 #include "System/SafeUtil.h"
 
+#include <tracy/Tracy.hpp>
+
 CONFIG(int, SourcePort).defaultValue(0);
 
 
@@ -36,6 +38,7 @@ CNetProtocol::CNetProtocol() {
 
 CNetProtocol::~CNetProtocol()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// when the client-server connection is deleted, make sure
 	// the server cleans up its corresponding connection to the
 	// client
@@ -51,6 +54,7 @@ CNetProtocol::~CNetProtocol()
 
 void CNetProtocol::InitClient(std::shared_ptr<ClientSetup> clientSetup, const std::string& clientVersion, const std::string& clientPlatform)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	userName = clientSetup->myPlayerName;
 	userPasswd = clientSetup->myPasswd;
 
@@ -64,6 +68,7 @@ void CNetProtocol::InitClient(std::shared_ptr<ClientSetup> clientSetup, const st
 
 void CNetProtocol::InitLocalClient()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	serverConnPtr = new (serverConnMem) netcode::CLocalConnection();
 	serverConnPtr->Flush();
 
@@ -73,6 +78,7 @@ void CNetProtocol::InitLocalClient()
 
 void CNetProtocol::AttemptReconnect(const std::string& myVersion, const std::string& myPlatform)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	netcode::UDPConnection conn(*serverConnPtr);
 
 	conn.Unmute();
@@ -84,25 +90,30 @@ void CNetProtocol::AttemptReconnect(const std::string& myVersion, const std::str
 
 
 bool CNetProtocol::NeedsReconnect() {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return serverConnPtr->NeedsReconnect();
 }
 
 bool CNetProtocol::CheckTimeout(int nsecs, bool initial) const {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return serverConnPtr->CheckTimeout(nsecs, initial);
 }
 
 bool CNetProtocol::Connected() const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (serverConnPtr->GetDataReceived() > 0);
 }
 
 std::string CNetProtocol::ConnectionStr() const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return serverConnPtr->GetFullAddress();
 }
 
 std::shared_ptr<const netcode::RawPacket> CNetProtocol::Peek(unsigned ahead) const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// not called while client is loading
 	// std::lock_guard<spring::spinlock> lock(serverConnMutex);
 	return serverConnPtr->Peek(ahead);
@@ -110,6 +121,7 @@ std::shared_ptr<const netcode::RawPacket> CNetProtocol::Peek(unsigned ahead) con
 
 void CNetProtocol::DeleteBufferPacketAt(unsigned index)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// not called while client is loading
 	// std::lock_guard<spring::spinlock> lock(serverConnMutex);
 	return serverConnPtr->DeleteBufferPacketAt(index);
@@ -118,6 +130,7 @@ void CNetProtocol::DeleteBufferPacketAt(unsigned index)
 
 float CNetProtocol::GetPacketTime(int frameNum) const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// startTime is not yet defined pre-simframe
 	if (frameNum < 0)
 		return gu->gameTime;
@@ -128,6 +141,7 @@ float CNetProtocol::GetPacketTime(int frameNum) const
 
 std::shared_ptr<const netcode::RawPacket> CNetProtocol::GetData(int frameNum)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::spinlock> lock(serverConnMutex);
 	std::shared_ptr<const netcode::RawPacket> ret = serverConnPtr->GetData();
 
@@ -146,6 +160,7 @@ std::shared_ptr<const netcode::RawPacket> CNetProtocol::GetData(int frameNum)
 void CNetProtocol::Send(const netcode::RawPacket* pkt) { Send(std::shared_ptr<const netcode::RawPacket>(pkt)); }
 void CNetProtocol::Send(std::shared_ptr<const netcode::RawPacket> pkt)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::spinlock> lock(serverConnMutex);
 	serverConnPtr->SendData(pkt);
 }
@@ -154,6 +169,7 @@ void CNetProtocol::Send(std::shared_ptr<const netcode::RawPacket> pkt)
 __FORCE_ALIGN_STACK__
 void CNetProtocol::UpdateLoop()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	Threading::SetThreadName("heartbeat");
 
 	while (keepUpdating) {
@@ -164,6 +180,7 @@ void CNetProtocol::UpdateLoop()
 
 void CNetProtocol::Update()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// any call to clientNet->Send is unsafe while heartbeat thread exists, i.e. during loading
 	std::lock_guard<spring::spinlock> lock(serverConnMutex);
 
@@ -172,6 +189,7 @@ void CNetProtocol::Update()
 
 void CNetProtocol::Close(bool flush)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::lock_guard<spring::spinlock> lock(serverConnMutex);
 
 	serverConnPtr->Close(flush);
@@ -184,4 +202,3 @@ void CNetProtocol::ResetDemoRecorder() { SetDemoRecorder({}); }
 
 unsigned int CNetProtocol::GetNumWaitingServerPackets() const { return (serverConnPtr->GetPacketQueueSize()); }
 unsigned int CNetProtocol::GetNumWaitingPingPackets() const { return (serverConnPtr->GetNumQueuedPings()); }
-

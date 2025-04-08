@@ -9,9 +9,12 @@
 #include "System/Sound/SoundLog.h"
 #include "VorbisShared.h"
 
+#include <tracy/Tracy.hpp>
+
 
 namespace {
 namespace VorbisCallbacks {
+	RECOIL_DETAILED_TRACY_ZONE;
 	size_t VorbisStreamReadCB(void* ptr, size_t size, size_t nmemb, void* datasource)
 	{
 		CStreamBuffer* mem = static_cast<CStreamBuffer*>(datasource);
@@ -46,12 +49,14 @@ namespace VorbisCallbacks {
 
 long OggDecoder::Read(uint8_t *buffer,int length, int bigendianp,int word,int sgned,int *bitstream)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return ov_read(&ovFile, reinterpret_cast<char*>(buffer), length, bigendianp, word, sgned, bitstream);
 }
 
 // TODO make this function accept FileHandler
 bool OggDecoder::LoadData(const uint8_t* mem, size_t len)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	stream = CStreamBuffer(mem, len);
 
 	ov_callbacks vorbisCallbacks;
@@ -75,16 +80,19 @@ bool OggDecoder::LoadData(const uint8_t* mem, size_t len)
 
 int OggDecoder::GetChannels() const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return vorbisInfo->channels;
 }
 
 long OggDecoder::GetRate() const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return vorbisInfo->rate;
 }
 
 float OggDecoder::GetTotalTime()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	// for non-seekable streams, ov_time_total returns OV_EINVAL (-131) while
 	// ov_time_tell always[?] returns the decoding time offset relative to EOS
 	return (ov_seekable(&ovFile) == 0) ? ov_time_tell(&ovFile): ov_time_total(&ovFile, -1);
@@ -93,6 +101,7 @@ float OggDecoder::GetTotalTime()
 // display Ogg info and comments
 void OggDecoder::DisplayInfo()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::vector<std::string> vorbisTags;
 
 	vorbis_comment* vorbisComment = ov_comment(&ovFile, -1);
@@ -122,6 +131,7 @@ void OggDecoder::DisplayInfo()
 
 void OggDecoder::Clear()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (vorbisInfo) {
 		ov_clear(&ovFile);
 		vorbisInfo = 0;
@@ -130,11 +140,13 @@ void OggDecoder::Clear()
 
 OggDecoder::~OggDecoder()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	Clear();
 }
 
 OggDecoder& OggDecoder::operator = (OggDecoder&& src) noexcept
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::swap(ovFile, src.ovFile);
 	std::swap(vorbisInfo, src.vorbisInfo);
 	std::swap(stream, src.stream);

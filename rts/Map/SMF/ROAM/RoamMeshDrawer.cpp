@@ -452,7 +452,6 @@ void CRoamMeshDrawer::Update()
 
 void CRoamMeshDrawer::DrawMesh(const DrawPass::e& drawPass)
 {
-	RECOIL_DETAILED_TRACY_ZONE;
 	// NOTE:
 	//   this updates the *tessellation* as well as the *visibility* of
 	//   patches at the same time, because both depend on the *current*

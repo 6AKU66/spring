@@ -13,6 +13,8 @@
 
 #include "System/Misc/TracyDefs.h"
 
+#include <tracy/Tracy.hpp>
+
 void CRefractWater::InitResources(bool loadShader)
 {
 	RECOIL_DETAILED_TRACY_ZONE;

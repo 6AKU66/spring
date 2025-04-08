@@ -10,8 +10,11 @@
 #include "SoundBuffer.h"
 #include "System/GlobalRNG.h"
 
+#include <tracy/Tracy.hpp>
+
 namespace
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	CGlobalUnsyncedRNG randnum; // no need for strong randomness here, so default seed is ok
 
 	template <typename T>
@@ -59,6 +62,7 @@ SoundItem::SoundItem(size_t itemID, size_t bufferID, const spring::unordered_map
 
 bool SoundItem::PlayNow()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (maxConcurrent >= currentlyPlaying) {
 		currentlyPlaying++;
 		return true;
@@ -69,12 +73,14 @@ bool SoundItem::PlayNow()
 
 void SoundItem::StopPlay()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	assert(currentlyPlaying > 0);
 	--currentlyPlaying;
 }
 
 float SoundItem::GetGain() const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	float tgain = 0.0f;
 
 	if (gainMod > 0.0f)
@@ -85,6 +91,7 @@ float SoundItem::GetGain() const
 
 float SoundItem::GetPitch() const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	float tpitch = 0.0f;
 
 	if (pitchMod > 0.0f)

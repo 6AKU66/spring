@@ -8,6 +8,8 @@
 #include "LuaUtils.h"
 #include "Sim/Units/CommandAI/Command.h"
 
+#include <tracy/Tracy.hpp>
+
 
 /***
  * Command constants.
@@ -16,6 +18,7 @@
 
 bool LuaConstCMD::PushEntries(lua_State* L)
 {
+
 	/*** @field CMD.OPT_ALT 128 */
 	LuaPushNamedNumber(L, "OPT_ALT",      ALT_KEY);
 	/*** @field CMD.OPT_CTRL 64 */

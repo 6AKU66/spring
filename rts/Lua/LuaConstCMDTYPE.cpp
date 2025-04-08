@@ -18,6 +18,7 @@
 
 bool LuaConstCMDTYPE::PushEntries(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 #define PUSH_CMDTYPE(cmd) LuaInsertDualMapPair(L, #cmd, CMDTYPE_ ## cmd)
 	/*** @field CMDTYPE.ICON integer Expect 0 parameters in return. */
 	PUSH_CMDTYPE(ICON);

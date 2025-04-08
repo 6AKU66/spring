@@ -25,6 +25,8 @@
 #include <vector>
 #include <algorithm>
 
+#include <tracy/Tracy.hpp>
+
 int   intUniformArrayBuf[1024] = {0   };
 float fltUniformArrayBuf[1024] = {0.0f};
 
@@ -40,6 +42,7 @@ float fltUniformArrayBuf[1024] = {0.0f};
 
 bool LuaShaders::PushEntries(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	REGISTER_LUA_CFUNC(CreateShader);
 	REGISTER_LUA_CFUNC(DeleteShader);
 	REGISTER_LUA_CFUNC(UseShader);
@@ -75,12 +78,14 @@ bool LuaShaders::PushEntries(lua_State* L)
 
 LuaShaders::LuaShaders()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	programs.emplace_back(0);
 }
 
 
 LuaShaders::~LuaShaders()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	for (auto& program: programs) {
 		DeleteProgram(program);
 	}
@@ -94,6 +99,7 @@ LuaShaders::~LuaShaders()
 
 inline void CheckDrawingEnabled(lua_State* L, const char* caller)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (LuaOpenGL::IsDrawingEnabled(L))
 		return;
 
@@ -106,6 +112,7 @@ inline void CheckDrawingEnabled(lua_State* L, const char* caller)
 
 GLuint LuaShaders::GetProgramName(uint32_t progIdx) const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (progIdx < programs.size())
 		return programs[progIdx].id;
 
@@ -114,6 +121,7 @@ GLuint LuaShaders::GetProgramName(uint32_t progIdx) const
 
 const LuaShaders::Program* LuaShaders::GetProgram(uint32_t progIdx) const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (progIdx < programs.size() && progIdx > 0)
 		return &programs[progIdx];
 
@@ -122,6 +130,7 @@ const LuaShaders::Program* LuaShaders::GetProgram(uint32_t progIdx) const
 
 LuaShaders::Program* LuaShaders::GetProgram(uint32_t progIdx)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (progIdx < programs.size() && progIdx > 0)
 		return &programs[progIdx];
 
@@ -131,6 +140,7 @@ LuaShaders::Program* LuaShaders::GetProgram(uint32_t progIdx)
 
 GLuint LuaShaders::GetProgramName(lua_State* L, int index) const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (luaL_checkint(L, index) <= 0)
 		return 0;
 
@@ -139,16 +149,19 @@ GLuint LuaShaders::GetProgramName(lua_State* L, int index) const
 
 const LuaShaders::Program* LuaShaders::GetProgram(lua_State* L, int index) const
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (GetProgram(luaL_checkint(L, index)));
 }
 LuaShaders::Program* LuaShaders::GetProgram(lua_State* L, int index)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	return (GetProgram(luaL_checkint(L, index)));
 }
 
 
 uint32_t LuaShaders::AddProgram(const Program& p)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!unused.empty()) {
 		const uint32_t index = unused.back();
 		programs[index] = p;
@@ -163,6 +176,7 @@ uint32_t LuaShaders::AddProgram(const Program& p)
 
 bool LuaShaders::RemoveProgram(uint32_t progIdx)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (progIdx >= programs.size())
 		return false;
 	if (!DeleteProgram(programs[progIdx]))
@@ -175,6 +189,7 @@ bool LuaShaders::RemoveProgram(uint32_t progIdx)
 
 bool LuaShaders::DeleteProgram(Program& p)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (p.id == 0)
 		return false;
 
@@ -202,6 +217,7 @@ bool LuaShaders::DeleteProgram(Program& p)
  */
 int LuaShaders::GetShaderLog(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const LuaShaders& shaders = CLuaHandle::GetActiveShaders(L);
 	lua_pushsstring(L, shaders.errorLog);
 	return 1;
@@ -222,6 +238,7 @@ namespace {
 
 	static void ParseUniformType(lua_State* L, int loc, int type)
 	{
+	RECOIL_DETAILED_TRACY_ZONE;
 		switch (type) {
 		case UNIFORM_TYPE_FLOAT: {
 			if (lua_israwnumber(L, -1)) {
@@ -288,6 +305,7 @@ namespace {
 		int type,
 		const LuaShaders::Program& p
 	) {
+	RECOIL_DETAILED_TRACY_ZONE;
 		constexpr const char* fieldNames[] = { "uniform", "uniformInt", "uniformFloat", "uniformMatrix" };
 		const char* fieldName = fieldNames[type];
 
@@ -354,6 +372,7 @@ namespace {
 
 	static GLint FillActiveUniforms(LuaShaders::Program& prog)
 	{
+	RECOIL_DETAILED_TRACY_ZONE;
 		GLint currentProgram = 0;
 		GLint numUniforms = 0;
 		GLsizei uniformLen = 0;
@@ -392,6 +411,7 @@ namespace {
 
 	static bool ParseUniformSetupTables(lua_State* L, int index, const LuaShaders::Program& p)
 	{
+	RECOIL_DETAILED_TRACY_ZONE;
 		bool ret = true;
 
 		ret = ret && ParseUniformsTable(L, index, UNIFORM_TYPE_MIXED       , p);
@@ -412,6 +432,7 @@ namespace {
 		const GLenum type,
 		bool& success
 	) {
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (sources.empty()) {
 			success = true;
 			return 0;
@@ -464,6 +485,7 @@ namespace {
 		const char* key,
 		std::vector<std::string>& data
 	) {
+	RECOIL_DETAILED_TRACY_ZONE;
 		lua_getfield(L, table, key);
 
 		if (lua_isnil(L, -1)) {
@@ -510,6 +532,7 @@ namespace {
 
 	static void ApplyGeometryParameters(lua_State* L, int table, GLuint prog)
 	{
+	RECOIL_DETAILED_TRACY_ZONE;
 		if (!IS_GL_FUNCTION_AVAILABLE(glProgramParameteriEXT))
 			return;
 
@@ -534,6 +557,7 @@ namespace {
 
 GLint LuaShaders::GetUniformLocation(LuaShaders::Program* p, const char* name)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!p)
 		return -1;
 
@@ -627,6 +651,7 @@ GLint LuaShaders::GetUniformLocation(LuaShaders::Program* p, const char* name)
  */
 int LuaShaders::CreateShader(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int args = lua_gettop(L);
 
 	if ((args != 1) || !lua_istable(L, 1))
@@ -811,6 +836,7 @@ int LuaShaders::DeleteShader(lua_State* L)
  */
 int LuaShaders::UseShader(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	CheckDrawingEnabled(L, __func__);
 
 	const int progIdx = luaL_checkint(L, 1);
@@ -849,6 +875,7 @@ int LuaShaders::UseShader(lua_State* L)
  */
 int LuaShaders::ActiveShader(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const int progIdx = luaL_checkint(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 
@@ -938,6 +965,7 @@ static const char* UniformTypeString(GLenum type)
  */
 int LuaShaders::GetActiveUniforms(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const LuaShaders& shaders = CLuaHandle::GetActiveShaders(L);
 	const auto* prog = shaders.GetProgram(L, 1);
 
@@ -974,6 +1002,7 @@ int LuaShaders::GetActiveUniforms(lua_State* L)
  */
 int LuaShaders::GetUniformLocation(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	LuaShaders& shaders = CLuaHandle::GetActiveShaders(L);
 	Program* prog = shaders.GetProgram(L, 1);
 
@@ -988,6 +1017,7 @@ int LuaShaders::GetUniformLocation(lua_State* L)
 
 int LuaShaders::GetSubroutineIndex(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IS_GL_FUNCTION_AVAILABLE(glGetSubroutineIndex))
 		return 0;
 
@@ -1009,6 +1039,7 @@ int LuaShaders::GetSubroutineIndex(lua_State* L)
 namespace {
 	template<typename T> int SetObjectBufferUniforms(lua_State* L, const char* func)
 	{
+	RECOIL_DETAILED_TRACY_ZONE;
 		const int id = luaL_checkint(L, 1);
 		const T* o = LuaUtils::IdToObject<T>(id, func);
 		if (o == nullptr)
@@ -1055,6 +1086,7 @@ int LuaShaders::SetFeatureBufferUniforms(lua_State* L) { return SetObjectBufferU
  */
 int LuaShaders::Uniform(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (activeShaderDepth <= 0)
 		CheckDrawingEnabled(L, __func__);
 
@@ -1096,6 +1128,7 @@ int LuaShaders::Uniform(lua_State* L)
  */
 int LuaShaders::UniformInt(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (activeShaderDepth <= 0)
 		CheckDrawingEnabled(L, __func__);
 
@@ -1128,6 +1161,7 @@ int LuaShaders::UniformInt(lua_State* L)
 template<typename type, typename glUniformFunc, typename ParseArrayFunc>
 static bool GLUniformArray(lua_State* L, UniformFunc uf, ParseArrayFunc pf)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const GLuint loc = luaL_checkint(L, 1);
 
 	switch (std::bit_ceil <uint32_t> (luaL_optint(L, 4, 32))) {
@@ -1166,6 +1200,7 @@ static bool GLUniformArray(lua_State* L, UniformFunc uf, ParseArrayFunc pf)
  */
 int LuaShaders::UniformArray(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (activeShaderDepth <= 0)
 		CheckDrawingEnabled(L, __func__);
 
@@ -1229,6 +1264,7 @@ int LuaShaders::UniformArray(lua_State* L)
  */
 int LuaShaders::UniformMatrix(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (activeShaderDepth <= 0)
 		CheckDrawingEnabled(L, __func__);
 
@@ -1290,6 +1326,7 @@ int LuaShaders::UniformMatrix(lua_State* L)
 
 int LuaShaders::UniformSubroutine(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IS_GL_FUNCTION_AVAILABLE(glUniformSubroutinesuiv))
 		return 0;
 	if (activeShaderDepth <= 0)
@@ -1314,6 +1351,7 @@ int LuaShaders::UniformSubroutine(lua_State* L)
  */
 int LuaShaders::GetEngineUniformBufferDef(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!globalRendering->haveGL4)
 		return 0;
 
@@ -1336,6 +1374,7 @@ int LuaShaders::GetEngineUniformBufferDef(lua_State* L)
  */
 int LuaShaders::GetEngineModelUniformDataDef(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!globalRendering->haveGL4)
 		return 0;
 
@@ -1353,6 +1392,7 @@ int LuaShaders::GetEngineModelUniformDataDef(lua_State* L)
  */
 int LuaShaders::SetGeometryShaderParameter(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IS_GL_FUNCTION_AVAILABLE(glProgramParameteriEXT))
 		return 0;
 
@@ -1384,6 +1424,7 @@ int LuaShaders::SetGeometryShaderParameter(lua_State* L)
  */
 int LuaShaders::SetTesselationShaderParameter(lua_State* L)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (!IS_GL_FUNCTION_AVAILABLE(glPatchParameteri))
 		return 0;
 

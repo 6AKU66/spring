@@ -10,6 +10,8 @@
 #include <vector>
 #include <cinttypes>
 
+#include <tracy/Tracy.hpp>
+
 
 #define LOG_SECTION_AUTOHOST_INTERFACE "AutohostInterface"
 LOG_REGISTER_SECTION_GLOBAL(LOG_SECTION_AUTOHOST_INTERFACE)
@@ -165,6 +167,7 @@ AutohostInterface::AutohostInterface(const std::string& remoteIP, int remotePort
 		: autohost(netcode::netservice)
 		, initialized(false)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::string errorMsg = AutohostInterface::TryBindSocket(autohost, remoteIP, remotePort, localIP, localPort);
 
 	if (errorMsg.empty()) {
@@ -179,6 +182,7 @@ std::string AutohostInterface::TryBindSocket(
 			const std::string& remoteIP, int remotePort,
 			const std::string& localIP, int localPort)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	std::string errorMsg;
 
 	ip::address localAddr;
@@ -236,6 +240,7 @@ std::string AutohostInterface::TryBindSocket(
 
 void AutohostInterface::SendStart()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uchar msg = SERVER_STARTED;
 
 	Send(asio::buffer(&msg, sizeof(uchar)));
@@ -243,6 +248,7 @@ void AutohostInterface::SendStart()
 
 void AutohostInterface::SendQuit()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uchar msg = SERVER_QUIT;
 
 	Send(asio::buffer(&msg, sizeof(uchar)));
@@ -250,6 +256,7 @@ void AutohostInterface::SendQuit()
 
 void AutohostInterface::SendStartPlaying(const unsigned char* gameID, const std::string& demoName)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (demoName.size() > std::numeric_limits<std::uint32_t>::max() - 30)
 		throw std::runtime_error("Path to demofile too long.");
 
@@ -279,6 +286,7 @@ void AutohostInterface::SendStartPlaying(const unsigned char* gameID, const std:
 
 void AutohostInterface::SendGameOver(uchar playerNum, const std::vector<uchar>& winningAllyTeams)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	const unsigned char msgsize = 1 + 1 + 1 + (winningAllyTeams.size() * sizeof(uchar));
 	std::vector<std::uint8_t> buffer(msgsize);
 	buffer[0] = SERVER_GAMEOVER;
@@ -293,6 +301,7 @@ void AutohostInterface::SendGameOver(uchar playerNum, const std::vector<uchar>& 
 
 void AutohostInterface::SendPlayerJoined(uchar playerNum, const std::string& name)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (autohost.is_open()) {
 		unsigned msgsize = 2 * sizeof(uchar) + name.size();
 		std::vector<std::uint8_t> buffer(msgsize);
@@ -306,6 +315,7 @@ void AutohostInterface::SendPlayerJoined(uchar playerNum, const std::string& nam
 
 void AutohostInterface::SendPlayerLeft(uchar playerNum, uchar reason)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uchar msg[3] = {PLAYER_LEFT, playerNum, reason};
 
 	Send(asio::buffer(&msg, 3 * sizeof(uchar)));
@@ -313,6 +323,7 @@ void AutohostInterface::SendPlayerLeft(uchar playerNum, uchar reason)
 
 void AutohostInterface::SendPlayerReady(uchar playerNum, uchar readyState)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uchar msg[3] = {PLAYER_READY, playerNum, readyState};
 
 	Send(asio::buffer(&msg, 3 * sizeof(uchar)));
@@ -320,6 +331,7 @@ void AutohostInterface::SendPlayerReady(uchar playerNum, uchar readyState)
 
 void AutohostInterface::SendPlayerChat(uchar playerNum, uchar destination, const std::string& chatmsg)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (autohost.is_open()) {
 		const unsigned msgsize = 3 * sizeof(uchar) + chatmsg.size();
 		std::vector<std::uint8_t> buffer(msgsize);
@@ -334,6 +346,7 @@ void AutohostInterface::SendPlayerChat(uchar playerNum, uchar destination, const
 
 void AutohostInterface::SendPlayerDefeated(uchar playerNum)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	uchar msg[2] = {PLAYER_DEFEATED, playerNum};
 
 	Send(asio::buffer(&msg, 2 * sizeof(uchar)));
@@ -341,6 +354,7 @@ void AutohostInterface::SendPlayerDefeated(uchar playerNum)
 
 void AutohostInterface::Message(const std::string& message)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (autohost.is_open()) {
 		const unsigned msgsize = sizeof(uchar) + message.size();
 		std::vector<std::uint8_t> buffer(msgsize);
@@ -353,6 +367,7 @@ void AutohostInterface::Message(const std::string& message)
 
 void AutohostInterface::Warning(const std::string& message)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (autohost.is_open()) {
 		const unsigned msgsize = sizeof(uchar) + message.size();
 		std::vector<std::uint8_t> buffer(msgsize);
@@ -365,6 +380,7 @@ void AutohostInterface::Warning(const std::string& message)
 
 void AutohostInterface::SendLuaMsg(const std::uint8_t* msg, size_t msgSize)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (autohost.is_open()) {
 		std::vector<std::uint8_t> buffer(msgSize+1);
 		buffer[0] = GAME_LUAMSG;
@@ -376,6 +392,7 @@ void AutohostInterface::SendLuaMsg(const std::uint8_t* msg, size_t msgSize)
 
 void AutohostInterface::Send(const std::uint8_t* msg, size_t msgSize)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (autohost.is_open()) {
 		std::vector<std::uint8_t> buffer(msgSize);
 		std::copy(msg, msg + msgSize, buffer.begin());
@@ -386,6 +403,7 @@ void AutohostInterface::Send(const std::uint8_t* msg, size_t msgSize)
 
 std::string AutohostInterface::GetChatMessage()
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (autohost.is_open()) {
 		size_t bytes_avail = 0;
 
@@ -401,6 +419,7 @@ std::string AutohostInterface::GetChatMessage()
 
 void AutohostInterface::Send(asio::mutable_buffers_1 buffer)
 {
+	RECOIL_DETAILED_TRACY_ZONE;
 	if (autohost.is_open()) {
 		try {
 			autohost.send(buffer);
