@@ -467,26 +467,16 @@ bool LuaVBOImpl::DefineElementArray(const sol::optional<sol::object> attribDefAr
 }
 
 /***
- * @alias VBODataType
- * | GL.BYTE
- * | GL.UNSIGNED_BYTE
- * | GL.SHORT
- * | GL.UNSIGNED_SHORT
- * | GL.INT
- * | GL.UNSIGNED_INT
- * | GL.FLOAT
- */
-
-/***
  * @class VBOAttributeDef
  * 
- * @field id integer
+ * @field id integer?
+ * 
  * The location in the vertex shader layout e.g.: layout (location = 0) in vec2
  * aPos. optional attrib, specifies location in the vertex shader. If not
  * specified the implementation will increment the counter starting from 0.
  * There can be maximum 16 attributes (so id of 15 is max).
  * 
- * @field name string
+ * @field name string? (Default: `attr#` where `#` is `id`)
  * 
  * The name for this VBO, only used for debugging.
  * 
@@ -496,22 +486,28 @@ bool LuaVBOImpl::DefineElementArray(const sol::optional<sol::object> attribDefAr
  * this buffer. e.g. for the previous layout (location = 0) in vec2 aPos, it
  * would be size = 2.
  * 
- * @field type VBODataType (Default: `GL.FLOAT`)
- * 
- * The datatype of this element.
+ * @field type GL? (Default: `GL.FLOAT`) The datatype of this element.
+ *
+ * Accepts the following:
+ * - `GL.BYTE`
+ * - `GL.UNSIGNED_BYTE`
+ * - `GL.SHORT`
+ * - `GL.UNSIGNED_SHORT`
+ * - `GL.INT`
+ * - `GL.UNSIGNED_INT`
+ * - `GL.FLOAT`
  * 
  * @field normalized boolean? (Defaults: `false`)
  * 
- * It's possible to submit say normal without normalizing them first, normalized
+ * It's possible to submit normals without normalizing them first, normalized
  * will make sure data is normalized.
  */
- 
 
 /***
  * Specify the kind of VBO you will be using.
  *
  * ```lua
- * @usage terrainVertexVBO:Define(numPoints, {{ id = 0, name = "pos", size = 2 }})
+ * terrainVertexVBO:Define(numPoints, {{ id = 0, name = "pos", size = 2 }})
  * ```
  * 
  * It is usually an array of vertex/color/uv data, but can also be an array of
@@ -613,33 +609,22 @@ std::tuple<uint32_t, uint32_t, uint32_t> LuaVBOImpl::GetBufferSize()
 
 
 /***
- * Uploads the data (array of floats) into the VBO
+ * Uploads data into the VBO.
  *
- * ```lua
- * vbo:Upload(posArray, 0, 1)
- * -- 0 is offset into vbo (on GPU) in this case no offset
- * -- 1 is lua index index into the Lua table, in this case it's same as default
- * -- Upload will upload from luaOffset to end of lua array
- * ```
- * 
- * ```lua
- * @usage rectInstanceVBO:Upload({1},0)
- * ```
- * 
  * @function VBO:Upload
- * @param vboData number[] a lua array of values to upload into the VBO
- * @param attributeIndex integer? (Default: -1)
+ * @param vboData number[] Array of values to upload into the VBO.
+ * @param attributeIndex integer? (Default: `-1`)
  * 
- * If supplied with non-default value then the data from vboData will only be
+ * If supplied with non-default value then the data from `vboData` will only be
  * used to upload the data to this particular attribute.
  * 
- * The whole vboData is expected to contain only attributeIndex data.
+ * The whole `vboData` is expected to contain only attributeIndex data.
  * 
  * Otherwise all attributes get updated sequentially across attributes and elements.
  *
- * @param elemOffset integer? (Default: 0) Which VBO element to start uploading data from Lua array into.
- * @param luaStartIndex integer? (Default: 1) Start uploading from that element in supplied Lua array.
- * @param luaFinishIndex integer? Consider this element the last element in Lua array.
+ * @param elemOffset integer? (Default: `0`) The index in destination VBO (on GPU) at which storing begins.
+ * @param luaStartIndex integer? (Default: `1`) The index of `vboData` at which copying begins.
+ * @param luaFinishIndex integer? (Default: `#vboData`) The index of `vboData` at which copying ends.
  * @return number[] indexData
  * @return integer elemOffset
  * @return integer|[integer,integer,integer,integer] attrID
@@ -691,12 +676,12 @@ size_t LuaVBOImpl::Upload(const sol::stack_table& luaTblData, sol::optional<int>
 /***
  *
  * @function VBO:Download
- * @param attributeIndex integer? (Default: -1) when supplied with non-default value: only data
+ * @param attributeIndex integer? (Default: `-1`) when supplied with non-default value: only data
  * from specified attribute will be downloaded - otherwise all attributes are
  * downloaded
- * @param elementOffset integer? (Default: 0) download data starting from this element
+ * @param elementOffset integer? (Default: `0`) download data starting from this element
  * @param elementCount number? number of elements to download
- * @param forceGPURead boolean? (Default: false) force downloading the data from GPU buffer as opposed
+ * @param forceGPURead boolean? (Default: `false`) force downloading the data from GPU buffer as opposed
  * to using shadow RAM buffer
  * @return [number, ...][] vboData
  */
@@ -1526,7 +1511,7 @@ void LuaVBOImpl::DumpDefinition()
 /*** Gets the OpenGL Buffer ID
  *
  * @function VBO:GetID
- * @return number bufferID
+ * @return integer bufferID
  */
 uint32_t LuaVBOImpl::GetID() const
 {

@@ -4,6 +4,8 @@ title: {{ type_name }}
 parent: Lua API
 permalink: lua-api/types/{{ type_name }}
 ---
+{# Use `render_with_liquid: false` when we upgrade to Jekyl >=4.0 #}
+{{ "{% raw %}" }}
 
 # enum {{ type_name }}
 ---
@@ -15,10 +17,16 @@ permalink: lua-api/types/{{ type_name }}
 {{ description }}
 {% endif %}
 
-```cpp
-enum {{ type_name }} {
-    {% for field in fields -%}
-        {{ field.name }} = {{ field.value }}, {{ field.description }}
-    {% endfor %}
-}
+{% for field in fields -%}
+
+### {{ field.name }}
+
+```lua
+{{ type_name }}.{{ field.name }} = {{ field.value }}
 ```
+
+{{ field.description }}
+
+{% endfor %}
+
+{{ "{% endraw %}" }}

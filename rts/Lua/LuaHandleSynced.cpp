@@ -112,6 +112,7 @@ bool CUnsyncedLuaHandle::Init(std::string code, const std::string& file)
 
 	LuaPushNamedCFunc(L, "loadstring", CSplitLuaHandle::LoadStringData);
 	LuaPushNamedCFunc(L, "CallAsTeam", CSplitLuaHandle::CallAsTeam);
+	/*** @global COBSCALE integer */ 
 	LuaPushNamedNumber(L, "COBSCALE",  COBSCALE);
 
 	// load our libraries
@@ -176,9 +177,7 @@ bool CUnsyncedLuaHandle::Init(std::string code, const std::string& file)
 /*** Receives data sent via `SendToUnsynced` callout.
  *
  * @function UnsyncedCallins:RecvFromSynced
- * @param arg1 any
- * @param arg2 any
- * @param argn any
+ * @param ... any
  */
 void CUnsyncedLuaHandle::RecvFromSynced(lua_State* srcState, int args)
 {
@@ -212,6 +211,7 @@ void CUnsyncedLuaHandle::RecvFromSynced(lua_State* srcState, int args)
  * @param unitID integer
  * @param drawMode number
  * @return boolean suppressEngineDraw
+ * @deprecated
  */
 bool CUnsyncedLuaHandle::DrawUnit(const CUnit* unit)
 {
@@ -248,6 +248,7 @@ bool CUnsyncedLuaHandle::DrawUnit(const CUnit* unit)
  * @param featureID integer
  * @param drawMode number
  * @return boolean suppressEngineDraw
+ * @deprecated
  */
 bool CUnsyncedLuaHandle::DrawFeature(const CFeature* feature)
 {
@@ -284,6 +285,7 @@ bool CUnsyncedLuaHandle::DrawFeature(const CFeature* feature)
  * @param weaponID integer
  * @param drawMode number
  * @return boolean suppressEngineDraw
+ * @deprecated
  */
 bool CUnsyncedLuaHandle::DrawShield(const CUnit* unit, const CWeapon* weapon)
 {
@@ -321,6 +323,7 @@ bool CUnsyncedLuaHandle::DrawShield(const CUnit* unit, const CWeapon* weapon)
  * @param projectileID integer
  * @param drawMode number
  * @return boolean suppressEngineDraw
+ * @deprecated
  */
 bool CUnsyncedLuaHandle::DrawProjectile(const CProjectile* projectile)
 {
@@ -355,9 +358,10 @@ bool CUnsyncedLuaHandle::DrawProjectile(const CProjectile* projectile)
 /***
  *
  * @function UnsyncedCallins:DrawMaterial
- * @param uuid number
+ * @param uuid integer
  * @param drawMode number
  * @return boolean suppressEngineDraw
+ * @deprecated
  */
 bool CUnsyncedLuaHandle::DrawMaterial(const LuaMaterial* material)
 {
@@ -651,7 +655,7 @@ bool CSyncedLuaHandle::AllowCommand(const CUnit* unit, const Command& cmd, int p
  * @param x number
  * @param y number
  * @param z number
- * @param facing number
+ * @param facing FacingInteger
  * @return boolean allow, boolean dropOrder
  */
 std::pair <bool, bool> CSyncedLuaHandle::AllowUnitCreation(
@@ -1237,15 +1241,16 @@ bool CSyncedLuaHandle::AllowDirectUnitControl(int playerID, const CUnit* unit)
  *
  * @param unitID integer
  * @param unitDefID integer
- * @param action number one of following:
- *
- *   -1 Build
- *   CMD.REPAIR Repair
- *   CMD.RECLAIM Reclaim
- *   CMD.RESTORE Restore
- *   CMD.RESURRECT Resurrect
- *   CMD.CAPTURE Capture
- *
+ * @param action -1|CMD
+ * 
+ * One of the following:
+ * 	- `-1` build,
+ * 	- `CMD.REPAIR` repair,
+ * 	- `CMD.RECLAIM` reclaim,
+ * 	- `CMD.RESTORE` restore,
+ * 	- `CMD.RESURRECT` resurrect, or
+ * 	- `CMD.CAPTURE` capture.
+ * 
  * @return boolean actionAllowed
  */
 bool CSyncedLuaHandle::AllowBuilderHoldFire(const CUnit* unit, int action)
@@ -1958,6 +1963,13 @@ int CSyncedLuaHandle::SyncedPairs(lua_State* L)
 }
 
 
+/***
+ * Invoke `UnsyncedCallins:RecvFromSynced` callin with the given arguments.
+ * 
+ * @function SendToUnsynced
+ * @param ... nil|boolean|number|string Arguments. Typically the first argument is the name of a function to call.
+ * @see UnsyncedCallins:RecvFromSynced
+ */
 int CSyncedLuaHandle::SendToUnsynced(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -2311,7 +2323,27 @@ int CSplitLuaHandle::LoadStringData(lua_State* L)
 	return 1;
 }
 
+/***
+ * @class CallAsTeamOptions
+ * @field ctrl integer Ctrl team ID.
+ * @field read integer Read team ID.
+ * @field select integer Read team ID.
+ */
 
+/***
+ * @function CallAsTeam
+ * @param teamID integer Team ID.
+ * @param func fun(...) The function to call.
+ * @param ... any Arguments to pass to the function.
+ * @return any ... The return values of the function.
+ */
+/***
+ * @function CallAsTeam
+ * @param options CallAsTeamOptions Options.
+ * @param func fun(...) The function to call.
+ * @param ... any Arguments to pass to the function.
+ * @return any ... The return values of the function.
+ */
 int CSplitLuaHandle::CallAsTeam(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;

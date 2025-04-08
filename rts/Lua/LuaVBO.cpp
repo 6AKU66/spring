@@ -125,14 +125,6 @@ LuaVBOs::~LuaVBOs()
 	luaVBOs.clear();
 }
 
-/***
- * @alias GLBufferType
- * | GL.ARRAY_BUFFER
- * | GL.ELEMENT_ARRAY_BUFFER
- * | GL.UNIFORM_BUFFER
- * | GL.SHADER_STORAGE_BUFFER
- */
-
 
 /***
  * Example:
@@ -144,12 +136,15 @@ LuaVBOs::~LuaVBOs()
  *
  * @function gl.GetVBO
  * 
- * @param bufferType GLBufferType? (Default: GL.ARRAY_BUFFER)
+ * @param bufferType GL? (Default: `GL.ARRAY_BUFFER`) The buffer type to use.
  *
- * Use `GL.ARRAY_BUFFER` for vertex data and
- * `GL.ELEMENT_ARRAY_BUFFER` for vertex indices.
+ * Accepts the following:
+ * - `GL.ARRAY_BUFFER` for vertex data.
+ * - `GL.ELEMENT_ARRAY_BUFFER` for vertex indices.
+ * - `GL.UNIFORM_BUFFER`
+ * - `GL.SHADER_STORAGE_BUFFER`
  * 
- * @param freqUpdated boolean? (Default: true)
+ * @param freqUpdated boolean? (Default: `true`)
  * 
  * `true` to updated frequently, `false` to update only once.
  * 

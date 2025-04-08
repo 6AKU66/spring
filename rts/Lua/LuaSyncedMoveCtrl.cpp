@@ -34,7 +34,12 @@
 
 bool LuaSyncedMoveCtrl::PushMoveCtrl(lua_State* L)
 {
-	RECOIL_DETAILED_TRACY_ZONE;
+	/***
+	 * Accessed via `Spring.MoveCtrl`.
+	 * 
+	 * @see Spring.MoveCtrl
+	 * @class MoveCtrl
+	 */
 	lua_pushliteral(L, "MoveCtrl");
 	lua_createtable(L, 0, 32);
 
@@ -137,6 +142,11 @@ static inline DerivedMoveType* ParseDerivedMoveType(lua_State* L, const char* ca
 /******************************************************************************/
 /******************************************************************************/
 
+/***
+ * @function MoveCtrl.IsEnabled
+ * @param unitID integer
+ * @return boolean? isEnabled
+ */
 int LuaSyncedMoveCtrl::IsEnabled(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -150,6 +160,10 @@ int LuaSyncedMoveCtrl::IsEnabled(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.Enable
+ * @param unitID integer
+ */
 int LuaSyncedMoveCtrl::Enable(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -163,6 +177,10 @@ int LuaSyncedMoveCtrl::Enable(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.Disable
+ * @param unitID integer
+ */
 int LuaSyncedMoveCtrl::Disable(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -178,6 +196,11 @@ int LuaSyncedMoveCtrl::Disable(lua_State* L)
 
 /******************************************************************************/
 
+/***
+ * @function MoveCtrl.SetTag
+ * @param unitID integer
+ * @param tag integer
+ */
 int LuaSyncedMoveCtrl::SetTag(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -191,6 +214,10 @@ int LuaSyncedMoveCtrl::SetTag(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.GetTag
+ * @param tag integer?
+ */
 int LuaSyncedMoveCtrl::GetTag(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -207,6 +234,18 @@ int LuaSyncedMoveCtrl::GetTag(lua_State* L)
 /******************************************************************************/
 /******************************************************************************/
 
+
+/***
+ * @function MoveCtrl.SetProgressState
+ * @param unitID integer
+ * @param state
+ * | 0 # Done
+ * | 1 # Active
+ * | 2 # Failed
+ * | "done"
+ * | "active"
+ * | "failed"
+ */
 int LuaSyncedMoveCtrl::SetProgressState(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -247,6 +286,11 @@ int LuaSyncedMoveCtrl::SetProgressState(lua_State* L)
 
 /******************************************************************************/
 
+/***
+ * @function MoveCtrl.SetExtrapolate
+ * @param unitID integer
+ * @param extrapolate boolean
+ */
 int LuaSyncedMoveCtrl::SetExtrapolate(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -262,6 +306,19 @@ int LuaSyncedMoveCtrl::SetExtrapolate(lua_State* L)
 
 /******************************************************************************/
 
+/***
+ * @function MoveCtrl.SetPhysics
+ * @param unitID integer
+ * @param posX number Position X component.
+ * @param posY number Position Y component.
+ * @param posZ number Position Z component.
+ * @param velX number Velocity X component.
+ * @param velY number Velocity Y component.
+ * @param velZ number Velocity Z component.
+ * @param rotX number Rotation X component.
+ * @param rotY number Rotation Y component.
+ * @param rotZ number Rotation Z component.
+ */
 int LuaSyncedMoveCtrl::SetPhysics(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -281,6 +338,13 @@ int LuaSyncedMoveCtrl::SetPhysics(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetPosition
+ * @param unitID integer
+ * @param posX number Position X component.
+ * @param posY number Position Y component.
+ * @param posZ number Position Z component.
+ */
 int LuaSyncedMoveCtrl::SetPosition(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -298,6 +362,13 @@ int LuaSyncedMoveCtrl::SetPosition(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetVelocity
+ * @param unitID integer
+ * @param velX number Velocity X component.
+ * @param velY number Velocity Y component.
+ * @param velZ number Velocity Z component.
+ */
 int LuaSyncedMoveCtrl::SetVelocity(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -315,6 +386,13 @@ int LuaSyncedMoveCtrl::SetVelocity(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetRelativeVelocity
+ * @param unitID integer
+ * @param relVelX number Relative velocity X component.
+ * @param relVelY number Relative velocity Y component.
+ * @param relVelZ number Relative velocity Z component.
+ */
 int LuaSyncedMoveCtrl::SetRelativeVelocity(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -332,6 +410,13 @@ int LuaSyncedMoveCtrl::SetRelativeVelocity(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetRotation
+ * @param unitID integer
+ * @param rotX number Rotation X component.
+ * @param rotY number Rotation Y component.
+ * @param rotZ number Rotation Z component.
+ */
 int LuaSyncedMoveCtrl::SetRotation(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -349,6 +434,10 @@ int LuaSyncedMoveCtrl::SetRotation(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetRotationOffset
+ * @deprecated
+ */
 int LuaSyncedMoveCtrl::SetRotationOffset(lua_State* L)
 {
 	// DEPRECATED
@@ -356,6 +445,13 @@ int LuaSyncedMoveCtrl::SetRotationOffset(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetRotationVelocity
+ * @param unitID integer
+ * @param rotVelX number Rotation velocity X component.
+ * @param rotVelY number Rotation velocity Y component.
+ * @param rotVelZ number Rotation velocity Z component.
+ */
 int LuaSyncedMoveCtrl::SetRotationVelocity(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -372,7 +468,11 @@ int LuaSyncedMoveCtrl::SetRotationVelocity(lua_State* L)
 	return 0;
 }
 
-
+/***
+ * @function MoveCtrl.SetHeading
+ * @param unitID integer
+ * @param heading Heading
+ */
 int LuaSyncedMoveCtrl::SetHeading(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -390,6 +490,11 @@ int LuaSyncedMoveCtrl::SetHeading(lua_State* L)
 
 /******************************************************************************/
 
+/***
+ * @function MoveCtrl.SetTrackSlope
+ * @param unitID integer
+ * @param trackSlope boolean
+ */
 int LuaSyncedMoveCtrl::SetTrackSlope(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -403,6 +508,11 @@ int LuaSyncedMoveCtrl::SetTrackSlope(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetTrackGround
+ * @param unitID integer
+ * @param trackGround boolean
+ */
 int LuaSyncedMoveCtrl::SetTrackGround(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -416,6 +526,11 @@ int LuaSyncedMoveCtrl::SetTrackGround(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetTrackLimits
+ * @param unitID integer
+ * @param trackLimits boolean
+ */
 int LuaSyncedMoveCtrl::SetTrackLimits(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -429,6 +544,11 @@ int LuaSyncedMoveCtrl::SetTrackLimits(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetGroundOffset
+ * @param unitID integer
+ * @param groundOffset number
+ */
 int LuaSyncedMoveCtrl::SetGroundOffset(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -442,6 +562,11 @@ int LuaSyncedMoveCtrl::SetGroundOffset(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetGravity
+ * @param unitID integer
+ * @param gravityFactor number
+ */
 int LuaSyncedMoveCtrl::SetGravity(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -455,6 +580,11 @@ int LuaSyncedMoveCtrl::SetGravity(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetDrag
+ * @param unitID integer
+ * @param drag number
+ */
 int LuaSyncedMoveCtrl::SetDrag(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -468,6 +598,11 @@ int LuaSyncedMoveCtrl::SetDrag(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetWindFactor
+ * @param unitID integer
+ * @param windFactor number
+ */
 int LuaSyncedMoveCtrl::SetWindFactor(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -481,6 +616,16 @@ int LuaSyncedMoveCtrl::SetWindFactor(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetLimits
+ * @param unitID integer
+ * @param minX number Minimum position X component.
+ * @param minY number Minimum position Y component.
+ * @param minZ number Minimum position Z component.
+ * @param maxX number Maximum position X component.
+ * @param maxY number Maximum position Y component.
+ * @param maxZ number Maximum position Z component.
+ */
 int LuaSyncedMoveCtrl::SetLimits(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -497,6 +642,11 @@ int LuaSyncedMoveCtrl::SetLimits(lua_State* L)
 
 /******************************************************************************/
 
+/***
+ * @function MoveCtrl.SetNoBlocking
+ * @param unitID integer
+ * @param noBlocking boolean
+ */
 int LuaSyncedMoveCtrl::SetNoBlocking(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -516,6 +666,11 @@ int LuaSyncedMoveCtrl::SetShotStop(lua_State* L) { return 0; }
 int LuaSyncedMoveCtrl::SetSlopeStop(lua_State* L) { return 0; }
 
 
+/***
+ * @function MoveCtrl.SetCollideStop
+ * @param unitID integer
+ * @param collideStop boolean
+ */
 int LuaSyncedMoveCtrl::SetCollideStop(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -529,6 +684,11 @@ int LuaSyncedMoveCtrl::SetCollideStop(lua_State* L)
 }
 
 
+/***
+ * @function MoveCtrl.SetLimitsStop
+ * @param unitID integer
+ * @param limitsStop boolean
+ */
 int LuaSyncedMoveCtrl::SetLimitsStop(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -566,7 +726,48 @@ static inline bool SetMoveTypeValue(lua_State* L, AMoveType* moveType, int keyId
 	return false;
 }
 
+/***
+ * @alias GenericMoveTypeNumberKey
+ * | "maxSpeed"
+ * | "maxWantedSpeed"
+ * | "maneuverLeash"
+ * | "waterline"
+ */
 
+/***
+ * @alias GenericMoveTypeBooleanKey
+ * | "useWantedSpeed[0]" # Use wanted speed for individual orders.
+ * | "useWantedSpeed[1]" # Use wanted speed for formation orders.
+ */
+
+/***
+ * @class GenericMoveType
+ * @field maxSpeed number?
+ * @field maxWantedSpeed number?
+ * @field maneuverLeash number?
+ * @field waterline number?
+ * @field ["useWantedSpeed[0]"] boolean? # Use wanted speed for individual orders.
+ * @field ["useWantedSpeed[1]"] boolean? # Use wanted speed for formation orders.
+ */
+
+/** - Not exported.
+ * 
+ * Parses a MoveType object.
+ * 
+ * Parses params, starting at param 2:
+ * 
+ * Overload 1:
+ * @param <MoveTypeTable> boolean
+ * @return number numAssignedValues
+ *
+ * Overload 2:
+ * @param <NumberKey> number
+ * @return number numAssignedValues
+ *
+ * Overload 3:
+ * @param <BooleanKey> boolean
+ * @return number numAssignedValues
+ */
 static int SetMoveTypeData(lua_State* L, AMoveType* moveType, const char* caller)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -607,19 +808,196 @@ static int SetMoveTypeData(lua_State* L, AMoveType* moveType, const char* caller
 	return 1;
 }
 
+/***
+ * @class HoverAirMoveType : GenericMoveType
+ * @field collide boolean?
+ * @field dontLand boolean?
+ * @field airStrafe boolean?
+ * @field useSmoothMesh boolean?
+ * @field bankingAllowed boolean?
+ * @field wantedHeight number?
+ * @field accRate number?
+ * @field decRate number?
+ * @field turnRate number?
+ * @field altitudeRate number?
+ * @field currentBank number?
+ * @field currentPitch number?
+ * @field maxDrift number?
+ */
 
+/***
+ * @function MoveCtrl.SetGunshipMoveTypeData
+ * @param unitID integer
+ * @param moveType HoverAirMoveType
+ * @return number numAssignedValues
+ */
+/***
+ * @function MoveCtrl.SetGunshipMoveTypeData
+ * @param unitID integer
+ * @param key
+ * | GenericMoveTypeBooleanKey
+ * | "collide"
+ * | "dontLand"
+ * | "airStrafe"
+ * | "useSmoothMesh"
+ * | "bankingAllowed"
+ * @param value boolean
+ * @return number numAssignedValues
+ */
+/***
+ * @function MoveCtrl.SetGunshipMoveTypeData
+ * @param unitID integer
+ * @param key
+ * | GenericMoveTypeNumberKey
+ * | "wantedHeight"
+ * | "accRate"
+ * | "decRate"
+ * | "turnRate"
+ * | "altitudeRate"
+ * | "currentBank"
+ * | "currentPitch"
+ * | "maxDrift"
+ * @param value number
+ * @return number numAssignedValues
+ */
 int LuaSyncedMoveCtrl::SetGunshipMoveTypeData(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetMoveTypeData(L, ParseDerivedMoveType<CHoverAirMoveType>(L, __func__, 1), __func__));
 }
 
+/***
+ * @class StrafeAirMoveType : GenericMoveType
+ * @field collide boolean?
+ * @field useSmoothMesh boolean?
+ * @field loopbackAttack boolean?
+ * @field maneuverBlockTime integer?
+ * @field wantedHeight number?
+ * @field turnRadius number?
+ * @field accRate number?
+ * @field decRate number?
+ * @field maxAcc number? Synonym for `accRate`.
+ * @field maxDec number? Synonym for `decRate`.
+ * @field maxBank number?
+ * @field maxPitch number?
+ * @field maxAileron number?
+ * @field maxElevator number?
+ * @field maxRudder number?
+ * @field attackSafetyDistance number?
+ * @field myGravity number?
+ */
+
+/***
+ * @function MoveCtrl.SetAirMoveTypeData
+ * @param unitID integer
+ * @param moveType StrafeAirMoveType
+ * @return number numAssignedValues
+ */
+/***
+ * @function MoveCtrl.SetAirMoveTypeData
+ * @param unitID integer
+ * @param key
+ * | GenericMoveTypeBooleanKey
+ * | "collide"
+ * | "useSmoothMesh"
+ * | "loopbackAttack"
+  * @param value boolean
+ * @return number numAssignedValues
+ */
+/***
+ * @function MoveCtrl.SetAirMoveTypeData
+ * @param unitID integer
+ * @param key
+ * | GenericMoveTypeNumberKey
+ * | "wantedHeight" 
+ * | "turnRadius" 
+ * | "accRate" 
+ * | "decRate" 
+ * | "maxAcc" # Synonym for `accRate`.
+ * | "maxDec" # Synonym for `decRate`.
+ * | "maxBank" 
+ * | "maxPitch" 
+ * | "maxAileron" 
+ * | "maxElevator" 
+ * | "maxRudder" 
+ * | "attackSafetyDistance" 
+ * | "myGravity" 
+ * @param value number
+ * @return number numAssignedValues
+ */
+/***
+ * @function MoveCtrl.SetAirMoveTypeData
+ * @param unitID integer
+ * @param key
+ * | "maneuverBlockTime"
+ * @param value integer
+ * @return number numAssignedValues
+ */
 int LuaSyncedMoveCtrl::SetAirMoveTypeData(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
 	return (SetMoveTypeData(L, ParseDerivedMoveType<CStrafeAirMoveType>(L, __func__, 1), __func__));
 }
 
+/***
+ * @class GroundMoveType : GenericMoveType
+ * @field atGoal boolean?
+ * @field atEndOfPath boolean?
+ * @field pushResistant boolean?
+ * @field minScriptChangeHeading integer?
+ * @field turnRate number?
+ * @field turnAccel number?
+ * @field accRate number?
+ * @field decRate number?
+ * @field myGravity number?
+ * @field maxReverseDist number?
+ * @field minReverseAngle number?
+ * @field maxReverseSpeed number?
+ * @field sqSkidSpeedMult number?
+ */
+
+/***
+ * @function MoveCtrl.SetGroundMoveTypeData
+ * @param unitID integer
+ * @param moveType GroundMoveType
+ * @return number numAssignedValues
+ */
+/***
+ * @function MoveCtrl.SetGroundMoveTypeData
+ * @param unitID integer
+ * @param key
+ * | GenericMoveTypeBooleanKey
+ * | "atGoal"
+ * | "atEndOfPath"
+ * | "pushResistant"
+ * @param value boolean
+ * @return number numAssignedValues
+ */
+/***
+ * @function MoveCtrl.SetGroundMoveTypeData
+ * @param unitID integer
+ * @param key
+ * | GenericMoveTypeNumberKey
+ * | "turnRate"
+ * | "turnAccel"
+ * | "accRate"
+ * | "decRate"
+ * | "myGravity"
+ * | "maxReverseDist"
+ * | "minReverseAngle"
+ * | "maxReverseSpeed"
+ * | "sqSkidSpeedMult"
+ * @param value number
+ * @return number numAssignedValues
+ */
+/***
+ * @function MoveCtrl.SetGroundMoveTypeData
+ * @param unitID integer
+ * @param key
+ * | "minScriptChangeHeading"
+ * @param value integer
+ * @return number numAssignedValues
+ */
 int LuaSyncedMoveCtrl::SetGroundMoveTypeData(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -631,6 +1009,12 @@ int LuaSyncedMoveCtrl::SetGroundMoveTypeData(lua_State* L)
 /******************************************************************************/
 /******************************************************************************/
 
+/***
+ * @function MoveCtrl.SetMoveDef
+ * @param unitID integer
+ * @param moveDef integer|string Name or path type of the MoveDef.
+ * @return boolean success `true` if the `MoveDef` was set, `false` if `unitID` or `moveDef` were invalid, or if the unit does not support a `MoveDef`.
+ */
 int LuaSyncedMoveCtrl::SetMoveDef(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -675,4 +1059,3 @@ int LuaSyncedMoveCtrl::SetMoveDef(lua_State* L)
 	lua_pushboolean(L, (unit->moveDef = moveDef) != nullptr);
 	return 1;
 }
-

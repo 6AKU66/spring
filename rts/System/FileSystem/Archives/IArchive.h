@@ -6,9 +6,12 @@
 #include <string>
 #include <vector>
 #include <cinttypes>
+#include <memory>
+#include <semaphore>
 
 #include "ArchiveTypes.h"
 #include "System/Sync/SHA512.hpp"
+#include "System/ScopedResource.h"
 #include "System/UnorderedMap.hpp"
 
 /**
@@ -24,13 +27,12 @@ class IArchive
 public:
 	struct SFileInfo {
 		std::string fileName;
+		std::string specialFileName; // overloaded meaning
 		int32_t size = -1;
 		uint32_t modTime = 0;
 	};
 protected:
-	IArchive(const std::string& archiveFile): archiveFile(archiveFile) {
-	}
-
+	IArchive(const std::string& archiveFile);
 public:
 	virtual ~IArchive() {}
 
@@ -93,15 +95,25 @@ public:
 
 		// no archive should be larger than 4GB when extracted
 		for (uint32_t fid = 0; fid < NumFiles(); fid++) {
-			auto fi = FileInfo(fid);
-			size += (fi.size);
+			auto fs = FileSize(fid);
+			size += fs;
 		}
 
 		return size;
 	}
 
 	/**
-	 * Fetches the name and size in bytes of a file by its ID.
+	 * Fetches the name of a file by its ID.
+	 */
+	virtual const std::string& FileName(uint32_t fid) const = 0;
+
+	/**
+	 * Fetches the size of a file by its ID.
+	 */
+	virtual int32_t FileSize(uint32_t fid) const = 0;
+
+	/**
+	 * Fetches the name, size and modTime of a file by its ID.
 	 */
 	virtual SFileInfo FileInfo(uint32_t fid) const = 0;
 
@@ -126,8 +138,14 @@ public:
 	 * Fetches the (SHA512) hash of a file by its ID.
 	 */
 	virtual bool CalcHash(uint32_t fid, sha512::raw_digest& hash, std::vector<std::uint8_t>& fb);
-
-
+protected:
+	static uint32_t GetSpinningDiskParallelAccessNum();
+	auto AcquireSemaphoreScoped() const { // fake const
+		return spring::ScopedNullResource(
+			[this]() { if (sem) sem->acquire(); },
+			[this]() { if (sem) sem->release(); }
+		);
+	}
 protected:
 	// Spring expects the contents of archives to be case-independent
 	// this map (which must be populated by subclass archives) is kept
@@ -137,6 +155,8 @@ protected:
 protected:
 	/// "ExampleArchive.sdd"
 	const std::string archiveFile;
+	uint32_t parallelAccessNum = 0;
+	std::unique_ptr<std::counting_semaphore<32>> sem;
 };
 
 #endif // _ARCHIVE_BASE_H

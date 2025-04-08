@@ -14,6 +14,7 @@
 
 #include "IArchiveFactory.h"
 #include "BufferedArchive.h"
+#include "System/Threading/AtomicFirstIndex.hpp"
 
 /**
  * Creates LZMA/7zip compressed, single-file archives.
@@ -42,18 +43,24 @@ public:
 	bool IsOpen() override { return isOpen.any(); }
 
 	uint32_t NumFiles() const override { return (fileEntries.size()); }
+	const std::string& FileName(uint32_t fid) const override;
+	int32_t FileSize(uint32_t fid) const override;
 	SFileInfo FileInfo(uint32_t fid) const override;
 
 	bool CheckForSolid() const override { return considerSolid; }
-
-	static constexpr int MAX_THREADS = 32;
 protected:
 	int GetFileImpl(uint32_t fid, std::vector<std::uint8_t>& buffer) override;
 private:
+	static constexpr int MAX_THREADS = 32;
+
+	Recoil::AtomicFirstIndex<uint32_t> afi;
+
 	struct PerThreadData {
 		CFileInStream archiveStream;
 		CSzArEx db;
 		CLookToRead2 lookStream;
+		UInt32 blockIndex = 0xFFFFFFFF;
+		size_t outBufferSize = 0;
 		Byte* outBuffer = nullptr;
 	};
 

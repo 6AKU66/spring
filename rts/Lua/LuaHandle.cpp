@@ -47,6 +47,7 @@
 #include "System/Input/KeyInput.h"
 #include "System/Platform/SDL1_keysym.h"
 
+
 #include "LuaInclude.h"
 
 #include <SDL_keyboard.h>
@@ -210,6 +211,10 @@ void CLuaHandle::KillLua(bool inFreeHandler)
 /******************************************************************************/
 /******************************************************************************/
 
+/***
+ * @function Script.Kill
+ * @param killMessage string? Kill message.
+ */
 int CLuaHandle::KillActiveHandle(lua_State* L)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -558,7 +563,7 @@ void CLuaHandle::Shutdown()
  *
  * @function Callins:GotChatMsg
  * @param msg string
- * @param playerID number
+ * @param playerID integer
  */
 bool CLuaHandle::GotChatMsg(const string& msg, int playerID)
 {
@@ -634,6 +639,10 @@ bool CLuaHandle::HasCallIn(lua_State* L, const string& name) const
 }
 
 
+/***
+ * @function Script.UpdateCallin
+ * @param name string
+ */
 bool CLuaHandle::UpdateCallIn(lua_State* L, const string& name)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
@@ -725,7 +734,7 @@ void CLuaHandle::GameOver(const std::vector<unsigned char>& winningAllyTeams)
 /*** Called when the game is paused.
  *
  * @function Callins:GamePaused
- * @param playerID number
+ * @param playerID integer
  * @param paused boolean
  */
 void CLuaHandle::GamePaused(int playerID, bool paused)
@@ -864,7 +873,7 @@ void CLuaHandle::GameID(const unsigned char* gameID, unsigned int numBytes)
 /*** Called when a team dies (see `Spring.KillTeam`).
  *
  * @function Callins:TeamDied
- * @param teamID number
+ * @param teamID integer
  */
 void CLuaHandle::TeamDied(int teamID)
 {
@@ -887,7 +896,7 @@ void CLuaHandle::TeamDied(int teamID)
 
 /*** @function Callins:TeamChanged
  *
- * @param teamID number
+ * @param teamID integer
  */
 void CLuaHandle::TeamChanged(int teamID)
 {
@@ -911,7 +920,7 @@ void CLuaHandle::TeamChanged(int teamID)
 /*** Called whenever a player's status changes e.g. becoming a spectator.
  *
  * @function Callins:PlayerChanged
- * @param playerID number
+ * @param playerID integer
  */
 void CLuaHandle::PlayerChanged(int playerID)
 {
@@ -935,7 +944,7 @@ void CLuaHandle::PlayerChanged(int playerID)
 /*** Called whenever a new player joins the game.
  *
  * @function Callins:PlayerAdded
- * @param playerID number
+ * @param playerID integer
  */
 void CLuaHandle::PlayerAdded(int playerID)
 {
@@ -959,7 +968,7 @@ void CLuaHandle::PlayerAdded(int playerID)
 /*** Called whenever a player is removed from the game.
  *
  * @function Callins:PlayerRemoved
- * @param playerID number
+ * @param playerID integer
  * @param reason string
  */
 void CLuaHandle::PlayerRemoved(int playerID, int reason)
@@ -1012,7 +1021,7 @@ inline void CLuaHandle::UnitCallIn(const LuaHashString& hs, const CUnit* unit)
  * @param unitID integer
  * @param unitDefID integer
  * @param unitTeam integer
- * @param builderID number?
+ * @param builderID integer?
  */
 void CLuaHandle::UnitCreated(const CUnit* unit, const CUnit* builder)
 {
@@ -1058,8 +1067,8 @@ void CLuaHandle::UnitFinished(const CUnit* unit)
  * @param unitID integer
  * @param unitDefID integer
  * @param unitTeam integer
- * @param factID number
- * @param factDefID number
+ * @param factID integer
+ * @param factDefID integer
  * @param userOrders boolean
  */
 void CLuaHandle::UnitFromFactory(const CUnit* unit,
@@ -1140,10 +1149,10 @@ void CLuaHandle::UnitConstructionDecayed(const CUnit* unit, float timeSinceLastB
  * @param unitID integer
  * @param unitDefID integer
  * @param unitTeam integer
- * @param attackerID number
- * @param attackerDefID number
+ * @param attackerID integer
+ * @param attackerDefID integer
  * @param attackerTeam number
- * @param weaponDefID number
+ * @param weaponDefID integer
  */
 void CLuaHandle::UnitDestroyed(const CUnit* unit, const CUnit* attacker, int weaponDefID)
 {
@@ -1252,7 +1261,7 @@ void CLuaHandle::UnitIdle(const CUnit* unit)
  * @param unitID integer
  * @param unitDefID integer
  * @param unitTeam integer
- * @param cmdID number
+ * @param cmdID integer
  * @param cmdParams table
  * @param options CommandOptions
  * @param cmdTag number
@@ -1286,7 +1295,7 @@ void CLuaHandle::UnitCommand(const CUnit* unit, const Command& command, int play
  * @param unitID integer
  * @param unitDefID integer
  * @param unitTeam integer
- * @param cmdID number
+ * @param cmdID integer
  * @param cmdParams table
  * @param options CommandOptions
  * @param cmdTag number
@@ -1318,10 +1327,10 @@ void CLuaHandle::UnitCmdDone(const CUnit* unit, const Command& command)
  * @param unitTeam integer
  * @param damage number
  * @param paralyzer number
- * @param weaponDefID number
- * @param projectileID number
- * @param attackerID number
- * @param attackerDefID number
+ * @param weaponDefID integer
+ * @param projectileID integer
+ * @param attackerID integer
+ * @param attackerDefID integer
  * @param attackerTeam number
  */
 void CLuaHandle::UnitDamaged(
@@ -1789,8 +1798,8 @@ void CLuaHandle::UnitDecloaked(const CUnit* unit)
  * Both units must be registered with `Script.SetWatchUnit`.
  *
  * @function Callins:UnitUnitCollision
- * @param colliderID number
- * @param collideeID number
+ * @param colliderID integer
+ * @param collideeID integer
  */
 bool CLuaHandle::UnitUnitCollision(const CUnit* collider, const CUnit* collidee)
 {
@@ -1841,8 +1850,8 @@ bool CLuaHandle::UnitUnitCollision(const CUnit* collider, const CUnit* collidee)
  *
  * The unit must be registered with `Script.SetWatchUnit` and the feature registered with `Script.SetWatchFeature`.
  *
- * @param colliderID number
- * @param collideeID number
+ * @param colliderID integer
+ * @param collideeID integer
  */
 bool CLuaHandle::UnitFeatureCollision(const CUnit* collider, const CFeature* collidee)
 {
@@ -1969,8 +1978,8 @@ void CLuaHandle::RenderUnitDestroyed(const CUnit* unit)
  *
  * @function Callins:FeatureCreated
  *
- * @param featureID number
- * @param allyTeamID number
+ * @param featureID integer
+ * @param allyTeamID integer
  */
 void CLuaHandle::FeatureCreated(const CFeature* feature)
 {
@@ -1996,8 +2005,8 @@ void CLuaHandle::FeatureCreated(const CFeature* feature)
  *
  * @function Callins:FeatureDestroyed
  *
- * @param featureID number
- * @param allyTeamID number
+ * @param featureID integer
+ * @param allyTeamID integer
  */
 void CLuaHandle::FeatureDestroyed(const CFeature* feature)
 {
@@ -2023,14 +2032,14 @@ void CLuaHandle::FeatureDestroyed(const CFeature* feature)
  *
  * @function Callins:FeatureDamaged
  *
- * @param featureID number
- * @param featureDefID number
+ * @param featureID integer
+ * @param featureDefID integer
  * @param featureTeam number
  * @param damage number
- * @param weaponDefID number
- * @param projectileID number
- * @param attackerID number
- * @param attackerDefID number
+ * @param weaponDefID integer
+ * @param projectileID integer
+ * @param attackerID integer
+ * @param attackerDefID integer
  * @param attackerTeam number
  */
 void CLuaHandle::FeatureDamaged(
@@ -2079,9 +2088,9 @@ void CLuaHandle::FeatureDamaged(
  *
  * Note that weaponDefID is missing if the projectile is spawned as part of a burst, but `Spring.GetProjectileDefID` and `Spring.GetProjectileName` still work in callin scope using proID.
  *
- * @param proID number
- * @param proOwnerID number
- * @param weaponDefID number
+ * @param proID integer
+ * @param proOwnerID integer
+ * @param weaponDefID integer
  *
  */
 void CLuaHandle::ProjectileCreated(const CProjectile* p)
@@ -2126,9 +2135,9 @@ void CLuaHandle::ProjectileCreated(const CProjectile* p)
 /*** Called when the projectile is destroyed.
  *
  * @function Callins:ProjectileDestroyed
- * @param proID number
- * @param ownerID number
- * @param proWeaponDefID number
+ * @param proID integer
+ * @param ownerID integer
+ * @param proWeaponDefID integer
  */
 void CLuaHandle::ProjectileDestroyed(const CProjectile* p)
 {
@@ -2180,12 +2189,12 @@ void CLuaHandle::ProjectileDestroyed(const CProjectile* p)
  *
  * @function Callins:Explosion
  *
- * @param weaponDefID number
+ * @param weaponDefID integer
  * @param px number
  * @param py number
  * @param pz number
- * @param attackerID number
- * @param projectileID number
+ * @param attackerID integer
+ * @param projectileID integer
  * @return boolean noGfx if then no graphical effects are drawn by the engine for this explosion.
  */
 bool CLuaHandle::Explosion(int weaponDefID, int projectileID, const float3& pos, const CUnit* owner)
@@ -2270,7 +2279,7 @@ void CLuaHandle::StockpileChanged(const CUnit* unit,
  *
  * @function Callins:RecvLuaMsg
  * @param msg string
- * @param playerID number
+ * @param playerID integer
  */
 bool CLuaHandle::RecvLuaMsg(const string& msg, int playerID)
 {
@@ -2495,11 +2504,11 @@ void CLuaHandle::SunChanged()
 	RunCallIn(L, cmdStr, 0, 0);
 }
 
-/*** Used to set the default command when a unit is selected. First parameter is the type of the object pointed at (either "unit or "feature") and the second is its unitID or featureID respectively.
- *
+/*** Used to set the default command when a unit is selected.
+ * 
  * @function Callins:DefaultCommand
- * @param type string "unit" | "feature"
- * @param id integer unitID | featureID
+ * @param type "unit"|"feature" The type of the object pointed at.
+ * @param id integer The `unitID` or `featureID`.
  */
 bool CLuaHandle::DefaultCommand(const CUnit* unit,
                                 const CFeature* feature, int& cmd)
@@ -3377,6 +3386,53 @@ void CLuaHandle::ActiveCommandChanged(const SCommandDescription* cmdDesc)
 	}
 }
 
+/*** Called whenever the camera rotation changes
+ *
+ * @function Callins:CameraRotationChanged
+ * @param rotX number Camera rotation around the x axis in radians.
+ * @param rotY number Camera rotation around the y axis in radians.
+ * @param rotZ number Camera rotation around the z axis in radians.
+ */
+void CLuaHandle::CameraRotationChanged(const float3& rot)
+{
+	RECOIL_DETAILED_TRACY_ZONE;
+	LUA_CALL_IN_CHECK(L, false);
+	luaL_checkstack(L, 6, __func__);
+	static const LuaHashString cmdStr(__func__);
+	if (!cmdStr.GetGlobalFunc(L))
+		return;
+
+	lua_pushnumber(L, rot.x);
+	lua_pushnumber(L, rot.y);
+	lua_pushnumber(L, rot.z);
+
+	RunCallIn(L, cmdStr, 3, 0);
+}
+
+/*** Called whenever the camera position changes
+ *
+ * @function Callins:CameraPositionChanged
+ * @param posX number Camera position x in world coordinates
+ * @param posY number Camera position y in world coordinates
+ * @param posZ number Camera position z in world coordinates
+ */
+void CLuaHandle::CameraPositionChanged(const float3& pos)
+{
+	RECOIL_DETAILED_TRACY_ZONE;
+	LUA_CALL_IN_CHECK(L, false);
+	luaL_checkstack(L, 6, __func__);
+
+	static const LuaHashString cmdStr(__func__);
+	if (!cmdStr.GetGlobalFunc(L))
+		return;
+
+	lua_pushnumber(L, pos.x);
+	lua_pushnumber(L, pos.y);
+	lua_pushnumber(L, pos.z);
+
+	RunCallIn(L, cmdStr, 3, 0);
+}
+
 /*** Called when a command is issued.
  *
  * @function Callins:CommandNotify
@@ -3439,7 +3495,7 @@ bool CLuaHandle::AddConsoleLine(const string& msg, const string& section, int le
 /*** Called when a unit is added to or removed from a control group.
  *
  * @function Callins:GroupChanged
- * @param groupID number
+ * @param groupID integer
  */
 bool CLuaHandle::GroupChanged(int groupID)
 {
@@ -3456,15 +3512,30 @@ bool CLuaHandle::GroupChanged(int groupID)
 	return RunCallIn(L, cmdStr, 1, 0);
 }
 
-
-
 /***
  * @function Callins:WorldTooltip
- * @param ttType string "unit" | "feature" | "ground" | "selection"
- * @param data1 number unitID | featureID | posX
- * @param data2 number? posY
- * @param data3 number? posZ
- * @return string newTooltip
+ * @param type "unit"
+ * @param unitId integer
+ * @return string tooltip
+ */
+/***
+ * @function Callins:WorldTooltip
+ * @param type "feature"
+ * @param featureId integer
+ * @return string tooltip
+ */
+/***
+ * @function Callins:WorldTooltip
+ * @param type "ground"
+ * @param posX number
+ * @param posY number
+ * @param posZ number
+ * @return string tooltip
+ */
+/***
+ * @function Callins:WorldTooltip
+ * @param type "selection"
+ * @return string tooltip
  */
 string CLuaHandle::WorldTooltip(const CUnit* unit,
                                 const CFeature* feature,
@@ -3509,18 +3580,34 @@ string CLuaHandle::WorldTooltip(const CUnit* unit,
 	return retval;
 }
 
-
 /***
- *
  * @function Callins:MapDrawCmd
- * @param playerID number
- * @param type string "point" | "line" | "erase"
+ * @param playerID integer
+ * @param type "point"
  * @param posX number
  * @param posY number
  * @param posZ number
- * @param data4 string|number point: label, erase: radius, line: pos2X
- * @param pos2Y number? when type is line
- * @param pos2Z number? when type is line
+ * @param label string
+ */
+/***
+ * @function Callins:MapDrawCmd
+ * @param playerID integer
+ * @param type "line"
+ * @param pos1X number
+ * @param pos1Y number
+ * @param pos1Z number
+ * @param pos2X number
+ * @param pos2Y number
+ * @param pos2Z number
+ */
+/***
+ * @function Callins:MapDrawCmd
+ * @param playerID integer
+ * @param type "erase"
+ * @param posX number
+ * @param posY number
+ * @param posZ number
+ * @param radius number
  */
 bool CLuaHandle::MapDrawCmd(int playerID, int type,
                             const float3* pos0,
@@ -3680,7 +3767,7 @@ const char* CLuaHandle::RecvSkirmishAIMessage(int aiTeam, const char* inData, in
 /*** Called when a Pr-downloader download is queued
  *
  * @function Callins:DownloadQueued
- * @param id number
+ * @param id integer
  * @param name string
  * @param type string
  */
@@ -3708,7 +3795,7 @@ void CLuaHandle::DownloadQueued(int ID, const string& archiveName, const string&
 /*** Called when a Pr-downloader download is started via VFS.DownloadArchive.
  *
  * @function Callins:DownloadStarted
- * @param id number
+ * @param id integer
  */
 void CLuaHandle::DownloadStarted(int ID)
 {
@@ -3731,7 +3818,7 @@ void CLuaHandle::DownloadStarted(int ID)
 /*** Called when a Pr-downloader download finishes successfully.
  *
  * @function Callins:DownloadFinished
- * @param id number
+ * @param id integer
  */
 void CLuaHandle::DownloadFinished(int ID)
 {
@@ -3754,8 +3841,8 @@ void CLuaHandle::DownloadFinished(int ID)
 /*** Called when a Pr-downloader download fails to complete.
  *
  * @function Callins:DownloadFailed
- * @param id number
- * @param errorID number
+ * @param id integer
+ * @param errorID integer
  */
 void CLuaHandle::DownloadFailed(int ID, int errorID)
 {
@@ -3779,9 +3866,9 @@ void CLuaHandle::DownloadFailed(int ID, int errorID)
 /*** Called incrementally during a Pr-downloader download.
  *
  * @function Callins:DownloadProgress
- * @param id number
- * @param downloaded number
- * @param total number
+ * @param id integer
+ * @param downloaded integer
+ * @param total integer
  */
 void CLuaHandle::DownloadProgress(int ID, long downloaded, long total)
 {
@@ -3899,7 +3986,10 @@ bool CLuaHandle::AddBasicCalls(lua_State* L)
 		HSTR_PUSH_CFUNC(L, "DelayByFrames",   CallOutDelayByFrames);
 		HSTR_PUSH_CFUNC(L, "IsEngineMinVersion", CallOutIsEngineMinVersion);
 		// special team constants
+
+		/*** @field Script.NO_ACCESS_TEAM -1 */
 		HSTR_PUSH_NUMBER(L, "NO_ACCESS_TEAM",  CEventClient::NoAccessTeam);
+		/*** @field Script.ALL_ACCESS_TEAM -2 */
 		HSTR_PUSH_NUMBER(L, "ALL_ACCESS_TEAM", CEventClient::AllAccessTeam);
 	}
 	lua_rawset(L, -3);
@@ -3918,6 +4008,10 @@ bool CLuaHandle::AddBasicCalls(lua_State* L)
 }
 
 
+/***
+ * @function Script.GetName
+ * @return string name
+ */
 int CLuaHandle::CallOutGetName(lua_State* L)
 {
 	lua_pushsstring(L, GetHandle(L)->GetName());
@@ -3925,6 +4019,10 @@ int CLuaHandle::CallOutGetName(lua_State* L)
 }
 
 
+/***
+ * @function Script.GetSynced
+ * @return boolean synced
+ */
 int CLuaHandle::CallOutGetSynced(lua_State* L)
 {
 	lua_pushboolean(L, GetHandleSynced(L));
@@ -3932,6 +4030,10 @@ int CLuaHandle::CallOutGetSynced(lua_State* L)
 }
 
 
+/***
+ * @function Script.GetFullCtrl
+ * @return boolean fullCtrl
+ */
 int CLuaHandle::CallOutGetFullCtrl(lua_State* L)
 {
 	lua_pushboolean(L, GetHandleFullCtrl(L));
@@ -3939,6 +4041,10 @@ int CLuaHandle::CallOutGetFullCtrl(lua_State* L)
 }
 
 
+/***
+ * @function Script.GetFullRead
+ * @return boolean fullRead
+ */
 int CLuaHandle::CallOutGetFullRead(lua_State* L)
 {
 	lua_pushboolean(L, GetHandleFullRead(L));
@@ -3946,6 +4052,10 @@ int CLuaHandle::CallOutGetFullRead(lua_State* L)
 }
 
 
+/***
+ * @function Script.GetCtrlTeam
+ * @return integer teamID
+ */
 int CLuaHandle::CallOutGetCtrlTeam(lua_State* L)
 {
 	lua_pushnumber(L, GetHandleCtrlTeam(L));
@@ -3953,6 +4063,10 @@ int CLuaHandle::CallOutGetCtrlTeam(lua_State* L)
 }
 
 
+/***
+ * @function Script.GetReadTeam
+ * @return integer teamID
+ */
 int CLuaHandle::CallOutGetReadTeam(lua_State* L)
 {
 	lua_pushnumber(L, GetHandleReadTeam(L));
@@ -3960,6 +4074,10 @@ int CLuaHandle::CallOutGetReadTeam(lua_State* L)
 }
 
 
+/***
+ * @function Script.GetReadAllyTeam
+ * @return integer allyTeamID
+ */
 int CLuaHandle::CallOutGetReadAllyTeam(lua_State* L)
 {
 	lua_pushnumber(L, GetHandleReadAllyTeam(L));
@@ -3967,6 +4085,10 @@ int CLuaHandle::CallOutGetReadAllyTeam(lua_State* L)
 }
 
 
+/***
+ * @function Script.GetSelectTeam
+ * @return integer teamID
+ */
 int CLuaHandle::CallOutGetSelectTeam(lua_State* L)
 {
 	lua_pushnumber(L, GetHandleSelectTeam(L));
@@ -3974,6 +4096,10 @@ int CLuaHandle::CallOutGetSelectTeam(lua_State* L)
 }
 
 
+/***
+ * @function Script.GetGlobal
+ * @return integer? global
+ */
 int CLuaHandle::CallOutGetGlobal(lua_State* L)
 {
 	if (devMode) {
@@ -3984,6 +4110,10 @@ int CLuaHandle::CallOutGetGlobal(lua_State* L)
 }
 
 
+/***
+ * @function Script.GetRegistry
+ * @return integer? registry
+ */
 int CLuaHandle::CallOutGetRegistry(lua_State* L)
 {
 	if (devMode) {
@@ -3994,11 +4124,17 @@ int CLuaHandle::CallOutGetRegistry(lua_State* L)
 }
 
 
+/** Documented at LuaUtils::IsEngineMinVersion */
 int CLuaHandle::CallOutIsEngineMinVersion(lua_State* L)
 {
 	return (LuaUtils::IsEngineMinVersion(L));
 }
 
+/***
+ * @function Script.DelayByFrames
+ * @param frameDelay integer
+ * @param fun(...) func
+ */
 int CLuaHandle::CallOutDelayByFrames(lua_State* L)
 {
 	int argCount = lua_gettop(L);

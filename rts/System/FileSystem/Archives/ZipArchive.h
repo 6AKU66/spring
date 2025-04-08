@@ -6,10 +6,10 @@
 #include "IArchiveFactory.h"
 #include "BufferedArchive.h"
 #include "minizip/unzip.h"
+#include "System/Threading/AtomicFirstIndex.hpp"
 
 #include <string>
 #include <vector>
-
 
 /**
  * Creates zip compressed, single-file archives.
@@ -38,6 +38,8 @@ public:
 	bool IsOpen() override { return (zipPerThread[0] != nullptr); }
 
 	uint32_t NumFiles() const override { return (fileEntries.size()); }
+	const std::string& FileName(uint32_t fid) const override;
+	int32_t FileSize(uint32_t fid) const override;
 	SFileInfo FileInfo(uint32_t fid) const override;
 
 	#if 0
@@ -46,11 +48,12 @@ public:
 		return fileEntries[fid].crc;
 	}
 	#endif
-
-	static constexpr int MAX_THREADS = 32;
 protected:
 	int GetFileImpl(uint32_t fid, std::vector<std::uint8_t>& buffer) override;
 private:
+	static constexpr int MAX_THREADS = 32;
+
+	Recoil::AtomicFirstIndex<uint32_t> afi;
 	std::array<unzFile, MAX_THREADS> zipPerThread = {nullptr};
 
 	// actual data is in BufferedArchive
