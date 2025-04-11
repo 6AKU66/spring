@@ -13,7 +13,6 @@
 #include "System/Threading/ThreadPool.h"
 #include "Game/GlobalUnsynced.h" // for myAllyTeam
 
-RECOIL_DETAILED_TRACY_ZONE;
 
 constexpr float LOS_BONUS_HEIGHT = 5.0f;
 
