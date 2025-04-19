@@ -1136,7 +1136,7 @@ int CGame::KeyPressed(int keyCode, int scanCode, bool isRepeat)
 
 	// try our list of actions
 	for (const Action& action: lastActionList) {
-		if (ActionPressed(keyCode, scanCode, action, isRepeat)) {
+		if (ActionPressed(action, isRepeat)) {
 			return 0;
 		}
 	}
@@ -2183,34 +2183,35 @@ void CGame::Save(std::string&& fileName, std::string&& saveArgs)
 
 
 
-bool CGame::ProcessCommandText(int keyCode, int scanCode, const std::string& command) {
+bool CGame::ProcessCommandText(const std::string& command) {
 	RECOIL_DETAILED_TRACY_ZONE;
 	if (command.size() <= 2)
 		return false;
 
 	if ((command[0] == '/') && (command[1] != '/')) {
 		// strip the '/'
-		ProcessAction(Action(command.substr(1)), keyCode, scanCode, false);
+		ProcessAction(Action(command.substr(1)), false);
 		return true;
 	}
 
 	return false;
 }
 
-bool CGame::ProcessAction(const Action& action, int keyCode, int scanCode, bool isRepeat)
+bool CGame::ProcessAction(const Action& action, bool isRepeat)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
-	if (ActionPressed(keyCode, scanCode, action, isRepeat))
+	if (ActionPressed(action, isRepeat))
 		return true;
 
+	bool handled = false;
 	// maybe a widget is interested?
-	if (luaUI != nullptr)
-		luaUI->GotChatMsg(action.rawline, false); //FIXME add return argument!
+	if (luaUI != nullptr && luaUI->GotChatMsg(action.rawline, false))
+		handled = true;
 
-	if (luaMenu != nullptr)
-		luaMenu->GotChatMsg(action.rawline, false); //FIXME add return argument!
+	if (luaMenu != nullptr && luaMenu->GotChatMsg(action.rawline, false))
+		handled = true;
 
-	return false;
+	return handled;
 }
 
 void CGame::ActionReceived(const Action& action, int playerID)
@@ -2230,16 +2231,11 @@ void CGame::ActionReceived(const Action& action, int playerID)
 	}
 }
 
-bool CGame::ActionPressed(int keyCode, int scanCode, const Action& action, bool isRepeat)
+bool CGame::ActionPressed(const Action& action, bool isRepeat)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
-	const IUnsyncedActionExecutor* executor = unsyncedGameCommands->GetActionExecutor(action.command);
-
-	if (executor != nullptr) {
-		// an executor for that action was found
-		if (executor->ExecuteAction(UnsyncedAction(action, keyCode, isRepeat)))
-			return true;
-	}
+	if (unsyncedGameCommands->ActionPressed(action, isRepeat))
+		return true;
 
 	if (CGameServer::IsServerCommand(action.command)) {
 		CommandMessage pckt(action, gu->myPlayerNum);
@@ -2248,4 +2244,9 @@ bool CGame::ActionPressed(int keyCode, int scanCode, const Action& action, bool 
 	}
 
 	return (gameCommandConsole.ExecuteAction(action));
+}
+
+bool CGame::ActionReleased(const Action& action)
+{
+	return unsyncedGameCommands->ActionReleased(action);
 }

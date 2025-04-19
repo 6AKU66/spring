@@ -2429,11 +2429,7 @@ int LuaUnsyncedCtrl::FreeUnitIcon(lua_State* L)
  */
 int LuaUnsyncedCtrl::UnitIconSetDraw(lua_State* L)
 {
-	static bool deprecatedMsgDone = false;
-	if (!deprecatedMsgDone) {
-		LOG_L(L_DEPRECATED, "Spring.UnitIconSetDraw is deprecated. Please use Spring.SetUnitIconDraw instead.");
-		deprecatedMsgDone = true;
-	}
+	LOG_DEPRECATED("Spring.UnitIconSetDraw is deprecated. Please use Spring.SetUnitIconDraw instead.");
 	return LuaUnsyncedCtrl::SetUnitIconDraw(L);
 }
 
@@ -3293,8 +3289,10 @@ static bool CanGiveOrders(const lua_State* L)
  */
 int LuaUnsyncedCtrl::GiveOrder(lua_State* L)
 {
-	if (!CanGiveOrders(L))
+	if (!CanGiveOrders(L)) {
+		lua_pushboolean(L, false);
 		return 1;
+	}
 
 	selectedUnitsHandler.GiveCommand(LuaUtils::ParseCommand(L, __func__, 1));
 
