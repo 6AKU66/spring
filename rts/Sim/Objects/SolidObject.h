@@ -85,6 +85,11 @@ public:
 		PSTATE_BIT_CRASHING = (1 << 10),
 		PSTATE_BIT_BLOCKING = (1 << 11),
 	};
+	static constexpr unsigned int PSTATE_ENVIRONMENT_BITS = (
+        PSTATE_BIT_ONGROUND | PSTATE_BIT_INWATER |
+        PSTATE_BIT_UNDERWATER | PSTATE_BIT_UNDERGROUND |
+        PSTATE_BIT_INAIR
+    );
 	enum CollidableState {
 		CSTATE_BIT_SOLIDOBJECTS = (1 << 0), // can be set while (physicalState & PSTATE_BIT_BLOCKING) == 0!
 		CSTATE_BIT_PROJECTILES  = (1 << 1),
@@ -266,6 +271,8 @@ public:
 
 	bool FootPrintOnGround() const;
 	bool BlockMapPosChanged() const { return (groundBlockPos != pos); }
+	
+	PhysicalState CalculatePhysicalState(float eps = 0.1f) const;
 
 	bool IsOnGround   () const { return (HasPhysicalStateBit(PSTATE_BIT_ONGROUND   )); }
 	bool IsInAir      () const { return (HasPhysicalStateBit(PSTATE_BIT_INAIR      )); }

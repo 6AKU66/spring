@@ -77,10 +77,11 @@ public:
 
 	void SanityCheck() const;
 	void PreUpdate() { preFramePos = pos; }
+	void ApplyPhysicalStateChange(PhysicalState newState, PhysicalState oldState);
 
 	virtual void PreInit(const UnitLoadParams& params);
 	virtual void PostInit(const CUnit* builder);
-
+	
 	virtual void Update();
 	virtual void SlowUpdate();
 

@@ -3,6 +3,8 @@
 #ifndef UNITHANDLER_H
 #define UNITHANDLER_H
 
+#include "Sim/Objects/SolidObject.h" 
+#include "System/Threading/ThreadPool.h"
 #include <array>
 #include <vector>
 
@@ -13,6 +15,12 @@
 struct UnitDef;
 class CUnit;
 class CBuilderCAI;
+
+struct PhysStateUpdateResult {
+	int unitID;
+	CSolidObject::PhysicalState newState;
+	CSolidObject::PhysicalState oldState;
+};
 
 class CUnitHandler
 {
@@ -85,6 +93,9 @@ private:
 	void UpdateUnitMoveTypes();
 	void UpdateUnitLosStates();
 	void UpdateUnits();
+	std::array<std::vector<PhysStateUpdateResult>, ThreadPool::MAX_THREADS> physStateUpdateResults;
+	void UpdatePhysicalStatesST(); // New ST application phase method
+    void UpdatePhysicalStatesMT(); // New MT calculation phase method
 	void UpdateUnitWeapons();
 
 	void GetUnitsWithPathRequests(std::vector<CUnit*>& unitsToMove, const size_t idxBeg, const size_t idxEnd);
